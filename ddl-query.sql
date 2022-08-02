@@ -61,7 +61,7 @@ CREATE TABLE public.store (
     "updated_by" varchar NOT NULL,
     CONSTRAINT "store_pkey" PRIMARY KEY ("id"),
     CONSTRAINT "address_fkey" FOREIGN KEY ("address_id") REFERENCES public.address("id")
-)
+);
 
 
 CREATE TABLE public.product (
@@ -78,7 +78,8 @@ CREATE TABLE public.product (
 "updated_by" varchar NOT NULL,
 CONSTRAINT "product_pkey" PRIMARY key ("id"),
 CONSTRAINT "store_fkey" FOREIGN KEY ("store_id") REFERENCE public.store("id"),
-CONSTRAINT "category_fkey" FOREIGN KEY ("category_id") REFERENCE public.category("id"));
+CONSTRAINT "category_fkey" FOREIGN KEY ("category_id") REFERENCE public.category("id")
+);
 
 CREATE TABLE public.product_transaction (
 "id" bigesrial NOT NULL,
@@ -94,13 +95,15 @@ CREATE TABLE public.product_transaction (
 CONSTRAINT "product_transaction_pkey" PRIMARY KEY ("id"),
 CONSTRAINT "transaction_fkey" FOREIGN KEY ("transaction_id") REFERENCE public.transaction ("id"),
 CONSTRAINT "product_fkey" FOREIGN KEY ("product_it") REFERENCE public.product ("id"),
-CONSTRAINT "shipping_fkey" FOREIGN KEY ("shipping_id") REFERENCE public.shippig ("id"));
+CONSTRAINT "shipping_fkey" FOREIGN KEY ("shipping_id") REFERENCE public.shippig ("id")
+);
 
 
 CREATE TABLE public.payment (
 "id" serial4 NOT NULL,
 "name" varchar NOT NULL,
-CONSTRAINT "payment_pkey" PRIMARY KEY("id"));
+CONSTRAINT "payment_pkey" PRIMARY KEY("id")
+);
 
 CREATE TABLE public.user_role (
 "id" serial4 NOT NULL,
