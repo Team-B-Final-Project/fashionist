@@ -1,7 +1,7 @@
-CREATE TABLE public.role (
-    "id" serial4 NOT NULL,
-    "name" varchar(50) NOT NULL,
-    CONSTRAINT "role_pkey" primary key ("id")
+create table public.role (
+"id" serial4 not null,
+"name" varchar(50) not null,
+constraint "role_pkey" primary key ("id")
 );
 
 CREATE TABLE public.profile_picture (
@@ -106,9 +106,9 @@ CREATE TABLE public.store (
 );
 
 CREATE TABLE public.user_role (
-    "id" serial4 NOT NULL,
-    "name" varchar NOT NULL,
-    CONSTRAINT "user_role_pkey" PRIMARY KEY("id")
+"id" serial4 NOT NULL,
+"name" varchar NOT NULL,
+CONSTRAINT "user_role_pkey" PRIMARY KEY("id")
 );
 
 CREATE TABLE public.product (
