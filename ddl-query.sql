@@ -1,3 +1,9 @@
+CREATE TABLE public.role (
+    "id" serial4 NOT NULL,
+    "name" varchar(50) NOT NULL,
+    CONSTRAINT "role_pkey" primary key ("id")
+);
+
 CREATE TABLE public.profile_picture (
     "id" bigserial,
     "name" varchar NOT NULL,
@@ -63,70 +69,64 @@ CREATE TABLE public.store (
     CONSTRAINT "address_fkey" FOREIGN KEY ("address_id") REFERENCES public.address("id")
 );
 
-
 CREATE TABLE public.product (
-"id" bigesrial NOT NULL,
-"store_id" bigint NOT NULL,
-"name" varchar(50) NOT NULL,
-"description" varchar NOT NULL,
-"price" float NOT NULL,
-"stock" int NOT NULL,
-"category_id" int4 NOT NULL,
-"created_at" timestamp NOT null default NOW(),
-"updated_at" timestamp NOT null default NOW(),
-"created_by" varchar NOT NULL,
-"updated_by" varchar NOT NULL,
-CONSTRAINT "product_pkey" PRIMARY key ("id"),
-CONSTRAINT "store_fkey" FOREIGN KEY ("store_id") REFERENCE public.store("id"),
-CONSTRAINT "category_fkey" FOREIGN KEY ("category_id") REFERENCE public.category("id")
+    "id" bigesrial NOT NULL,
+    "store_id" bigint NOT NULL,
+    "name" varchar(50) NOT NULL,
+    "description" varchar NOT NULL,
+    "price" float NOT NULL,
+    "stock" int NOT NULL,
+    "category_id" int4 NOT NULL,
+    "created_at" timestamp NOT null DEFAULT NOW(),
+    "updated_at" timestamp NOT null DEFAULT NOW(),
+    "created_by" varchar NOT NULL,
+    "updated_by" varchar NOT NULL,
+    CONSTRAINT "product_pkey" PRIMARY key ("id"),
+    CONSTRAINT "store_fkey" FOREIGN KEY ("store_id") REFERENCE public.store("id"),
+    CONSTRAINT "category_fkey" FOREIGN KEY ("category_id") REFERENCE public.category("id")
 );
 
 CREATE TABLE public.product_transaction (
-"id" bigesrial NOT NULL,
-"transaction_id" bigint NOT NULL,
-"product_id" bigint NOT NULL,
-"item_unit" int4 NOT NULL,
-"total_price" float NOT NULL,
-"shipping_id" int4 NOT NULL,
-"created_at" timestamp NOT NULL default NOW(),
-"updated_at" timestamp NOT NULL default NOW(),
-"created_by" varchar NOT NULL,
-"updated_by" varchar NOT NULL,
-CONSTRAINT "product_transaction_pkey" PRIMARY KEY ("id"),
-CONSTRAINT "transaction_fkey" FOREIGN KEY ("transaction_id") REFERENCE public.transaction ("id"),
-CONSTRAINT "product_fkey" FOREIGN KEY ("product_it") REFERENCE public.product ("id"),
-CONSTRAINT "shipping_fkey" FOREIGN KEY ("shipping_id") REFERENCE public.shippig ("id")
+    "id" bigesrial NOT NULL,
+    "transaction_id" bigint NOT NULL,
+    "product_id" bigint NOT NULL,
+    "item_unit" int4 NOT NULL,
+    "total_price" float NOT NULL,
+    "shipping_id" int4 NOT NULL,
+    "created_at" timestamp NOT NULL DEFAULT NOW(),
+    "updated_at" timestamp NOT NULL DEFAULT NOW(),
+    "created_by" varchar NOT NULL,
+    "updated_by" varchar NOT NULL,
+    CONSTRAINT "product_transaction_pkey" PRIMARY KEY ("id"),
+    CONSTRAINT "transaction_fkey" FOREIGN KEY ("transaction_id") REFERENCE public.transaction ("id"),
+    CONSTRAINT "product_fkey" FOREIGN KEY ("product_it") REFERENCE public.product ("id"),
+    CONSTRAINT "shipping_fkey" FOREIGN KEY ("shipping_id") REFERENCE public.shippig ("id")
 );
 
 CREATE TABLE public.payment (
-"id" serial4 NOT NULL,
-"name" varchar NOT NULL,
-CONSTRAINT "payment_pkey" PRIMARY KEY("id")
+    "id" serial4 NOT NULL,
+    "name" varchar NOT NULL,
+    CONSTRAINT "payment_pkey" PRIMARY KEY("id")
 );
 
 CREATE TABLE public.user_role (
-"id" serial4 NOT NULL,
-"name" varchar NOT NULL,
-CONSTRAINT "user_role_pkey" PRIMARY KEY("id");
-
-    create table public.role (
-"id" serial4 not null,
-"name" varchar(50) not null,
-constraint "role_pkey" primary key ("id")
+    "id" serial4 NOT NULL,
+    "name" varchar NOT NULL,
+    CONSTRAINT "user_role_pkey" PRIMARY KEY("id")
 );
 
-create table public.message (
-"id" bigserial not null,
-"sender" bigint not null,
-"receiver" bigint not null,
-"title" varchar(50) not null,
-"text" varchar not null,
-"is_read" boolean not null,
-"created_at" timestamp not null default NOW(),
-"updated_at" timestamp not null default NOW(),
-"created_by" varchar not null,
-"updated_by" varchar not null,
-constraint "role_pkey" primary key ("id"),
-constraint "sender_fkey" foreign key ("id") references public.user("id"),
-constraint "receiver_fkey" foreign key ("id") references public.user("id")
+CREATE TABLE public.message (
+    "id" bigserial NOT NULL,
+    "sender" bigint NOT NULL,
+    "receiver" bigint NOT NULL,
+    "title" varchar(50) NOT NULL,
+    "text" varchar NOT NULL,
+    "is_read" boolean NOT NULL,
+    "created_at" timestamp NOT NULL DEFAULT NOW(),
+    "updated_at" timestamp NOT NULL DEFAULT NOW(),
+    "created_by" varchar NOT NULL,
+    "updated_by" varchar NOT NULL,
+    CONSTRAINT "role_pkey" primary key ("id"),
+    CONSTRAINT "sender_fkey" FOREIGN KEY ("id") REFERENCES public.user("id"),
+    CONSTRAINT "receiver_fkey" FOREIGN KEY ("id") REFERENCES public.user("id")
 );
