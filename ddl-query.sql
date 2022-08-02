@@ -1,7 +1,7 @@
-create table public.role (
-"id" serial4 not null,
-"name" varchar(50) not null,
-constraint "role_pkey" primary key ("id")
+CREATE TABLE public.role (
+    "id" serial4 not null,
+    "name" varchar(50) not null,
+    CONSTRAINT "role_pkey" primary key ("id")
 );
 
 CREATE TABLE public.profile_picture (
@@ -21,25 +21,25 @@ CREATE TABLE public.product_picture (
     "type" varchar not null,
     "size" bigint not null,
     "data" bytea not null,
-    constraint "product_picture_pkey" primary key ("id")
+    CONSTRAINT "product_picture_pkey" primary key ("id")
 );
 
 CREATE TABLE public.payment (
-"id" serial4 NOT NULL,
-"name" varchar NOT NULL,
-CONSTRAINT "payment_pkey" PRIMARY KEY("id")
+    "id" serial4 NOT NULL,
+    "name" varchar NOT NULL,
+    CONSTRAINT "payment_pkey" PRIMARY KEY("id")
 );
 
 CREATE TABLE public.transaction_status (
     "id" bigserial not null,
     "name" varchar not null,
-    constraint "transaction_status_pkey" primary key ("id")
+    CONSTRAINT "transaction_status_pkey" primary key ("id")
 );
 
 CREATE TABLE public.shipping (
     "id" serial4 not null,
     "name" varchar not null,
-    constraint "shipping_pkey" primary key ("id")
+    CONSTRAINT "shipping_pkey" primary key ("id")
 );
 
 CREATE TABLE public.category (
@@ -51,7 +51,7 @@ CREATE TABLE public.category (
     "updated_at" timestamp not null default NOW(),
     "created_by" varchar not null,
     "updated_by" varchar not null,
-    constraint "category_pkey" primary key ("id")
+    CONSTRAINT "category_pkey" primary key ("id")
 
 );
 
@@ -137,7 +137,7 @@ CREATE TABLE public.cart (
     "updated_at" timestamp not null default NOW(),
     "created_by" varchar not null,
     "updated_by" varchar not null,
-    constraint "cart_pkey" primary key ("id")
+    CONSTRAINT "cart_pkey" primary key ("id")
 );
 
 CREATE TABLE public.transaction (
@@ -153,7 +153,7 @@ CREATE TABLE public.transaction (
     "updated_at" timestamp not null default NOW(),
     "created_by" varchar not null,
     "updated_by" varchar not null,
-    constraint "transaction_pkey" primary key ("id")
+    CONSTRAINT "transaction_pkey" primary key ("id")
 );
 
 CREATE TABLE public.product_transaction (
@@ -171,7 +171,7 @@ CREATE TABLE public.product_transaction (
 
 );
 
-create table public.message (
+CREATE TABLE public.message (
     "id" bigserial not null,
     "sender" bigint not null,
     "receiver" bigint not null,
@@ -182,8 +182,7 @@ create table public.message (
     "updated_at" timestamp not null default NOW(),
     "created_by" varchar not null,
     "updated_by" varchar not null,
-    constraint "message_pkey" primary key ("id")
-
+    CONSTRAINT "message_pkey" primary key ("id")
 );
 
 ALTER TABLE public.product_picture
