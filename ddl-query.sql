@@ -65,47 +65,48 @@ CREATE TABLE public.store (
 
 
 CREATE TABLE public.product (
-"id" bigesrial NOT NULL,
-"store_id" bigint NOT NULL,
-"name" varchar(50) NOT NULL,
-"description" varchar NOT NULL,
-"price" float NOT NULL,
-"stock" int NOT NULL,
-"category_id" int4 NOT NULL,
-"created_at" timestamp NOT null default NOW(),
-"updated_at" timestamp NOT null default NOW(),
-"created_by" varchar NOT NULL,
-"updated_by" varchar NOT NULL,
-CONSTRAINT "product_pkey" PRIMARY key ("id"),
-CONSTRAINT "store_fkey" FOREIGN KEY ("store_id") REFERENCE public.store("id"),
-CONSTRAINT "category_fkey" FOREIGN KEY ("category_id") REFERENCE public.category("id")
+    "id" bigesrial NOT NULL,
+    "store_id" bigint NOT NULL,
+    "name" varchar(50) NOT NULL,
+    "description" varchar NOT NULL,
+    "price" float NOT NULL,
+    "stock" int NOT NULL,
+    "category_id" int4 NOT NULL,
+    "created_at" timestamp NOT null default NOW(),
+    "updated_at" timestamp NOT null default NOW(),
+    "created_by" varchar NOT NULL,
+    "updated_by" varchar NOT NULL,
+    CONSTRAINT "product_pkey" PRIMARY key ("id"),
+    CONSTRAINT "store_fkey" FOREIGN KEY ("store_id") REFERENCE public.store("id"),
+    CONSTRAINT "category_fkey" FOREIGN KEY ("category_id") REFERENCE public.category("id")
 );
 
 CREATE TABLE public.product_transaction (
-"id" bigesrial NOT NULL,
-"transaction_id" bigint NOT NULL,
-"product_id" bigint NOT NULL,
-"item_unit" int4 NOT NULL,
-"total_price" float NOT NULL,
-"shipping_id" int4 NOT NULL,
-"created_at" timestamp NOT NULL default NOW(),
-"updated_at" timestamp NOT NULL default NOW(),
-"created_by" varchar NOT NULL,
-"updated_by" varchar NOT NULL,
-CONSTRAINT "product_transaction_pkey" PRIMARY KEY ("id"),
-CONSTRAINT "transaction_fkey" FOREIGN KEY ("transaction_id") REFERENCE public.transaction ("id"),
-CONSTRAINT "product_fkey" FOREIGN KEY ("product_it") REFERENCE public.product ("id"),
-CONSTRAINT "shipping_fkey" FOREIGN KEY ("shipping_id") REFERENCE public.shippig ("id")
+    "id" bigesrial NOT NULL,
+    "transaction_id" bigint NOT NULL,
+    "product_id" bigint NOT NULL,
+    "item_unit" int4 NOT NULL,
+    "total_price" float NOT NULL,
+    "shipping_id" int4 NOT NULL,
+    "created_at" timestamp NOT NULL default NOW(),
+    "updated_at" timestamp NOT NULL default NOW(),
+    "created_by" varchar NOT NULL,
+    "updated_by" varchar NOT NULL,
+    CONSTRAINT "product_transaction_pkey" PRIMARY KEY ("id"),
+    CONSTRAINT "transaction_fkey" FOREIGN KEY ("transaction_id") REFERENCE public.transaction ("id"),
+    CONSTRAINT "product_fkey" FOREIGN KEY ("product_it") REFERENCE public.product ("id"),
+    CONSTRAINT "shipping_fkey" FOREIGN KEY ("shipping_id") REFERENCE public.shippig ("id")
 );
 
 
 CREATE TABLE public.payment (
-"id" serial4 NOT NULL,
-"name" varchar NOT NULL,
-CONSTRAINT "payment_pkey" PRIMARY KEY("id")
+    "id" serial4 NOT NULL,
+    "name" varchar NOT NULL,
+    CONSTRAINT "payment_pkey" PRIMARY KEY("id")
 );
 
 CREATE TABLE public.user_role (
-"id" serial4 NOT NULL,
-"name" varchar NOT NULL,
-CONSTRAINT "user_role_pkey" PRIMARY KEY("id");
+    "id" serial4 NOT NULL,
+    "name" varchar NOT NULL,
+    CONSTRAINT "user_role_pkey" PRIMARY KEY("id"  
+);
