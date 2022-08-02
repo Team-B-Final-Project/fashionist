@@ -106,9 +106,9 @@ CREATE TABLE public.store (
 );
 
 CREATE TABLE public.user_role (
-"id" serial4 NOT NULL,
-"name" varchar NOT NULL,
-CONSTRAINT "user_role_pkey" PRIMARY KEY("id")
+    "user_id" bigint NOT NULL,
+    "role_id" int NOT NULL,
+    CONSTRAINT "user_role_pkey" PRIMARY KEY("user_id", "role_id")
 );
 
 CREATE TABLE public.product (
@@ -284,3 +284,13 @@ ALTER TABLE public.message
 ADD CONSTRAINT "receiver_fkey"
 FOREIGN KEY("receiver")
 REFERENCES public.user("id");
+
+ALTER TABLE public.user_role
+ADD CONSTRAINT "user_fkey"
+FOREIGN KEY("user_id")
+REFERENCES public.user("id");
+
+ALTER TABLE public.user_role
+ADD CONSTRAINT "role_fkey"
+FOREIGN KEY("role_id")
+REFERENCES public.role("id");
