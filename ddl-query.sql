@@ -49,3 +49,16 @@ CREATE TABLE public.user_address (
     CONSTRAINT "user_fkey" FOREIGN KEY ("user_id") REFERENCES public.user("id"),
     CONSTRAINT "address_fkey" FOREIGN KEY ("address_id") REFERENCES public.address("id")
 );
+
+CREATE TABLE public.store (
+    "id" bigserial,
+    "user_id" bigint NOT NULL,
+    "name" varchar(50) NOT NULL,
+    "address_id" bigint NOT NULL,
+    "created_at" timestamp NOT NULL DEFAULT NOW(),
+    "updated_at" timestamp NOT NULL DEFAULT NOW(),
+    "creatd_by" varchar NOT NULL,
+    "updated_by" varchar NOT NULL,
+    CONSTRAINT "store_pkey" PRIMARY KEY ("id"),
+    CONSTRAINT "address_fkey" FOREIGN KEY ("address_id") REFERENCES public.address("id")
+)
