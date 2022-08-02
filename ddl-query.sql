@@ -1,11 +1,11 @@
 CREATE TABLE public.role (
-    "id" serial4 not null,
-    "name" varchar(50) not null,
+    "id" serial4 NOT NULL,
+    "name" varchar(50) NOT NULL,
     CONSTRAINT "role_pkey" primary key ("id")
 );
 
 CREATE TABLE public.profile_picture (
-    "id" bigserial not null,
+    "id" bigserial NOT NULL,
     "name" varchar NOT NULL,
     "type" varchar NOT NULL,
     "size" bigint NOT NULL,
@@ -14,13 +14,13 @@ CREATE TABLE public.profile_picture (
 );
 
 CREATE TABLE public.product_picture (
-    "id" serial4 not null,
-    "product_id" bigint not null,
-    "level" int4 not null,
-    "name" varchar not null,
-    "type" varchar not null,
-    "size" bigint not null,
-    "data" bytea not null,
+    "id" serial4 NOT NULL,
+    "product_id" bigint NOT NULL,
+    "level" int4 NOT NULL,
+    "name" varchar NOT NULL,
+    "type" varchar NOT NULL,
+    "size" bigint NOT NULL,
+    "data" bytea NOT NULL,
     CONSTRAINT "product_picture_pkey" primary key ("id")
 );
 
@@ -31,26 +31,26 @@ CREATE TABLE public.payment (
 );
 
 CREATE TABLE public.transaction_status (
-    "id" bigserial not null,
-    "name" varchar not null,
+    "id" bigserial NOT NULL,
+    "name" varchar NOT NULL,
     CONSTRAINT "transaction_status_pkey" primary key ("id")
 );
 
 CREATE TABLE public.shipping (
-    "id" serial4 not null,
-    "name" varchar not null,
+    "id" serial4 NOT NULL,
+    "name" varchar NOT NULL,
     CONSTRAINT "shipping_pkey" primary key ("id")
 );
 
 CREATE TABLE public.category (
-    "id" bigserial not null,
-    "user_id" bigint not null,
-    "address_id" bigint not null,
-    "phone_number" varchar(50) not null,
-    "created_at" timestamp not null default NOW(),
-    "updated_at" timestamp not null default NOW(),
-    "created_by" varchar not null,
-    "updated_by" varchar not null,
+    "id" bigserial NOT NULL,
+    "user_id" bigint NOT NULL,
+    "address_id" bigint NOT NULL,
+    "phone_number" varchar(50) NOT NULL,
+    "created_at" timestamp NOT NULL default NOW(),
+    "updated_at" timestamp NOT NULL default NOW(),
+    "created_by" varchar NOT NULL,
+    "updated_by" varchar NOT NULL,
     CONSTRAINT "category_pkey" primary key ("id")
 
 );
@@ -119,8 +119,8 @@ CREATE TABLE public.product (
     "price" float NOT NULL,
     "stock" int NOT NULL,
     "category_id" int4 NOT NULL,
-    "created_at" timestamp NOT null default NOW(),
-    "updated_at" timestamp NOT null default NOW(),
+    "created_at" timestamp NOT NULL default NOW(),
+    "updated_at" timestamp NOT NULL default NOW(),
     "created_by" varchar NOT NULL,
     "updated_by" varchar NOT NULL,
     CONSTRAINT "product_pkey" PRIMARY key ("id")
@@ -128,31 +128,31 @@ CREATE TABLE public.product (
 );
 
 CREATE TABLE public.cart (
-    "id" bigint not null,
-    "user_id" bigint not null,
-    "product_id" bigint not null,
-    "item_unit" int4 not null,
-    "total_price" float not null,
-    "created_at" timestamp not null default NOW(),
-    "updated_at" timestamp not null default NOW(),
-    "created_by" varchar not null,
-    "updated_by" varchar not null,
+    "id" bigint NOT NULL,
+    "user_id" bigint NOT NULL,
+    "product_id" bigint NOT NULL,
+    "item_unit" int4 NOT NULL,
+    "total_price" float NOT NULL,
+    "created_at" timestamp NOT NULL default NOW(),
+    "updated_at" timestamp NOT NULL default NOW(),
+    "created_by" varchar NOT NULL,
+    "updated_by" varchar NOT NULL,
     CONSTRAINT "cart_pkey" primary key ("id")
 );
 
 CREATE TABLE public.transaction (
-    "id" bigint not null,
-    "tota_price" float not null,
-    "total_item_unit" int4 not null,
-    "user_id" bigint not null,
-    "send_address_id" bigint not null,
-    "payment_id" bigint not null,
-    "transaction_status_id" bigint not null,
-    "receipt" varchar not null,
-    "created_at" timestamp not null default NOW(),
-    "updated_at" timestamp not null default NOW(),
-    "created_by" varchar not null,
-    "updated_by" varchar not null,
+    "id" bigint NOT NULL,
+    "tota_price" float NOT NULL,
+    "total_item_unit" int4 NOT NULL,
+    "user_id" bigint NOT NULL,
+    "send_address_id" bigint NOT NULL,
+    "payment_id" bigint NOT NULL,
+    "transaction_status_id" bigint NOT NULL,
+    "receipt" varchar NOT NULL,
+    "created_at" timestamp NOT NULL default NOW(),
+    "updated_at" timestamp NOT NULL default NOW(),
+    "created_by" varchar NOT NULL,
+    "updated_by" varchar NOT NULL,
     CONSTRAINT "transaction_pkey" primary key ("id")
 );
 
@@ -172,16 +172,16 @@ CREATE TABLE public.product_transaction (
 );
 
 CREATE TABLE public.message (
-    "id" bigserial not null,
-    "sender" bigint not null,
-    "receiver" bigint not null,
-    "title" varchar(50) not null,
-    "text" varchar not null,
-    "is_read" boolean not null,
-    "created_at" timestamp not null default NOW(),
-    "updated_at" timestamp not null default NOW(),
-    "created_by" varchar not null,
-    "updated_by" varchar not null,
+    "id" bigserial NOT NULL,
+    "sender" bigint NOT NULL,
+    "receiver" bigint NOT NULL,
+    "title" varchar(50) NOT NULL,
+    "text" varchar NOT NULL,
+    "is_read" boolean NOT NULL,
+    "created_at" timestamp NOT NULL default NOW(),
+    "updated_at" timestamp NOT NULL default NOW(),
+    "created_by" varchar NOT NULL,
+    "updated_by" varchar NOT NULL,
     CONSTRAINT "message_pkey" primary key ("id")
 );
 
