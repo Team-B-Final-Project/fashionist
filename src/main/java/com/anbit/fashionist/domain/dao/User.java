@@ -1,13 +1,13 @@
 package com.anbit.fashionist.domain.dao;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.*;
 
 import com.anbit.fashionist.domain.common.Audit;
 
 import lombok.*;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,7 +22,7 @@ public class User extends Audit{
 
     @ManyToOne
     @JoinColumn(name = "profile_picture_id")
-    private ProfilePicture profile_picture;
+    private ProfilePicture profilePicture;
 
     private String firstName;
 

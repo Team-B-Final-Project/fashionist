@@ -22,7 +22,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import com.anbit.fashionist.domain.dto.SignUpRequestDTO;
+import com.anbit.fashionist.helper.ResourceAlreadyExistException;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -30,14 +31,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public abstract class AuthServiceImpl implements AuthService {
+public class AuthServiceImpl implements AuthService {
+//public abstract class AuthServiceImpl implements AuthService {
     @Autowired
     AuthenticationManager authenticationManager;
 
     @Autowired
     UserRepository userRepository;
-
-
 
     @Autowired
     PasswordEncoder encoder;
@@ -75,9 +75,24 @@ public abstract class AuthServiceImpl implements AuthService {
             String jwt = jwtUtils.generateJwtToken(authentication);
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
             List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
-            return ResponseHandler.generateResponse(null, HttpStatus.OK, headers, ZonedDateTime.now(), new JwtResponse(jwt, userDetails.getUserId(), userDetails.getFirstName(), userDetails.getLastName(), userDetails.getUsername(), userDetails.getEmailAddress(), roles));
+            return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully retrieved user data!", ZonedDateTime.now(), new JwtResponse(jwt, userDetails.getUsername(), roles));
         } catch (ResourceNotFoundException e) {
-            return ResponseHandler.generateResponse(e.getMessage(), HttpStatus.NOT_FOUND, headers, ZonedDateTime.now(), null);
+            return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, ZonedDateTime.now(), "", EErrorCode.MISSING_PARAM.getCode());
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> registerUser(SignUpRequestDTO signUpRequestDTO) {
+        try {
+            if (userRepository.existsByUsername(signUpRequestDTO.getUsername())) {
+                throw new ResourceAlreadyExistException("Username already taken!");
+            }
+            if (userRepository.existsByEmail(signUpRequestDTO.getEmail())) {
+                throw new ResourceAlreadyExistException("Email already in use!");
+            }
+            return null;
+        } catch (ResourceAlreadyExistException e) {
+            return null;
         }
     }
 }

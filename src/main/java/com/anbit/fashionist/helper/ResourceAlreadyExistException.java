@@ -5,3 +5,4 @@ public class ResourceAlreadyExistException extends Throwable {
         super(message);
     }
 }
+

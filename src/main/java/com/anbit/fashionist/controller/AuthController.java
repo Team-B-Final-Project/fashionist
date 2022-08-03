@@ -19,7 +19,7 @@ AuthServiceImpl authServiceImpl;
  * @param loginRequest
  * @return
  */
-@PostMapping("/sigin")
+@PostMapping("/signin")
     public ResponseEntity<?> authenticate(@Valid @RequestBody LoginRequest loginRequest) throws ResourceNotFoundException
     {
         return authServiceImpl.authenticateUser(loginRequest);
