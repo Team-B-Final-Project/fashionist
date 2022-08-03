@@ -1,14 +1,18 @@
 package com.anbit.fashionist.config;
 
-import com.anbit.fashionist.entity.UserDetailsImpl;
-import io.jsonwebtoken.*;
+import java.util.Date;
+
+import com.anbit.fashionist.domain.common.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import java.security.SignatureException;
-import java.util.Date;
-import java.util.stream.DoubleStream;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 
 @Component
 public class JwtUtils {
@@ -17,10 +21,8 @@ public class JwtUtils {
 
     @Value("${com.app.jwtExpirationMs}")
     private int jwtExpirationMs;
-    private Object SignatureAlgorithm;
-    private DoubleStream Jwts;
 
-    public String generateJwtToken(Authentication authentication){
+    public String generateJwtToken(Authentication authentication) {
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
 
         return Jwts.builder()
@@ -41,7 +43,7 @@ public class JwtUtils {
             return true;
         } catch (SignatureException e) {
 
-        } catch (MalformedJwtException e ) {
+        } catch (MalformedJwtException e) {
 
         } catch (ExpiredJwtException e) {
 
@@ -53,4 +55,3 @@ public class JwtUtils {
         return false;
     }
 }
-

@@ -10,7 +10,11 @@ import java.util.Optional;
 @Repository
 public interface UserRepository {
     Optional<User> findByUsername(String username);
+
     Optional<User> findByEmailAddress(String emailAddress);
+
     Boolean existsByUsername(String username);
+
     Boolean existsByEmailAddress(String emailAddress);
+
 }

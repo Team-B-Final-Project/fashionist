@@ -67,8 +67,12 @@
             <version>1.12.12</version>
             <scope>compile</scope>
         </dependency>
-    </dependencies>
-
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.9.1</version>
+		</dependency>
+	</dependencies>
 	<build>
 		<plugins>
 			<plugin>

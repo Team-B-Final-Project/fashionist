@@ -2,6 +2,7 @@ package com.anbit.fashionist.service;
 
 import com.anbit.fashionist.controller.AuthController;
 import com.anbit.fashionist.domain.dao.JwtResponse;
+import com.anbit.fashionist.config.JwtUtils;
 import com.anbit.fashionist.domain.dto.LoginRequest;
 import com.anbit.fashionist.entity.User;
 import com.anbit.fashionist.entity.UserDetailsImpl;
@@ -21,6 +22,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -69,6 +71,7 @@ public abstract class AuthServiceImpl implements AuthService {
             }
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            JwtUtils jwtUtils = new JwtUtils();
             String jwt = jwtUtils.generateJwtToken(authentication);
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
             List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
