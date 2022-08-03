@@ -1,5 +1,6 @@
 package com.anbit.fashionist.domain.common;
 
+import com.anbit.fashionist.domain.dao.ProfilePicture;
 import com.anbit.fashionist.domain.dao.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
@@ -9,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -17,11 +19,11 @@ import java.util.stream.Collectors;
 @Setter
 @Builder
 public class UserDetailsImpl implements UserDetails {
-    private static final Long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-    private Long userId;
+    private Long id;
 
-    private Long profilePictureId;
+    private ProfilePicture profilePicture;
 
     private String firstName;
 
@@ -42,7 +44,7 @@ public class UserDetailsImpl implements UserDetails {
         List<GrantedAuthority> authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName()))
                 .collect(Collectors.toList());
-        return new UserDetailsImpl(user.getId(), user.getProfile_picture().getId(), user.getFirstName(), user.getLastName(), user.getUsername(), user.getEmail(), user.getPhoneNumber(), user.getPassword(), authorities);
+        return new UserDetailsImpl(user.getId(), user.getProfilePicture(), user.getFirstName(), user.getLastName(), user.getUsername(), user.getEmail(), user.getPhoneNumber(), user.getPassword(), authorities);
     }
 
     @Override
@@ -69,6 +71,6 @@ public class UserDetailsImpl implements UserDetails {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserDetailsImpl user = (UserDetailsImpl) o;
-        return userId.equals(user.userId);
+        return Objects.equals(id, user.id);
     }
 }
