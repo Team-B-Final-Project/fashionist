@@ -10,7 +10,7 @@ import com.anbit.fashionist.domain.dao.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByUsername(String username);
-    boolean exixstsByEmail(String email);
+    boolean existsByEmail(String email);
     Optional<User> findByUsername(String username);
     Optional<User> findByEmail(String email);
 }
