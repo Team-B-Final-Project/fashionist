@@ -15,7 +15,6 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
-@Builder
 public class Audit {
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
