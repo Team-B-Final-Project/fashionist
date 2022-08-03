@@ -22,7 +22,7 @@ public class User extends Audit{
 
     @ManyToOne
     @JoinColumn(name = "profile_picture_id")
-    private ProfilePicture profile_picture;
+    private ProfilePicture profilePicture;
 
     private String firstName;
 
