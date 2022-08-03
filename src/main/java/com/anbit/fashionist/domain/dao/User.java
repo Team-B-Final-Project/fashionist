@@ -15,7 +15,7 @@ import lombok.*;
 @Setter
 @Builder
 @Entity
-@Table(name = "user", schema = "public", uniqueConstraints = {@UniqueConstraint(columnNames = "username"), @UniqueConstraint(columnNames = "emailAddress")})
+@Table(name = "user", schema = "public", uniqueConstraints = {@UniqueConstraint(columnNames = "username"), @UniqueConstraint(columnNames = "email")})
 public class User extends Audit{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

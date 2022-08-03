@@ -1,10 +1,11 @@
 package com.anbit.fashionist.service;
 
 
-import com.anbit.fashionist.entity.User;
-import com.anbit.fashionist.entity.UserDetailsImpl;
+
 import javax.transaction.Transactional;
 
+import com.anbit.fashionist.domain.common.UserDetailsImpl;
+import com.anbit.fashionist.domain.dao.User;
 import com.anbit.fashionist.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
