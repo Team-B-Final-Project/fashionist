@@ -13,6 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 @Entity
 @Table(name = "user", schema = "public", uniqueConstraints = {@UniqueConstraint(columnNames = "username"), @UniqueConstraint(columnNames = "emailAddress")})
 public class User extends Audit{
@@ -36,6 +37,7 @@ public class User extends Audit{
 
     private String password;
 
+    @Builder.Default
     private Set<Role> roles = new HashSet<>();
 }
 
