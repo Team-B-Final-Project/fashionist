@@ -1,13 +1,13 @@
 package com.anbit.fashionist.domain.dao;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.*;
 
 import com.anbit.fashionist.domain.common.Audit;
 
 import lombok.*;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
