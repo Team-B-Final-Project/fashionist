@@ -3,11 +3,13 @@ package com.anbit.fashionist.service;
 import com.anbit.fashionist.controller.AuthController;
 import com.anbit.fashionist.domain.dao.JwtResponse;
 import com.anbit.fashionist.config.JwtUtils;
+import com.anbit.fashionist.constant.EErrorCode;
 import com.anbit.fashionist.domain.dto.LoginRequest;
 import com.anbit.fashionist.entity.User;
 import com.anbit.fashionist.entity.UserDetailsImpl;
 import com.anbit.fashionist.handler.ResponseHandler;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
+import com.anbit.fashionist.repository.RoleRepository;
 import com.anbit.fashionist.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +40,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     UserRepository userRepository;
+    
+    @Autowired
+    RoleRepository roleRepository;
 
     @Autowired
     PasswordEncoder encoder;
@@ -54,12 +59,8 @@ public class AuthServiceImpl implements AuthService {
     @Value("${com.app.team}")
     String projectTeam;
 
-    private final HttpHeaders headers = new HttpHeaders();
-    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
-
     @Override
     public ResponseEntity<?> authenticateUser(LoginRequest loginRequest) throws ResourceNotFoundException {
-        headers.set("APP-NAME", projectName + "-API " + projectTeam);
         try {
             Optional<User> user = userRepository.findByUsername(loginRequest.getUsername());
             Boolean isPasswordCorrect = encoder.matches(loginRequest.getPassword(), user.get().getPassword());
@@ -75,7 +76,7 @@ public class AuthServiceImpl implements AuthService {
             String jwt = jwtUtils.generateJwtToken(authentication);
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
             List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
-            return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully retrieved user data!", ZonedDateTime.now(), new JwtResponse(jwt, userDetails.getUsername(), roles));
+            return ResponseHandler.generateSuccessResponse(HttpStatus.OK, , ZonedDateTime.now(), "Successfully login!", new JwtResponse(jwt, userDetails.getUsername(), roles));
         } catch (ResourceNotFoundException e) {
             return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, ZonedDateTime.now(), "", EErrorCode.MISSING_PARAM.getCode());
         }
@@ -90,9 +91,40 @@ public class AuthServiceImpl implements AuthService {
             if (userRepository.existsByEmail(signUpRequestDTO.getEmail())) {
                 throw new ResourceAlreadyExistException("Email already in use!");
             }
-            return null;
+            User user = User.builder()
+                    .firstName(signUpRequestDTO.getFirstName())
+                    .lastName(signUpRequestDTO.getLastName())
+                    .username(signUpRequestDTO.getUsername())
+                    .email(signUpRequestDTO.getEmail())
+                    .phoneNumber(signUpRequestDTO.getPhoneNumber())
+                    .password(encoder.encode(signUpRequestDTO.getPassword()))
+                    .build();
+            Set<String> strRoles = signUpRequestDTO.getRole();
+            Set<Role> roles = new HashSet<>();
+            strRoles.forEach(role -> {
+                switch(role) {
+                    case "admin":
+                        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN).orElseThrow(() -> new RuntimeException("Error: Role is not found!"));
+                        roles.add(adminRole);
+                    break;
+                    case "cust":
+                        Role modRole = roleRepository.findByName(ERole.ROLE_CUSTOMER).orElseThrow(() -> new RuntimeException("Error: Role is not found!"));
+                        roles.add(modRole);
+                    break;
+                    case "user":
+                        Role userRole = roleRepository.findByName(ERole.ROLE_USER).orElseThrow(() -> new RuntimeException("Error: Role is not found!"));
+                        roles.add(userRole);
+                    break;
+                    default :
+                        Role user1Role = roleRepository.findByName(ERole.ROLE_USER).orElseThrow(() -> new RuntimeException("Error: Role is not found!"));
+                        roles.add(user1Role);
+                }
+            });
+            user.setRoles(roles);
+            userRepository.save(user);
+            return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "You have been registered successfully!", null);
         } catch (ResourceAlreadyExistException e) {
-            return null;
+            return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, ZonedDateTime.now(), "", EErrorCode.MISSING_PARAM.getCode());
         }
     }
 }

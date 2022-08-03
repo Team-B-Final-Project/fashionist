@@ -13,7 +13,6 @@ import org.springframework.data.annotation.LastModifiedBy;
 @NoArgsConstructor
 @Getter
 @Setter
-@Builder
 public class Audit {
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
