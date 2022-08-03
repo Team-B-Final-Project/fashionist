@@ -4,6 +4,8 @@ import lombok.*;
 
 import javax.persistence.*;
 
+import com.anbit.fashionist.constant.ERole;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,7 +16,8 @@ import javax.persistence.*;
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long roleId;
+    private Integer id;
 
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private ERole name;
 }

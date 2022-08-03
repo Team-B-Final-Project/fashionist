@@ -33,7 +33,7 @@ public class SignUpRequestDTO {
 
     @NotBlank
     @Size(min =11, max = 12)
-    private Character phoneNumber;
+    private String phoneNumber;
 
     private Set<String> role;
 

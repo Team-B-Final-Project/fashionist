@@ -33,7 +33,7 @@ public class UserDetailsImpl implements UserDetails {
 
     private String email;
 
-    private Character phoneNumber;
+    private String phoneNumber;
 
     @JsonIgnore
     private String password;
@@ -42,7 +42,7 @@ public class UserDetailsImpl implements UserDetails {
 
     public static UserDetailsImpl build(User user) {
         List<GrantedAuthority> authorities = user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName()))
+                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
                 .collect(Collectors.toList());
         return new UserDetailsImpl(user.getId(), user.getProfilePicture(), user.getFirstName(), user.getLastName(), user.getUsername(), user.getEmail(), user.getPhoneNumber(), user.getPassword(), authorities);
     }
