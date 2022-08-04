@@ -1,12 +1,9 @@
 package com.anbit.fashionist.config;
 
-import com.anbit.fashionist.domain.common.AuditorAwareImpl;
 import com.anbit.fashionist.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.domain.AuditorAware;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -25,18 +22,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@EnableJpaAuditing(auditorAwareRef="auditorProvider")
 public class WebSecurityConfig {
     @Autowired
     UserDetailsServiceImpl userDetailsService;
 
     @Autowired
     private AuthEntryPoinJwt unauthorizedHandler;
-
-    @Bean
-    AuditorAware<String> auditorProvider() {
-        return new AuditorAwareImpl();
-    }
 
     @Bean
     public UserDetailsService userDetailsService() {

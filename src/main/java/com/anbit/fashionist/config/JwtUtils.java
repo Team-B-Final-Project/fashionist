@@ -3,6 +3,7 @@ package com.anbit.fashionist.config;
 import java.util.Date;
 
 import com.anbit.fashionist.domain.common.UserDetailsImpl;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -16,10 +17,10 @@ import io.jsonwebtoken.UnsupportedJwtException;
 
 @Component
 public class JwtUtils {
-    @Value("${com.app.jwtSecret}")
+    @Value("${com.anbit.fashionist.jwtSecret}")
     private String jwtSecret;
 
-    @Value("${com.app.jwtExpirationMs}")
+    @Value("${com.anbit.fashionist.jwtExpirationMs}")
     private int jwtExpirationMs;
 
     public String generateJwtToken(Authentication authentication) {

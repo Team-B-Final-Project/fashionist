@@ -13,8 +13,8 @@ import com.anbit.fashionist.handler.ResponseHandler;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.repository.RoleRepository;
 import com.anbit.fashionist.repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,6 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import com.anbit.fashionist.domain.dto.SignUpRequestDTO;
 import com.anbit.fashionist.helper.ResourceAlreadyExistException;
 
@@ -35,7 +36,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class AuthServiceImpl implements AuthService {
-//public abstract class AuthServiceImpl implements AuthService {
     @Autowired
     AuthenticationManager authenticationManager;
 
@@ -48,17 +48,8 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     PasswordEncoder encoder;
 
-    @Value("${com.app.domain}")
-    String domain;
-
-    @Value("${server.port}")
-    String port;
-
-    @Value("${com.app.name}")
-    String projectName;
-
-    @Value("${com.app.team}")
-    String projectTeam;
+    @Autowired
+    JwtUtils jwtUtils;
 
     @Override
     public ResponseEntity<?> authenticateUser(LoginRequest loginRequest) throws ResourceNotFoundException {
@@ -73,13 +64,12 @@ public class AuthServiceImpl implements AuthService {
             }
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            JwtUtils jwtUtils = new JwtUtils();
             String jwt = jwtUtils.generateJwtToken(authentication);
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
             List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
             return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Successfully login!", new JwtResponse(jwt, userDetails.getUsername(), roles));
         } catch (ResourceNotFoundException e) {
-            return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, ZonedDateTime.now(), "", EErrorCode.MISSING_PARAM.getCode());
+            return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
     }
 
