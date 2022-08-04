@@ -65,7 +65,7 @@ CREATE TABLE public.address (
     "full_address" varchar NOT NULL,
     "created_at" timestamp NOT NULL DEFAULT NOW(),
     "updated_at" timestamp NOT NULL DEFAULT NOW(),
-    "creatd_by" varchar NOT NULL,
+    "created_by" varchar NOT NULL,
     "updated_by" varchar NOT NULL,
     CONSTRAINT "address_pkey" PRIMARY KEY ("id")
 );
