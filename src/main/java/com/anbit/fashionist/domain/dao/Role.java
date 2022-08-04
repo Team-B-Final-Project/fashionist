@@ -16,7 +16,7 @@ import com.anbit.fashionist.constant.ERole;
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Integer id;
 
     @Enumerated(EnumType.STRING)
     private ERole name;
