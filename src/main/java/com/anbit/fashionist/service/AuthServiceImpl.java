@@ -14,7 +14,6 @@ import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.repository.RoleRepository;
 import com.anbit.fashionist.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -48,18 +47,6 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     PasswordEncoder encoder;
 
-    @Value("${com.app.domain}")
-    String domain;
-
-    @Value("${server.port}")
-    String port;
-
-    @Value("${com.app.name}")
-    String projectName;
-
-    @Value("${com.app.team}")
-    String projectTeam;
-
     @Override
     public ResponseEntity<?> authenticateUser(LoginRequest loginRequest) throws ResourceNotFoundException {
         try {
@@ -79,7 +66,7 @@ public class AuthServiceImpl implements AuthService {
             List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
             return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Successfully login!", new JwtResponse(jwt, userDetails.getUsername(), roles));
         } catch (ResourceNotFoundException e) {
-            return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, ZonedDateTime.now(), "", EErrorCode.MISSING_PARAM.getCode());
+            return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
     }
 
