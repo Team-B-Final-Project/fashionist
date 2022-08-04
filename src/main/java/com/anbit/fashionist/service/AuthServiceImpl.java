@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class AuthServiceImpl implements AuthService {
-//public abstract class AuthServiceImpl implements AuthService {
     @Autowired
     AuthenticationManager authenticationManager;
 
