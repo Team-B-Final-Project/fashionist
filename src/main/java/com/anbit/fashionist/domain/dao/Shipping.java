@@ -16,5 +16,6 @@ import lombok.*;
 public class Shipping {
     private Integer id;
 
+    @Enumerated(EnumType.STRING)
     private EShipping name;
 }

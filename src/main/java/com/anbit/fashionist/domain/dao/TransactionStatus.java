@@ -17,5 +17,6 @@ public class TransactionStatus {
     @Id
     private Integer id;
 
+    @Enumerated(EnumType.STRING)
     private ETransactionStatus name;
 }

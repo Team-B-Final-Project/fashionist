@@ -16,5 +16,6 @@ import lombok.*;
 public class Payment {
     private Integer id;
 
+    @Enumerated(EnumType.STRING)
     private EPayment name;
 }
