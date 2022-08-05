@@ -20,7 +20,7 @@ public class ProductController {
     @Autowired
     private final ProductServiceImpl productService;
 
-    @PostMapping("/upload/product")
+    @PostMapping("/product/upload")
     public ResponseEntity<?> uploadProduct(ProductRequestDTO productRequestDTO) throws ResourceAlreadyExistException {
         return productService.uploadProduct(productRequestDTO);
     }

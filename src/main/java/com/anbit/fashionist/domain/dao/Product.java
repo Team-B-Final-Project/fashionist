@@ -43,6 +43,7 @@ public class Product extends Audit {
         return "Product{" +
                 "productId=" + id +
                 ", name='" + name + '\'' +
+                ", storeId=" + storeId +
                 ", description='" + description + '\'' +
                 ", price=" + price +
                 ", stock=" + stock +
