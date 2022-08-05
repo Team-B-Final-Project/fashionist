@@ -1,5 +1,18 @@
 package com.anbit.fashionist.domain.dao;
 
-public class Address {
+import javax.persistence.*;
 
+import lombok.*;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@Builder
+@Entity
+@Table(name = "address", schema = "public")
+public class Address {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
 }

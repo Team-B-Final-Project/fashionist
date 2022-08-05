@@ -17,7 +17,8 @@ import lombok.*;
 @Table(name = "transaction", schema = "public")
 public class Transaction extends Audit {
     @Id
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private String id;
 
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = User.class)
     @JoinColumn(name = "user_id")
@@ -42,5 +43,5 @@ public class Transaction extends Audit {
     private String receipt;
     
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "transaction")
-    private List<Product> products;
+    private List<ProductTransaction> productTransactions;
 }

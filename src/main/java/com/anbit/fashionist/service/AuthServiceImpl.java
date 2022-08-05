@@ -6,7 +6,7 @@ import com.anbit.fashionist.domain.dao.User;
 import com.anbit.fashionist.config.JwtUtils;
 import com.anbit.fashionist.constant.EErrorCode;
 import com.anbit.fashionist.constant.ERole;
-import com.anbit.fashionist.domain.dto.JwtResponse;
+import com.anbit.fashionist.domain.dto.JwtResponseDTO;
 import com.anbit.fashionist.domain.dto.LoginRequest;
 
 import com.anbit.fashionist.handler.ResponseHandler;
@@ -67,7 +67,7 @@ public class AuthServiceImpl implements AuthService {
             String jwt = jwtUtils.generateJwtToken(authentication);
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
             List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
-            return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Successfully login!", new JwtResponse(jwt, userDetails.getUsername(), roles));
+            return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Successfully login!", new JwtResponseDTO(jwt, userDetails.getUsername(), roles));
         } catch (ResourceNotFoundException e) {
             return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
