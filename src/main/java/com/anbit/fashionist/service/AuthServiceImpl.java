@@ -1,12 +1,12 @@
 package com.anbit.fashionist.service;
 
 import com.anbit.fashionist.domain.common.UserDetailsImpl;
-import com.anbit.fashionist.domain.dao.JwtResponse;
 import com.anbit.fashionist.domain.dao.Role;
 import com.anbit.fashionist.domain.dao.User;
 import com.anbit.fashionist.config.JwtUtils;
 import com.anbit.fashionist.constant.EErrorCode;
 import com.anbit.fashionist.constant.ERole;
+import com.anbit.fashionist.domain.dto.JwtResponse;
 import com.anbit.fashionist.domain.dto.LoginRequest;
 
 import com.anbit.fashionist.handler.ResponseHandler;
