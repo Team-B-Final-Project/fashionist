@@ -28,9 +28,11 @@ public class ProductServiceImpl implements ProductService {
             if(Boolean.TRUE.equals(productRepository.existsById(product.getId()))){
                 throw new ResourceAlreadyExistException("Product already exist!");
             }
+            productRepository.save(product);
+            return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, ZonedDateTime.now(), "Product uploaded successfully!", product);
         } catch (Exception e) {
             return ResponseHandler.generateErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ZonedDateTime.now(), e.getMessage(), 500);
         }
-        return null;
+
     }
 }

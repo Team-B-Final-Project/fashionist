@@ -38,16 +38,6 @@ public class Product extends Audit {
     @JoinColumn(name = "category_id")
     private Category categoryId;
 
-    public ProductResponseDTO convertToResponseDTO() {
-        return ProductResponseDTO.builder()
-                .productId(this.id)
-                .name(this.name)
-                .description(this.description)
-                .price(this.price)
-                .stock(this.stock)
-                .build();
-    }
-
     @Override
     public String toString() {
         return "Product{" +
