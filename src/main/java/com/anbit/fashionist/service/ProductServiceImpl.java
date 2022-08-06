@@ -4,7 +4,6 @@ import com.anbit.fashionist.domain.dao.Product;
 import com.anbit.fashionist.domain.dto.ProductRequestDTO;
 import com.anbit.fashionist.handler.ResponseHandler;
 import com.anbit.fashionist.helper.ResourceAlreadyExistException;
-import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.repository.ProductRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
