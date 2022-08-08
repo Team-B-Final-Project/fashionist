@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -15,7 +16,7 @@ import javax.persistence.*;
 public class Product extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = Store.class)
     @JoinColumn(name = "store_id")
@@ -37,9 +38,11 @@ public class Product extends Audit {
     @JoinColumn(name = "category_id")
     private Category category;
 
+
     @Override
     public String toString() {
         return "Product{" +
+
                 "id=" + id +
                 ", storeId=" + store.getId() +
                 ", name='" + name + '\'' +

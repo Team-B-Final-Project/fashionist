@@ -1,5 +1,6 @@
 package com.anbit.fashionist.domain.dao;
 
+
 import com.anbit.fashionist.domain.common.Audit;
 import lombok.*;
 
@@ -16,7 +17,7 @@ public class Store extends Audit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = User.class)
     @JoinColumn(name = "user_id")
