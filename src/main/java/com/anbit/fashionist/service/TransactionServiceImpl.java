@@ -7,26 +7,32 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.anbit.fashionist.constant.EErrorCode;
 import com.anbit.fashionist.constant.EPayment;
+import com.anbit.fashionist.constant.EShipping;
 import com.anbit.fashionist.constant.ETransactionStatus;
+import com.anbit.fashionist.domain.common.UserDetailsImpl;
 import com.anbit.fashionist.domain.dao.Cart;
 import com.anbit.fashionist.domain.dao.Payment;
 import com.anbit.fashionist.domain.dao.ProductTransaction;
+import com.anbit.fashionist.domain.dao.Shipping;
 import com.anbit.fashionist.domain.dao.Transaction;
+import com.anbit.fashionist.domain.dao.User;
 import com.anbit.fashionist.domain.dto.CreateTransactionRequestDTO;
+import com.anbit.fashionist.domain.dto.TransactionHistoriesResponseDTO;
 import com.anbit.fashionist.handler.ResponseHandler;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.repository.AddressRepository;
 import com.anbit.fashionist.repository.CartRepository;
 import com.anbit.fashionist.repository.PaymentRepository;
 import com.anbit.fashionist.repository.ProductTransactionRepository;
+import com.anbit.fashionist.repository.ShippingRepository;
 import com.anbit.fashionist.repository.TransactionRepository;
 import com.anbit.fashionist.repository.TransactionStatusRepository;
 import com.anbit.fashionist.repository.UserRepository;
-import com.anbit.fashionist.util.RandomString;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -51,14 +57,15 @@ public class TransactionServiceImpl implements TransactionService {
     @Autowired
     TransactionStatusRepository transactionStatusRepository;
 
-    private RandomString randomString;
+    @Autowired
+    ShippingRepository shippingRepository;
+
     
     @Override
     public ResponseEntity<?> createTransaction(CreateTransactionRequestDTO requestDTO) throws ResourceNotFoundException {
         try {
             List<Cart> cartList = new ArrayList<>();
             Transaction transaction = Transaction.builder()
-                .id(randomString.generate("TSN"))
                 .user(userRepository.getReferenceById(requestDTO.getUserId()))
                 .sendAddress(addressRepository.getReferenceById(requestDTO.getSendAddressId()))
                 .transactionStatus(transactionStatusRepository.findByName(ETransactionStatus.WAITING_PAYMENT).get())
@@ -96,8 +103,25 @@ public class TransactionServiceImpl implements TransactionService {
                     .transaction(newTransaction)
                     .itemUnit(cart.getItemUnit())
                     .totalPrice(cart.getTotalPrice())
-                    .shipping(requestDTO.getCartShipping().get(cartId))
                     .build();
+                switch (requestDTO.getCartShipping().get(cartId)) {
+                        case "JNE":
+                            Shipping jne = shippingRepository.findByName(EShipping.JNE).orElseThrow(() -> new ResourceNotFoundException("Error: Shipping is not found!"));
+                            productTransaction.setShipping(jne);
+                            break;
+                        case "JNT":
+                            Shipping jnt = shippingRepository.findByName(EShipping.JNT).orElseThrow(() -> new ResourceNotFoundException("Error: Shipping is not found!"));
+                            productTransaction.setShipping(jnt);
+                            break;
+                        case "SICEPAT":
+                            Shipping sicepat = shippingRepository.findByName(EShipping.SICEPAT).orElseThrow(() -> new ResourceNotFoundException("Error: Shipping is not found!"));
+                            productTransaction.setShipping(sicepat);
+                            break;
+                        case "ANTERAJA":
+                            Shipping anteraja = shippingRepository.findByName(EShipping.ANTERAJA).orElseThrow(() -> new ResourceNotFoundException("Error: Shipping is not found!"));
+                            productTransaction.setShipping(anteraja);
+                            break;
+                    }
                 productTransactionRepository.save(productTransaction);
             }
 
@@ -105,5 +129,26 @@ public class TransactionServiceImpl implements TransactionService {
         } catch (ResourceNotFoundException e) {
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
+    }
+
+    @Override
+    public ResponseEntity<?> getTransactionHistories() throws ResourceNotFoundException {
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.getReferenceById(userDetails.getId());
+        List<Transaction> transactions = transactionRepository.findByUser(user);
+        List<ProductTransaction> productTransactionList = new ArrayList<>();
+        transactions.forEach(transaction -> {
+            List<ProductTransaction> productTransaction = productTransactionRepository.findByTransaction(transaction);
+            productTransaction.forEach(pt -> {
+                productTransactionList.add(pt);
+            });
+        });
+        List<TransactionHistoriesResponseDTO> responseDTO = new ArrayList<>();
+        productTransactionList.forEach(ptl -> {
+            TransactionHistoriesResponseDTO dto = TransactionHistoriesResponseDTO.builder()
+                .productName(ptl.getProduct().get)
+                .build();
+            responseDTO.add(new Transaction)
+        });
     }
 }

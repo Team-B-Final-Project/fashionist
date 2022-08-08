@@ -2,8 +2,6 @@ package com.anbit.fashionist.domain.dto;
 
 import java.util.Map;
 
-import com.anbit.fashionist.domain.dao.Shipping;
-
 import lombok.*;
 
 @AllArgsConstructor
@@ -16,7 +14,7 @@ public class CreateTransactionRequestDTO {
 
     private Integer totalItemunits;
 
-    private Map<Long, Shipping> cartShipping;
+    private Map<Long, String> cartShipping;
 
     private Float totalPrice;
 

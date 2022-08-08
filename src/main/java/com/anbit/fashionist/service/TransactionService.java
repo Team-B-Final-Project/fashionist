@@ -7,4 +7,6 @@ import com.anbit.fashionist.helper.ResourceNotFoundException;
 
 public interface TransactionService {
     ResponseEntity<?> createTransaction(CreateTransactionRequestDTO requestDTO) throws ResourceNotFoundException;
+
+    ResponseEntity<?> getTransactionHistories() throws ResourceNotFoundException;
 }
