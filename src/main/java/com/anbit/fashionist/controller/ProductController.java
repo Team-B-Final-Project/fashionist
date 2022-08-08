@@ -2,7 +2,6 @@ package com.anbit.fashionist.controller;
 
 
 import com.anbit.fashionist.domain.dto.ProductRequestDTO;
-import com.anbit.fashionist.domain.dto.ProductResponseDTO;
 import com.anbit.fashionist.helper.ResourceAlreadyExistException;
 import com.anbit.fashionist.service.ProductServiceImpl;
 import lombok.AllArgsConstructor;
