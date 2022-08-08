@@ -50,7 +50,8 @@ CREATE TABLE public.category (
 );
 
 CREATE TABLE public.address (
-    "id" bigserial,
+    "id" bigserial NOT NULL,
+    "user_id" bigint NOT NULL,
     "name" varchar(50) NOT NULL,
     "phone_number" char(12) NOT NULL,
     "province" varchar(50) NOT NULL,
@@ -199,15 +200,6 @@ ADD CONSTRAINT "profile_picture_fkey"
 FOREIGN KEY("profile_picture_id")
 REFERENCES public.profile_picture("id");
 
-ALTER TABLE public.user_address
-ADD CONSTRAINT "user_fkey"
-FOREIGN KEY("user_id")
-REFERENCES public.user("id");
-
-ALTER TABLE public.user_address
-ADD CONSTRAINT "address_fkey"
-FOREIGN KEY("address_id")
-REFERENCES public.address("id");
 
 ALTER TABLE public.store
 ADD CONSTRAINT "address_fkey"
@@ -288,3 +280,8 @@ ALTER TABLE public.user_role
 ADD CONSTRAINT "role_fkey"
 FOREIGN KEY("role_id")
 REFERENCES public.role("id");
+
+ALTER TABLE public.address
+ADD CONSTRAINT "user_fkey"
+FOREIGN KEY("user_id")
+REFERENCES public.user("id");
