@@ -22,18 +22,17 @@ import java.util.Map;
 
 @Service
 public class ProductServiceImpl implements ProductService{
-
     @Autowired
     ProductRepository productRepository;
-
-    @Autowired
-    Pageable pageable;
 
     @Override
     public ResponseEntity<?> searchProducts(String keyword, String category, String locations, String sortBy, String order, Float minPrice, Float maxPrice, int page) throws ResourceNotFoundException {
         try{
+            Pageable pageable;
             if (sortBy != null){
                 pageable = PageRequest.of(page -1,30, Sort.by(sortBy).ascending());
+            } else {
+                pageable = PageRequest.of(page -1,30, Sort.by("name").ascending());
             }
             Page<Product> pageProduct = productRepository.findByName(keyword, pageable);
             if (pageProduct.getContent().isEmpty()){

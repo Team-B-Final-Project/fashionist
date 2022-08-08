@@ -10,11 +10,16 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Builder
+@Entity
 @Table(name = "product",schema="public")
 public class Address extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = User.class)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -33,13 +38,12 @@ public class Address extends Audit {
 
     @Override
     public String toString() {
-        return "Address{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", province='" + province + '\'' +
-                ", city='" + city + '\'' +
-                ", fullAddress='" + fullAddress + '\'' +
-                '}';
+        return "Address [city=" + city + 
+            ", fullAddress=" + fullAddress + 
+            ", id=" + id + 
+            ", name=" + name + 
+            ", phoneNumber=" + phoneNumber + 
+            ", province=" + province + 
+            ", user=" + user + "]";
     }
 }
