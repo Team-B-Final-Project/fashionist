@@ -10,6 +10,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Builder
+@Entity
 @Table(name = "product",schema="public")
 public class Product extends Audit {
     @Id
