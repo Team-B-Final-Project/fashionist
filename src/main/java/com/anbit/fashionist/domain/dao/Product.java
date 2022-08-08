@@ -13,14 +13,11 @@ import javax.persistence.*;
 @Builder
 @Table(name = "product",schema="public")
 @Entity
-
-
 public class Product extends Audit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
-    private Integer id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id")
@@ -39,14 +36,8 @@ public class Product extends Audit {
     private Integer stock;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_id")
-    private Store storeId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
-
-    private Category categoryId;
 
 
     @Override
