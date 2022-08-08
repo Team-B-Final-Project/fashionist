@@ -8,11 +8,11 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
-@Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@Entity
 @Table(name = "profile_picture", schema = "public")
 public class ProfilePicture extends Audit {
     @Id
