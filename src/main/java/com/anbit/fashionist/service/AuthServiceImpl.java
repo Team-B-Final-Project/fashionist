@@ -7,7 +7,7 @@ import com.anbit.fashionist.domain.dao.User;
 import com.anbit.fashionist.config.JwtUtils;
 import com.anbit.fashionist.constant.EErrorCode;
 import com.anbit.fashionist.constant.ERole;
-import com.anbit.fashionist.domain.dto.LoginRequest;
+import com.anbit.fashionist.domain.dto.LoginRequestDTO;
 
 import com.anbit.fashionist.handler.ResponseHandler;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
@@ -52,7 +52,7 @@ public class AuthServiceImpl implements AuthService {
     JwtUtils jwtUtils;
 
     @Override
-    public ResponseEntity<?> authenticateUser(LoginRequest loginRequest) throws ResourceNotFoundException {
+    public ResponseEntity<?> authenticateUser(LoginRequestDTO loginRequest) throws ResourceNotFoundException {
         try {
             Optional<User> user = userRepository.findByUsername(loginRequest.getUsername());
             Boolean isPasswordCorrect = encoder.matches(loginRequest.getPassword(), user.get().getPassword());
