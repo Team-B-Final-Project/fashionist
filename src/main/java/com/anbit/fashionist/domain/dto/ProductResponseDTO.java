@@ -18,5 +18,4 @@ public class ProductResponseDTO {
 
     private Integer stock;
 
-//    private String categoryId;
 }

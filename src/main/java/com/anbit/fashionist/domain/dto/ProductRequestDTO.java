@@ -9,7 +9,7 @@ import lombok.*;
 @Setter
 @Builder
 public class ProductRequestDTO {
-    private Long id;
+  
     private String name;
     private String description;
     private Float price;
@@ -17,7 +17,6 @@ public class ProductRequestDTO {
 
     public Product convertToEntity() {
         return Product.builder()
-                .id(this.id)
                 .name(this.name)
                 .description(this.description)
                 .price(this.price)
