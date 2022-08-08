@@ -1,23 +1,51 @@
 package com.anbit.fashionist.domain.dao;
 
-import java.util.List;
+import com.anbit.fashionist.domain.common.Audit;
+import lombok.*;
 
 import javax.persistence.*;
-
-import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Builder
-@Entity
-@Table(name = "product", schema = "public")
-public class Product {
+@Table(name = "product",schema="public")
+public class Product extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "transaction")
-    private List<ProductTransaction> productTransactions;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id")
+    private Store store;
+
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @Column(name = "description", nullable = false)
+    private String description;
+
+    @Column(name = "price", nullable = false)
+    private Float price;
+
+    @Column(name = "stock", nullable = false)
+    private Integer stock;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", storeId=" + store.getId() +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", price=" + price +
+                ", stock=" + stock +
+                ", categoryId=" + category +
+                '}';
+    }
 }
