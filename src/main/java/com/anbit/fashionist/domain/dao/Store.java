@@ -11,6 +11,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Builder
+@Entity
 @Table(name = "store",schema="public")
 public class Store extends Audit {
 
@@ -18,14 +19,15 @@ public class Store extends Audit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = User.class)
     @JoinColumn(name = "user_id")
     private User user;
 
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "address_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Address.class)
+    @JoinColumn(name = "address_id")
     private Address address;
 
     @Override

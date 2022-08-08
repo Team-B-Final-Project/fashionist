@@ -1,6 +1,6 @@
 package com.anbit.fashionist.controller;
 
-import com.anbit.fashionist.domain.dto.LoginRequest;
+import com.anbit.fashionist.domain.dto.SignInRequestDTO;
 import com.anbit.fashionist.domain.dto.SignUpRequestDTO;
 import com.anbit.fashionist.helper.ResourceAlreadyExistException;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
@@ -26,9 +26,9 @@ public class AuthController {
      * @return
      */
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticate(@Valid @RequestBody LoginRequest loginRequest) throws ResourceNotFoundException
+    public ResponseEntity<?> authenticate(@Valid @RequestBody SignInRequestDTO signInRequest) throws ResourceNotFoundException
     {
-        return authServiceImpl.authenticateUser(loginRequest);
+        return authServiceImpl.authenticateUser(signInRequest);
     }
 
     /***

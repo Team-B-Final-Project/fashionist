@@ -2,6 +2,8 @@ package com.anbit.fashionist.domain.dao;
 
 import javax.persistence.*;
 
+import com.anbit.fashionist.constant.EPayment;
+
 import lombok.*;
 
 @AllArgsConstructor
@@ -10,13 +12,12 @@ import lombok.*;
 @Setter
 @Builder
 @Entity
-@Table(name = "category", schema = "public")
-public class Category {
+@Table(name = "payment", schema = "public")
+public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
-    private String name;
-
-    private String slug;
+    @Enumerated(EnumType.STRING)
+    private EPayment name;
 }
