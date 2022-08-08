@@ -2,6 +2,7 @@ package com.anbit.fashionist.service;
 
 
 import com.anbit.fashionist.domain.dto.CartRequestDTO;
+import com.anbit.fashionist.domain.dto.UserRequestDTO;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
 import org.springframework.http.ResponseEntity;
 
@@ -12,5 +13,5 @@ public interface CartService {
 
     ResponseEntity<?> editCart (CartRequestDTO cartRequestDTO) throws ResourceNotFoundException;
 
-    ResponseEntity<?> deleteCart (CartRequestDTO cartRequestDTO) throws ResourceNotFoundException;
+    public ResponseEntity<?> deleteCart(CartRequestDTO cartRequestDTO, UserRequestDTO userRequestDTO) throws  ResourceNotFoundException;
 }
