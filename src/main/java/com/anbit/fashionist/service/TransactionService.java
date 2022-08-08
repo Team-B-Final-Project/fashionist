@@ -10,5 +10,5 @@ public interface TransactionService {
 
     ResponseEntity<?> getTransactionHistories() throws ResourceNotFoundException;
     
-    ResponseEntity<?> getTransactionHistory() throws ResourceNotFoundException;
+    ResponseEntity<?> getTransactionHistory(Long id) throws ResourceNotFoundException;
 }

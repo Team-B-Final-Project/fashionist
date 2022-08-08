@@ -26,12 +26,23 @@ public class TransactionController {
     }
 
     /***
-     * Get transaction histories of current user
+     * Get transaction histories per product of current user
      * @return
      * @throws ResourceNotFoundException
      */
     @GetMapping("/transaction/histories")
     public ResponseEntity<?> transactionHistories() throws ResourceNotFoundException {
         return transactionService.getTransactionHistories();
+    }
+    
+    /***
+     * Get details of product we bought
+     * @param id
+     * @return
+     * @throws ResourceNotFoundException
+     */
+    @PostMapping("/transaction/{uuid}")
+    public ResponseEntity<?> transactionHistory(@PathVariable("uuid") Long id) throws ResourceNotFoundException{
+        return transactionService.getTransactionHistory(id);
     }
 }

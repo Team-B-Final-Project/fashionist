@@ -25,6 +25,7 @@ import com.anbit.fashionist.domain.dao.Transaction;
 import com.anbit.fashionist.domain.dao.User;
 import com.anbit.fashionist.domain.dto.CreateTransactionRequestDTO;
 import com.anbit.fashionist.domain.dto.TransactionHistoriesResponseDTO;
+import com.anbit.fashionist.domain.dto.TransactionHistoryResponseDTO;
 import com.anbit.fashionist.handler.ResponseHandler;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.repository.AddressRepository;
@@ -162,6 +163,27 @@ public class TransactionServiceImpl implements TransactionService {
             Map<String, Object> metaData = new HashMap<>();
             metaData.put("_total", responseDTO.size());
             return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, ZonedDateTime.now(), "Successfully reterieve data!", responseDTO, metaData);
+        } catch (ResourceNotFoundException e) {
+            return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> getTransactionHistory(Long id) throws ResourceNotFoundException {
+        try {
+            ProductTransaction pt = productTransactionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Error: Transaction is not found!"));
+            TransactionHistoryResponseDTO responseDTO = TransactionHistoryResponseDTO.builder()
+                .id(pt.getId())
+                .totalItemUnit(pt.getItemUnit())
+                .totalPrice(pt.getTotalPrice())
+                .shippingPrice(null)
+                .sendAddress(pt.getTransaction().getSendAddress())
+                .paymentMethod(pt.getTransaction().getPayment().getName().name())
+                .status(pt.getTransaction().getTransactionStatus().getName().name())
+                .receipt(pt.getTransaction().getReceipt())
+                .build();
+    
+            return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Successfully retrieved data!", responseDTO);
         } catch (ResourceNotFoundException e) {
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
