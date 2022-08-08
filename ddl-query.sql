@@ -44,15 +44,9 @@ CREATE TABLE public.shipping (
 
 CREATE TABLE public.category (
     "id" bigserial NOT NULL,
-    "user_id" bigint NOT NULL,
-    "address_id" bigint NOT NULL,
-    "phone_number" varchar(50) NOT NULL,
-    "created_at" timestamp NOT NULL default NOW(),
-    "updated_at" timestamp NOT NULL default NOW(),
-    "created_by" varchar NOT NULL,
-    "updated_by" varchar NOT NULL,
+    "name" varchar(50) NOT NULL,
+    "slug" varchar NOT NULL,
     CONSTRAINT "category_pkey" primary key ("id")
-
 );
 
 CREATE TABLE public.address (
