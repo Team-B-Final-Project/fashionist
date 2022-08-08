@@ -2,7 +2,9 @@ package com.anbit.fashionist.service;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -133,22 +135,35 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public ResponseEntity<?> getTransactionHistories() throws ResourceNotFoundException {
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.getReferenceById(userDetails.getId());
-        List<Transaction> transactions = transactionRepository.findByUser(user);
-        List<ProductTransaction> productTransactionList = new ArrayList<>();
-        transactions.forEach(transaction -> {
-            List<ProductTransaction> productTransaction = productTransactionRepository.findByTransaction(transaction);
-            productTransaction.forEach(pt -> {
-                productTransactionList.add(pt);
+        try {
+            UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            User user = userRepository.getReferenceById(userDetails.getId());
+            List<Transaction> transactions = transactionRepository.findByUser(user);
+            if (transactions.isEmpty()) {
+                throw new ResourceNotFoundException("You have no transactions yet!");
+            }
+            List<ProductTransaction> productTransactionList = new ArrayList<>();
+            transactions.forEach(transaction -> {
+                List<ProductTransaction> productTransaction = productTransactionRepository.findByTransaction(transaction);
+                productTransaction.forEach(pt -> {
+                    productTransactionList.add(pt);
+                });
             });
-        });
-        List<TransactionHistoriesResponseDTO> responseDTO = new ArrayList<>();
-        productTransactionList.forEach(ptl -> {
-            TransactionHistoriesResponseDTO dto = TransactionHistoriesResponseDTO.builder()
-                .productName(ptl.getProduct().get)
-                .build();
-            responseDTO.add(new Transaction)
-        });
+            List<TransactionHistoriesResponseDTO> responseDTO = new ArrayList<>();
+            productTransactionList.forEach(ptl -> {
+                TransactionHistoriesResponseDTO dto = TransactionHistoriesResponseDTO.builder()
+                    .productName(ptl.getProduct().getName())
+                    .productPrice(ptl.getProduct().getPrice())
+                    .totalItems(ptl.getItemUnit())
+                    .totalPricePerItem(ptl.getTotalPrice())
+                    .build();
+                responseDTO.add(dto);
+            });
+            Map<String, Object> metaData = new HashMap<>();
+            metaData.put("_total", responseDTO.size());
+            return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, ZonedDateTime.now(), "Successfully reterieve data!", responseDTO, metaData);
+        } catch (ResourceNotFoundException e) {
+            return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
+        }
     }
 }
