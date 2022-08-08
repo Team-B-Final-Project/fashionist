@@ -1,17 +1,18 @@
 package com.anbit.fashionist.domain.dao;
 
 import com.anbit.fashionist.domain.common.Audit;
-import com.anbit.fashionist.domain.dto.ProductResponseDTO;
 import lombok.*;
 
 import javax.persistence.*;
 
-@Entity
+
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@Table(name = "product",schema="public")
+@Entity
 public class Product extends Audit {
 
     @Id
@@ -20,42 +21,36 @@ public class Product extends Audit {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id")
-    private Store storeId;
+    private Store store;
 
-    @Column(nullable = false, name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(nullable = false, name = "description")
+    @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(nullable = false, name = "price")
+    @Column(name = "price", nullable = false)
     private Float price;
 
-    @Column(nullable = false, name = "stock")
+    @Column(name = "stock", nullable = false)
     private Integer stock;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
-    private Category categoryId;
+    private Category category;
 
-    public ProductResponseDTO convertToResponseDTO() {
-        return ProductResponseDTO.builder()
-                .productId(this.id)
-                .name(this.name)
-                .description(this.description)
-                .price(this.price)
-                .stock(this.stock)
-                .build();
-    }
 
     @Override
     public String toString() {
         return "Product{" +
-                "productId=" + id +
+
+                "id=" + id +
+                ", storeId=" + store.getId() +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", price=" + price +
                 ", stock=" + stock +
+                ", categoryId=" + category +
                 '}';
     }
 }

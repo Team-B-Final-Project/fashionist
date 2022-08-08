@@ -7,15 +7,8 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-public class ProductResponseDTO {
-    private Long productId;
-
+public class SearchProductResponseDTO {
     private String name;
-
-    private String description;
-
     private Float price;
-
-    private Integer stock;
-
+    private String city;
 }
