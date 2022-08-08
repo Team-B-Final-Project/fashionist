@@ -3,6 +3,7 @@ package com.anbit.fashionist.service;
 import com.anbit.fashionist.domain.dto.CartRequestDTO;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.repository.CartRepository;
+import com.anbit.fashionist.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ public class CartServiceImpl implements CartService {
     CartRepository cartRepository;
 
     @Autowired
+    ProductRepository productRepository;
 
     @Override
     public ResponseEntity<?> addCart(CartRequestDTO cartRequestDTO) throws ResourceNotFoundException {
