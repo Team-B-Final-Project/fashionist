@@ -60,7 +60,6 @@ public class Product extends Audit {
                 ", price=" + price +
                 ", stock=" + stock +
                 ", categoryId=" + category +
-
                 '}';
     }
 }
