@@ -32,6 +32,9 @@ public class Address extends Audit {
 
     @Column(name = "city", nullable = false)
     private String city;
+    
+    @Column(name = "district", nullable = false)
+    private String district;
 
     @Column(name = "full_address", nullable = false)
     private String fullAddress;
