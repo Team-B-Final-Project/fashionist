@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Setter
 @Builder
 @Entity
-@Table(name = "product",schema="public")
+@Table(name = "address" ,schema="public")
 public class Address extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
