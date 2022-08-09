@@ -11,11 +11,11 @@ import javax.persistence.*;
 @Setter
 @Builder
 @Entity
-@Table(name = "product",schema="public")
+@Table(name = "address" ,schema="public")
 public class Address extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = User.class)
     @JoinColumn(name = "user_id")
@@ -32,6 +32,9 @@ public class Address extends Audit {
 
     @Column(name = "city", nullable = false)
     private String city;
+    
+    @Column(name = "district", nullable = false)
+    private String district;
 
     @Column(name = "full_address", nullable = false)
     private String fullAddress;

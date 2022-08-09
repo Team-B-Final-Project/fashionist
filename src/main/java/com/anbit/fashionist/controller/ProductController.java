@@ -7,6 +7,7 @@ import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.service.ProductServiceImpl;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "2. Product Controller")
 @RestController
 @RequestMapping("/api/v1")
+@SecurityRequirement(name = "bearer-key")
 public class ProductController {
 
     @Autowired

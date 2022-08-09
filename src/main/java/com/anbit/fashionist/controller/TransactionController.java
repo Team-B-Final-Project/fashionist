@@ -9,11 +9,13 @@ import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.service.TransactionServiceImpl;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "4. Transaction Controller")
-@RequestMapping("/api/v1")
 @RestController
+@RequestMapping("/api/v1")
+@SecurityRequirement(name = "bearer-key")
 public class TransactionController {
     @Autowired
     TransactionServiceImpl transactionService;

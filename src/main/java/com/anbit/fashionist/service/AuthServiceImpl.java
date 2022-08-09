@@ -106,12 +106,12 @@ public class AuthServiceImpl implements AuthService {
                         roles.add(modRole);
                     break;
                     case "user":
-                        Role userRole = roleRepository.findByName(ERole.ROLE_USER).orElseThrow(() -> new RuntimeException("Error: Role is not found!"));
-                        roles.add(userRole);
+                        Role sellerRole = roleRepository.findByName(ERole.ROLE_SELLER).orElseThrow(() -> new RuntimeException("Error: Role is not found!"));
+                        roles.add(sellerRole);
                     break;
                     default :
-                        Role user1Role = roleRepository.findByName(ERole.ROLE_USER).orElseThrow(() -> new RuntimeException("Error: Role is not found!"));
-                        roles.add(user1Role);
+                        Role seller1Role = roleRepository.findByName(ERole.ROLE_CUSTOMER).orElseThrow(() -> new RuntimeException("Error: Role is not found!"));
+                        roles.add(seller1Role);
                 }
             });
             user.setRoles(roles);
