@@ -52,4 +52,6 @@ public class Product extends Audit {
                 ", categoryId=" + category +
                 '}';
     }
+
 }
+
