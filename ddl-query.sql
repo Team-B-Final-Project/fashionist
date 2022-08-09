@@ -179,11 +179,6 @@ ADD CONSTRAINT "product_fkey"
 FOREIGN KEY("product_id")
 REFERENCES public.product("id");
 
-ALTER TABLE public.category
-ADD CONSTRAINT "address_fkey"
-FOREIGN KEY("address_id")
-REFERENCES public.address("id");
-
 ALTER TABLE public.user
 ADD CONSTRAINT "profile_picture_fkey"
 FOREIGN KEY("profile_picture_id")
