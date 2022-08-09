@@ -1,16 +1,13 @@
 package com.anbit.fashionist.controller;
 
 
-import com.anbit.fashionist.domain.dao.User;
 import com.anbit.fashionist.domain.dto.CartRequestDTO;
-import com.anbit.fashionist.domain.dto.UserRequestDTO;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.service.CartServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1")

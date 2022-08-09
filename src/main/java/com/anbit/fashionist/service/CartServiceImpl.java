@@ -3,7 +3,6 @@ package com.anbit.fashionist.service;
 import com.anbit.fashionist.domain.common.UserDetailsImpl;
 import com.anbit.fashionist.domain.dao.Cart;
 import com.anbit.fashionist.domain.dao.Product;
-import com.anbit.fashionist.domain.dao.User;
 import com.anbit.fashionist.domain.dto.CartRequestDTO;
 import com.anbit.fashionist.handler.ResponseHandler;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
