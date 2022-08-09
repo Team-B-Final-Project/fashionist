@@ -81,12 +81,6 @@ CREATE TABLE public.user (
     CONSTRAINT "user_pkey" PRIMARY KEY ("id")
 );
 
-CREATE TABLE public.user_address (
-    "user_id" bigint NOT NULL,
-    "address_id" bigint NOT NULL,
-    CONSTRAINT "user_address_pkey" PRIMARY KEY ("user_id", "address_id")
-);
-
 CREATE TABLE public.store (
     "id" bigserial,
     "user_id" bigint NOT NULL,
