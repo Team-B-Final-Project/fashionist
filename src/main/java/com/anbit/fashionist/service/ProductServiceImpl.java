@@ -14,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import com.anbit.fashionist.helper.ResourceAlreadyExistException;
-import lombok.AllArgsConstructor;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,20 +29,18 @@ import java.util.Map;
 
 
 @Service
-@AllArgsConstructor
-public class ProductServiceImpl implements ProductService {
-
+public class ProductServiceImpl implements ProductService{
     @Autowired
     ProductRepository productRepository;
 
-    @Autowired
-    Pageable pageable;
-
     @Override
     public ResponseEntity<?> searchProducts(String keyword, String category, String locations, String sortBy, String order, Float minPrice, Float maxPrice, int page) throws ResourceNotFoundException {
-        try {
-            if (sortBy != null) {
-                pageable = PageRequest.of(page - 1, 30, Sort.by(sortBy).ascending());
+        try{
+            Pageable pageable;
+            if (sortBy != null){
+                pageable = PageRequest.of(page -1,30, Sort.by(sortBy).ascending());
+            } else {
+                pageable = PageRequest.of(page -1,30, Sort.by("name").ascending());
             }
             Page<Product> pageProduct = productRepository.findByName(keyword, pageable);
             if (pageProduct.getContent().isEmpty()) {
@@ -66,7 +63,7 @@ public class ProductServiceImpl implements ProductService {
             pagination.put("perPage", 30);
             pagination.put("totalElements", pageProduct.getTotalElements());
             return ResponseHandler.generateSuccessResponseWithPagination(HttpStatus.OK, ZonedDateTime.now(), "Successfully reterieve data!", searchProductResponseDTOS, pagination);
-        } catch (ResourceNotFoundException e) {
+        }catch (ResourceNotFoundException e){
             return ResponseHandler.generateErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ZonedDateTime.now(), e.getMessage(), 500);
         }
     }

@@ -15,7 +15,9 @@ import lombok.*;
 @Table(name = "transaction_status")
 public class TransactionStatus {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Enumerated(EnumType.STRING)
     private ETransactionStatus name;
 }

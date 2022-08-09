@@ -11,15 +11,14 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Builder
-@Table(name = "product",schema="public")
 @Entity
+@Table(name = "product",schema="public")
 public class Product extends Audit {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Store.class)
     @JoinColumn(name = "store_id")
     private Store store;
 
@@ -35,7 +34,7 @@ public class Product extends Audit {
     @Column(name = "stock", nullable = false)
     private Integer stock;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Category.class)
     @JoinColumn(name = "category_id")
     private Category category;
 
@@ -53,4 +52,6 @@ public class Product extends Audit {
                 ", categoryId=" + category +
                 '}';
     }
+
 }
+

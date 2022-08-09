@@ -14,7 +14,10 @@ import lombok.*;
 @Entity
 @Table(name = "payment", schema = "public")
 public class Payment {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Enumerated(EnumType.STRING)
     private EPayment name;
 }

@@ -1,13 +1,14 @@
 package com.anbit.fashionist.service;
 
 import com.anbit.fashionist.domain.common.UserDetailsImpl;
-import com.anbit.fashionist.domain.dao.JwtResponse;
 import com.anbit.fashionist.domain.dao.Role;
 import com.anbit.fashionist.domain.dao.User;
 import com.anbit.fashionist.config.JwtUtils;
 import com.anbit.fashionist.constant.EErrorCode;
 import com.anbit.fashionist.constant.ERole;
-import com.anbit.fashionist.domain.dto.LoginRequestDTO;
+
+import com.anbit.fashionist.domain.dto.JwtResponseDTO;
+import com.anbit.fashionist.domain.dto.SignInRequestDTO;
 
 import com.anbit.fashionist.handler.ResponseHandler;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
@@ -52,7 +53,9 @@ public class AuthServiceImpl implements AuthService {
     JwtUtils jwtUtils;
 
     @Override
-    public ResponseEntity<?> authenticateUser(LoginRequestDTO loginRequest) throws ResourceNotFoundException {
+
+    public ResponseEntity<?> authenticateUser(SignInRequestDTO loginRequest) throws ResourceNotFoundException {
+
         try {
             Optional<User> user = userRepository.findByUsername(loginRequest.getUsername());
             Boolean isPasswordCorrect = encoder.matches(loginRequest.getPassword(), user.get().getPassword());
@@ -67,7 +70,7 @@ public class AuthServiceImpl implements AuthService {
             String jwt = jwtUtils.generateJwtToken(authentication);
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
             List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
-            return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Successfully login!", new JwtResponse(jwt, userDetails.getUsername(), roles));
+            return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Successfully login!", new JwtResponseDTO(jwt, userDetails.getUsername(), roles));
         } catch (ResourceNotFoundException e) {
             return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
