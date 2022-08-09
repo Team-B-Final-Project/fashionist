@@ -1,9 +1,12 @@
 package com.anbit.fashionist.service;
 
+import com.anbit.fashionist.constant.EErrorCode;
 import com.anbit.fashionist.domain.common.UserDetailsImpl;
 import com.anbit.fashionist.domain.dao.Cart;
 import com.anbit.fashionist.domain.dao.Product;
-import com.anbit.fashionist.domain.dto.CartRequestDTO;
+import com.anbit.fashionist.domain.dao.User;
+import com.anbit.fashionist.domain.dto.AddCartRequestDTO;
+import com.anbit.fashionist.domain.dto.EditCartTotalItemRequestDTO;
 import com.anbit.fashionist.handler.ResponseHandler;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.repository.CartRepository;
@@ -30,61 +33,57 @@ public class CartServiceImpl implements CartService {
     UserRepository userRepository;
 
     @Override
-    public ResponseEntity<?> addCart(CartRequestDTO cartRequestDTO) throws ResourceNotFoundException {
+    public ResponseEntity<?> addCart(AddCartRequestDTO requestDTO) throws ResourceNotFoundException {
         try{
-            Optional<Product> product = productRepository.findById(cartRequestDTO.getId());
+            UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            Optional<User> user = userRepository.findByUsername(userDetails.getUsername());
+            Optional<Product> product = productRepository.findById(requestDTO.getProductId());
             if(product.isPresent()){
-                Product product1 = product.get();
                 Cart cart = Cart.builder()
-                        .product(product1)
-                        .itemUnit(cartRequestDTO.getItemUnit())
-                        .totalPrice(cartRequestDTO.getTotalPrice())
+                        .user(user.get())
+                        .product(product.get())
+                        .itemUnit(requestDTO.getItemUnit())
+                        .totalPrice(requestDTO.getTotalPrice())
                         .build();
                 this.cartRepository.save(cart);
-                return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(),"Cart added successfully" , cart);
+                return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(),"Cart added successfully!" , cart);
             }
             else{
                 throw new ResourceNotFoundException("Product not found");
             }
         }catch (Exception e){
-            throw new ResourceNotFoundException(e.getMessage());
+            return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
     }
 
     @Override
-    public ResponseEntity<?> editCart(CartRequestDTO cartRequestDTO) throws ResourceNotFoundException {
+    public ResponseEntity<?> editCartTotalItem(EditCartTotalItemRequestDTO requestDTO) throws ResourceNotFoundException {
         try {
-            Cart cart = cartRequestDTO.convertToEntity();
-            if(Boolean.FALSE.equals(cartRepository.existsById(cart.getId()))){
-                throw new ResourceNotFoundException("Cart not found");
+            Cart cart = cartRepository.findById(requestDTO.getCartId()).orElseThrow(() -> new ResourceNotFoundException("Cart not found!"));
+            UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if(!userDetails.getId().equals(cart.getUser().getId())){
+                throw new ResourceNotFoundException("You are not allowed to edit this cart!");
             }
+            cart.setItemUnit(requestDTO.getItemUnit());
             this.cartRepository.save(cart);
-            return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "cart updated",cart);
-        }catch (Exception e){
-            throw new ResourceNotFoundException(e.getMessage());
+            return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Cart item unit updated!", null);
+        }catch (ResourceNotFoundException e){
+            return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
     }
 
     @Override
     public ResponseEntity<?> deleteCart(Long id) throws  ResourceNotFoundException {
         try{
-            Optional<Cart> cart = cartRepository.findById(id);
-
+            Cart cart = cartRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Cart not found!"));
             UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                if(cart.isEmpty()){
-                    throw new ResourceNotFoundException("Data cart is empty");
-                }else{
-//                    if user is logged in, remove user from cart
-                    if(userDetails.getId().equals(cart.get().getUser().getId())){
-                        this.cartRepository.delete(cart.get());
-                        return ResponseHandler.generateSuccessResponse(HttpStatus.OK , ZonedDateTime.now(), "Product deleted from cart", null);
-                    }else {
-                        throw new ResourceNotFoundException("User not found");
-                    }
-                }
-
-        }catch (Exception e){
-            throw new ResourceNotFoundException(e.getMessage());
+            if(!userDetails.getId().equals(cart.getUser().getId())){
+                throw new ResourceNotFoundException("You are not allowed to delete this cart!");
+            }
+            this.cartRepository.delete(cart);
+            return ResponseHandler.generateSuccessResponse(HttpStatus.OK , ZonedDateTime.now(), "Product deleted from cart", null);
+        }catch (ResourceNotFoundException e){
+            return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
     }
 

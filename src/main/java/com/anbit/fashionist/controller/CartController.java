@@ -1,7 +1,8 @@
 package com.anbit.fashionist.controller;
 
 
-import com.anbit.fashionist.domain.dto.CartRequestDTO;
+import com.anbit.fashionist.domain.dto.AddCartRequestDTO;
+import com.anbit.fashionist.domain.dto.EditCartTotalItemRequestDTO;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.service.CartServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +23,8 @@ public class CartController {
      * @throws ResourceNotFoundException
      */
     @PostMapping("/add/cart")
-    public ResponseEntity<?> add(CartRequestDTO cartRequestDTO) throws ResourceNotFoundException {
-        return cartService.addCart(cartRequestDTO);
+    public ResponseEntity<?> add(AddCartRequestDTO requestDTO) throws ResourceNotFoundException {
+        return cartService.addCart(requestDTO);
     }
 
     /***
@@ -33,8 +34,8 @@ public class CartController {
      * @throws ResourceNotFoundException
      */
     @PutMapping("/edit/cart")
-    public ResponseEntity<?> edit(CartRequestDTO cartRequestDTO) throws ResourceNotFoundException {
-        return cartService.editCart(cartRequestDTO);
+    public ResponseEntity<?> edit(EditCartTotalItemRequestDTO requestDTO) throws ResourceNotFoundException {
+        return cartService.editCartTotalItem(requestDTO);
     }
 
     /***
