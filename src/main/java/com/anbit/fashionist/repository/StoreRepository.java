@@ -7,5 +7,5 @@ import com.anbit.fashionist.domain.dao.Store;
 
 @Repository
 public interface StoreRepository extends JpaRepository<Store, Long> {
-    
+    boolean existsByUserUsername(String username);
 }

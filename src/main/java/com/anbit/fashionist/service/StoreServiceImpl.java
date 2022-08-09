@@ -38,8 +38,11 @@ public class StoreServiceImpl implements StoreService {
         try {
             UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             Optional<User> user = userRepository.findByUsername(userDetails.getUsername());
+            if (Boolean.TRUE.equals(storeRepository.existsByUserUsername(userDetails.getUsername()))) {
+                throw new ResourceAlreadyExistException("You already have a store!");
+            }
             Address address = addressRepository.findById(requestDTO.getAddressId()).orElseThrow(() -> new ResourceNotFoundException("Address not found!"));
-            if (address.getUser().getUsername() != userDetails.getUsername()) {
+            if (!address.getUser().getUsername().equals(userDetails.getUsername())) {
                 throw new ResourceNotFoundException("Address not found!");
             }
             Store store = Store.builder()
@@ -48,10 +51,11 @@ public class StoreServiceImpl implements StoreService {
                 .address(address)
                 .build();
             storeRepository.save(store);
-            return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Successfully create new store!", null);
+            return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, ZonedDateTime.now(), "Successfully create new store!", null);
         } catch (ResourceNotFoundException e) {
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
+        } catch(ResourceAlreadyExistException e){
+            return ResponseHandler.generateErrorResponse(HttpStatus.NOT_ACCEPTABLE, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
     }
-    
 }
