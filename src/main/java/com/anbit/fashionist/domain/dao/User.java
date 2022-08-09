@@ -45,6 +45,9 @@ public class User extends Audit{
     
     @OneToMany(cascade = CascadeType.ALL , fetch = FetchType.LAZY, mappedBy = "user")
     private List<Cart> carts;
+
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")
+    private Store store;
 }
 
 

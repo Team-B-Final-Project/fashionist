@@ -6,12 +6,12 @@ import javax.persistence.*;
 
 import com.anbit.fashionist.constant.ERole;
 
-@Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Builder
+@Entity
 @Table(name = "role")
 public class Role {
     @Id
