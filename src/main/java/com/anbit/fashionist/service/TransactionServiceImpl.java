@@ -19,6 +19,7 @@ import com.anbit.fashionist.constant.ETransactionStatus;
 import com.anbit.fashionist.domain.common.UserDetailsImpl;
 import com.anbit.fashionist.domain.dao.Cart;
 import com.anbit.fashionist.domain.dao.Payment;
+import com.anbit.fashionist.domain.dao.Product;
 import com.anbit.fashionist.domain.dao.ProductTransaction;
 import com.anbit.fashionist.domain.dao.Shipping;
 import com.anbit.fashionist.domain.dao.Transaction;
@@ -31,6 +32,7 @@ import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.repository.AddressRepository;
 import com.anbit.fashionist.repository.CartRepository;
 import com.anbit.fashionist.repository.PaymentRepository;
+import com.anbit.fashionist.repository.ProductRepository;
 import com.anbit.fashionist.repository.ProductTransactionRepository;
 import com.anbit.fashionist.repository.ShippingRepository;
 import com.anbit.fashionist.repository.TransactionRepository;
@@ -47,6 +49,9 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Autowired
     ProductTransactionRepository productTransactionRepository;
+
+    @Autowired
+    ProductRepository productRepository;
 
     @Autowired
     UserRepository userRepository;
@@ -152,6 +157,12 @@ public class TransactionServiceImpl implements TransactionService {
     public ResponseEntity<?> getTransactionHistory(Long id) throws ResourceNotFoundException {
         try {
             Transaction transaction = transactionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Error: Transaction is not found!"));
+            List<ProductTransaction> productTransactions = productTransactionRepository.findByTransaction(transaction);
+            List<Product> products = new ArrayList<>();
+            productTransactions.forEach(pr -> {
+                products.add(pr.getProduct());
+            });
+
             TransactionHistoryResponseDTO responseDTO = TransactionHistoryResponseDTO.builder()
                 .id(transaction.getId())
                 .totalItemUnit(transaction.getTotalItemUnit())
@@ -161,6 +172,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .paymentMethod(transaction.getPayment().getName().name())
                 .status(transaction.getTransactionStatus().getName().name())
                 .receipt(transaction.getReceipt())
+                .products(products)
                 .build();
             return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Successfully retrieved data!", responseDTO);
         } catch (ResourceNotFoundException e) {

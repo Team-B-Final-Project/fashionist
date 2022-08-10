@@ -43,6 +43,8 @@ public class Product extends Audit {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "product")
+    private List<ProductTransaction> productTransactions;
 
     @Override
     public String toString() {
