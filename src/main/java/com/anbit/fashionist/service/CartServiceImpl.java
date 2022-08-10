@@ -8,6 +8,7 @@ import com.anbit.fashionist.domain.dao.User;
 import com.anbit.fashionist.domain.dto.AddCartRequestDTO;
 import com.anbit.fashionist.domain.dto.EditCartTotalItemRequestDTO;
 import com.anbit.fashionist.handler.ResponseHandler;
+import com.anbit.fashionist.helper.ResourceAlreadyExistException;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.repository.CartRepository;
 import com.anbit.fashionist.repository.ProductRepository;
@@ -33,27 +34,27 @@ public class CartServiceImpl implements CartService {
     UserRepository userRepository;
 
     @Override
-    public ResponseEntity<?> addCart(AddCartRequestDTO requestDTO) throws ResourceNotFoundException {
+    public ResponseEntity<?> addCart(AddCartRequestDTO requestDTO) throws ResourceNotFoundException, ResourceAlreadyExistException {
         try{
             UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             Optional<User> user = userRepository.findByUsername(userDetails.getUsername());
-            Optional<Product> product = productRepository.findById(requestDTO.getProductId());
-            if(product.isPresent()){
-                Cart cart = Cart.builder()
-                        .user(user.get())
-                        .product(product.get())
-                        .itemUnit(requestDTO.getItemUnit())
-                        .build();
-                Float totalPrice = product.get().getPrice() * requestDTO.getItemUnit();
-                cart.setTotalPrice(totalPrice);
-                this.cartRepository.save(cart);
-                return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(),"Cart added successfully!" , cart);
+            Product product = productRepository.findById(requestDTO.getProductId()).orElseThrow(() -> new ResourceNotFoundException("Product not found!"));
+            if (Boolean.TRUE.equals(cartRepository.existsByUser(user.get())) && Boolean.TRUE.equals(cartRepository.existsByProduct(product))) {
+                throw new ResourceAlreadyExistException("This product has been in the cart!");
             }
-            else{
-                throw new ResourceNotFoundException("Product not found");
-            }
-        }catch (Exception e){
+            Cart cart = Cart.builder()
+                    .user(user.get())
+                    .product(product)
+                    .itemUnit(requestDTO.getItemUnit())
+                    .build();
+            Float totalPrice = product.getPrice() * requestDTO.getItemUnit();
+            cart.setTotalPrice(totalPrice);
+            this.cartRepository.save(cart);
+            return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(),"Product added successfully to the cart!" , null);
+        }catch (ResourceNotFoundException e){
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
+        } catch (ResourceAlreadyExistException e){
+            return ResponseHandler.generateErrorResponse(HttpStatus.NOT_ACCEPTABLE, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
     }
 

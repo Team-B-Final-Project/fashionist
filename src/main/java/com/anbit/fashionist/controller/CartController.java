@@ -3,6 +3,7 @@ package com.anbit.fashionist.controller;
 
 import com.anbit.fashionist.domain.dto.AddCartRequestDTO;
 import com.anbit.fashionist.domain.dto.EditCartTotalItemRequestDTO;
+import com.anbit.fashionist.helper.ResourceAlreadyExistException;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.service.CartServiceImpl;
 
@@ -30,10 +31,11 @@ public class CartController {
      * @param cartRequestDTO
      * @return
      * @throws ResourceNotFoundException
+     * @throws ResourceAlreadyExistException
      */
     @PostMapping("/add/cart")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
-    public ResponseEntity<?> add(@Valid AddCartRequestDTO requestDTO) throws ResourceNotFoundException {
+    public ResponseEntity<?> add(@Valid @RequestBody AddCartRequestDTO requestDTO) throws ResourceNotFoundException, ResourceAlreadyExistException {
         return cartService.addCart(requestDTO);
     }
     
@@ -45,7 +47,7 @@ public class CartController {
      */
     @PutMapping("/edit/cart")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
-    public ResponseEntity<?> edit(EditCartTotalItemRequestDTO requestDTO) throws ResourceNotFoundException {
+    public ResponseEntity<?> edit(@RequestBody EditCartTotalItemRequestDTO requestDTO) throws ResourceNotFoundException {
         return cartService.editCartTotalItem(requestDTO);
     }
     
