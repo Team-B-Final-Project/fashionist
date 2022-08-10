@@ -46,10 +46,11 @@ public class AuthController {
      * @param signUpRequestDTO
      * @return
      * @throws ResourceAlreadyExistException
+     * @throws ResourceNotFoundException
      */
     @Operation(summary = "Register for user")
     @PostMapping("/signup")
-    public ResponseEntity<?> register(@Valid @RequestBody SignUpRequestDTO signUpRequestDTO) throws ResourceAlreadyExistException {
+    public ResponseEntity<?> register(@Valid @RequestBody SignUpRequestDTO signUpRequestDTO) throws ResourceAlreadyExistException, ResourceNotFoundException {
         return authServiceImpl.registerUser(signUpRequestDTO);
     }
 }

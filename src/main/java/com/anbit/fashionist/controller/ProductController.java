@@ -1,7 +1,6 @@
 package com.anbit.fashionist.controller;
 
-
-import com.anbit.fashionist.domain.dto.ProductRequestDTO;
+import com.anbit.fashionist.domain.dto.UploadProductRequestDTO;
 import com.anbit.fashionist.helper.ResourceAlreadyExistException;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.service.ProductServiceImpl;
@@ -10,9 +9,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "2. Product Controller")
@@ -46,7 +47,7 @@ public class ProductController {
                                     @RequestParam(value = "order", required = false) String order,
                                     @RequestParam(value = "minPrice", required = false) Float minPrice,
                                     @RequestParam(value = "maxPrice", required = false) Float maxPrice,
-                                    @RequestParam(value = "page", required = true) int page) throws ResourceNotFoundException {
+                                    @RequestParam(value = "page", required = true, defaultValue = "1") int page) throws ResourceNotFoundException {
         return productService.searchProducts(keyword, category, locations, sortBy, order, minPrice, maxPrice, page);
     }
 
@@ -55,10 +56,13 @@ public class ProductController {
      * @param productRequestDTO
      * @return
      * @throws ResourceAlreadyExistException
+     * @throws ResourceNotFoundException
+     * @throws IOException
      */
     @Operation(summary = "Upload a product for seller")
     @PostMapping("/product/upload")
-    public ResponseEntity<?> uploadProduct(ProductRequestDTO productRequestDTO) throws ResourceAlreadyExistException {
-        return productService.uploadProduct(productRequestDTO);
+    @PreAuthorize("hasAuthority('ROLE_SELLER')")
+    public ResponseEntity<?> create(@RequestBody UploadProductRequestDTO requestDTO) throws ResourceAlreadyExistException, ResourceNotFoundException {
+        return productService.createProduct(requestDTO);
     }
 }

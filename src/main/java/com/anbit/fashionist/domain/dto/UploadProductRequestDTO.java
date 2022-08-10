@@ -1,6 +1,7 @@
 package com.anbit.fashionist.domain.dto;
 
 import com.anbit.fashionist.domain.dao.Product;
+
 import lombok.*;
 
 @AllArgsConstructor
@@ -8,12 +9,17 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-public class ProductRequestDTO {
-  
+public class UploadProductRequestDTO {
+    
     private String name;
+    
     private String description;
+    
     private Float price;
+    
     private Integer stock;
+
+    private String categoryName;
 
     public Product convertToEntity() {
         return Product.builder()

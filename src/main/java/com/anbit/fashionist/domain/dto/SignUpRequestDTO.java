@@ -1,7 +1,5 @@
 package com.anbit.fashionist.domain.dto;
 
-import java.util.Set;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -35,13 +33,7 @@ public class SignUpRequestDTO {
     @Size(min =11, max = 12)
     private String phoneNumber;
 
-    private Set<String> role;
-
     @NotBlank
     @Size(min = 6, max = 40)
     private String password;
-
-    public void setRole(Set<String> role){
-        this.role = role;
-    }
 }

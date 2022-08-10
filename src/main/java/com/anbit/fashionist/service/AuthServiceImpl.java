@@ -77,7 +77,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ResponseEntity<?> registerUser(SignUpRequestDTO signUpRequestDTO) {
+    public ResponseEntity<?> registerUser(SignUpRequestDTO signUpRequestDTO) throws ResourceAlreadyExistException, ResourceNotFoundException{
         try {
             if (userRepository.existsByUsername(signUpRequestDTO.getUsername())) {
                 throw new ResourceAlreadyExistException("Username already taken!");
@@ -93,32 +93,16 @@ public class AuthServiceImpl implements AuthService {
                     .phoneNumber(signUpRequestDTO.getPhoneNumber())
                     .password(encoder.encode(signUpRequestDTO.getPassword()))
                     .build();
-            Set<String> strRoles = signUpRequestDTO.getRole();
             Set<Role> roles = new HashSet<>();
-            strRoles.forEach(role -> {
-                switch(role) {
-                    case "admin":
-                        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN).orElseThrow(() -> new RuntimeException("Error: Role is not found!"));
-                        roles.add(adminRole);
-                    break;
-                    case "cust":
-                        Role modRole = roleRepository.findByName(ERole.ROLE_CUSTOMER).orElseThrow(() -> new RuntimeException("Error: Role is not found!"));
-                        roles.add(modRole);
-                    break;
-                    case "user":
-                        Role sellerRole = roleRepository.findByName(ERole.ROLE_SELLER).orElseThrow(() -> new RuntimeException("Error: Role is not found!"));
-                        roles.add(sellerRole);
-                    break;
-                    default :
-                        Role seller1Role = roleRepository.findByName(ERole.ROLE_CUSTOMER).orElseThrow(() -> new RuntimeException("Error: Role is not found!"));
-                        roles.add(seller1Role);
-                }
-            });
+            Role customer = roleRepository.findByName(ERole.ROLE_CUSTOMER).orElseThrow(() -> new ResourceNotFoundException("Role not found!"));
+            roles.add(customer);
             user.setRoles(roles);
             userRepository.save(user);
             return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "You have been registered successfully!", null);
         } catch (ResourceAlreadyExistException e) {
             return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, ZonedDateTime.now(), "", EErrorCode.MISSING_PARAM.getCode());
+        } catch (ResourceNotFoundException e) {
+            return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), "", EErrorCode.MISSING_PARAM.getCode());
         }
     }
 }

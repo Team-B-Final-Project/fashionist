@@ -1,22 +1,33 @@
 package com.anbit.fashionist.service;
 
+import com.anbit.fashionist.constant.ECategory;
+import com.anbit.fashionist.constant.EErrorCode;
+import com.anbit.fashionist.domain.common.UserDetailsImpl;
+import com.anbit.fashionist.domain.dao.Category;
 import com.anbit.fashionist.domain.dao.Product;
-
+import com.anbit.fashionist.domain.dao.Store;
+import com.anbit.fashionist.domain.dao.User;
 import com.anbit.fashionist.domain.dto.SearchProductResponseDTO;
-import com.anbit.fashionist.domain.dto.ProductRequestDTO;
+import com.anbit.fashionist.domain.dto.UploadProductRequestDTO;
 import com.anbit.fashionist.handler.ResponseHandler;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
+import com.anbit.fashionist.repository.CategoryRepository;
+import com.anbit.fashionist.repository.ProductPictureRepository;
 import com.anbit.fashionist.repository.ProductRepository;
+import com.anbit.fashionist.repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import com.anbit.fashionist.helper.FileNameHelper;
 import com.anbit.fashionist.helper.ResourceAlreadyExistException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
@@ -33,8 +44,28 @@ public class ProductServiceImpl implements ProductService{
     @Autowired
     ProductRepository productRepository;
 
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    FileNameHelper fileNameHelper;
+
+    @Autowired
+    CategoryRepository categoryRepository;
+
+    @Autowired
+    ProductPictureRepository productPictureRepository;
+
     @Override
-    public ResponseEntity<?> searchProducts(String keyword, String category, String locations, String sortBy, String order, Float minPrice, Float maxPrice, int page) throws ResourceNotFoundException {
+    public ResponseEntity<?> searchProducts(
+        String keyword, 
+        String category, 
+        String locations, 
+        String sortBy, 
+        String order, 
+        Float minPrice, 
+        Float maxPrice, 
+        int page) throws ResourceNotFoundException {
         try{
             Pageable pageable;
             if (sortBy != null){
@@ -42,7 +73,7 @@ public class ProductServiceImpl implements ProductService{
             } else {
                 pageable = PageRequest.of(page -1,30, Sort.by("name").ascending());
             }
-            Page<Product> pageProduct = productRepository.findByName(keyword, pageable);
+            Page<Product> pageProduct = productRepository.findByNameContainingIgnoreCase(keyword, pageable);
             if (pageProduct.getContent().isEmpty()) {
                 throw new ResourceNotFoundException("Product not found");
             }
@@ -63,23 +94,33 @@ public class ProductServiceImpl implements ProductService{
             pagination.put("perPage", 30);
             pagination.put("totalElements", pageProduct.getTotalElements());
             return ResponseHandler.generateSuccessResponseWithPagination(HttpStatus.OK, ZonedDateTime.now(), "Successfully reterieve data!", searchProductResponseDTOS, pagination);
-        }catch (ResourceNotFoundException e){
-            return ResponseHandler.generateErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ZonedDateTime.now(), e.getMessage(), 500);
+        }catch (Exception e){
+            return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
     }
 
     @Override
-    public ResponseEntity<?> uploadProduct(ProductRequestDTO productRequestDTO) throws ResourceAlreadyExistException {
+    public ResponseEntity<?> createProduct(UploadProductRequestDTO requestDTO) throws ResourceAlreadyExistException, ResourceNotFoundException {
         try {
-            Product product = productRequestDTO.convertToEntity();
-            if(Boolean.TRUE.equals(productRepository.existsById(product.getId()))) {
-                throw new ResourceAlreadyExistException("Product already exist!");
+            UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            User user = userRepository.getReferenceById(userDetails.getId());
+            Store store = user.getStore();
+            if (store.equals(null)) {
+                throw new ResourceNotFoundException("You don't have any store yet!");
             }
+            Category category = categoryRepository.findByName(ECategory.valueOf(requestDTO.getCategoryName().toUpperCase())).orElseThrow(() -> new ResourceNotFoundException("Category not found!"));
+            Product product = Product.builder()
+                .name(requestDTO.getName())
+                .price(requestDTO.getPrice())
+                .stock(requestDTO.getStock())
+                .store(store)
+                .description(requestDTO.getDescription())
+                .category(category)
+                .build();
             productRepository.save(product);
-            return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, ZonedDateTime.now(), "Product uploaded successfully!", product);
-        } catch (Exception e) {
-            return ResponseHandler.generateErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ZonedDateTime.now(), e.getMessage(), 500);
+            return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, ZonedDateTime.now(), "Product created successfully!", null);
+        } catch (ResourceNotFoundException e) {
+            return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
-
     }
 }
