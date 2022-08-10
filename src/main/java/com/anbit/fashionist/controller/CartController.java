@@ -5,6 +5,9 @@ import com.anbit.fashionist.domain.dto.AddCartRequestDTO;
 import com.anbit.fashionist.domain.dto.EditCartTotalItemRequestDTO;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.service.CartServiceImpl;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +26,7 @@ public class CartController {
      * @throws ResourceNotFoundException
      */
     @PostMapping("/add/cart")
-    public ResponseEntity<?> add(AddCartRequestDTO requestDTO) throws ResourceNotFoundException {
+    public ResponseEntity<?> add(@Valid AddCartRequestDTO requestDTO) throws ResourceNotFoundException {
         return cartService.addCart(requestDTO);
     }
 

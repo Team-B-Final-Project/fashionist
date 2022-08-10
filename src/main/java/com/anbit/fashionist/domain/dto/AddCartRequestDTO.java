@@ -1,6 +1,8 @@
 package com.anbit.fashionist.domain.dto;
 
 
+import javax.validation.constraints.Size;
+
 import lombok.*;
 
 @AllArgsConstructor
@@ -11,5 +13,6 @@ import lombok.*;
 public class AddCartRequestDTO {
     private Long productId;
 
+    @Size(min = 1)
     private Integer itemUnit;
 }
