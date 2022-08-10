@@ -61,11 +61,13 @@ public class CartServiceImpl implements CartService {
     @Override
     public ResponseEntity<?> editCartTotalItem(EditCartTotalItemRequestDTO requestDTO) throws ResourceNotFoundException {
         try {
-            Cart cart = cartRepository.findById(requestDTO.getCartId()).orElseThrow(() -> new ResourceNotFoundException("Cart not found!"));
+            Cart cart =  cartRepository.findById(requestDTO.getCartId()).orElseThrow(() -> new ResourceNotFoundException("Cart not found!"));
             UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if(!userDetails.getId().equals(cart.getUser().getId())){
                 throw new ResourceNotFoundException("You are not allowed to edit this cart!");
             }
+            Float totalPrice = cart.getProduct().getPrice() * requestDTO.getItemUnit();
+            cart.setTotalPrice(totalPrice);
             cart.setItemUnit(requestDTO.getItemUnit());
             this.cartRepository.save(cart);
             return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Cart item unit updated!", null);

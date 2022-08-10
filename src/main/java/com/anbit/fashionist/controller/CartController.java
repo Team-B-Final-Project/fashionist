@@ -45,7 +45,7 @@ public class CartController {
      * @return
      * @throws ResourceNotFoundException
      */
-    @PutMapping("/edit/cart")
+    @PatchMapping("/edit/cart")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     public ResponseEntity<?> edit(@RequestBody EditCartTotalItemRequestDTO requestDTO) throws ResourceNotFoundException {
         return cartService.editCartTotalItem(requestDTO);
