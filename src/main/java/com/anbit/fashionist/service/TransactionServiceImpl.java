@@ -68,66 +68,45 @@ public class TransactionServiceImpl implements TransactionService {
     public ResponseEntity<?> createTransaction(CreateTransactionRequestDTO requestDTO) throws ResourceNotFoundException {
         try {
             List<Cart> cartList = new ArrayList<>();
+            UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            User user = userRepository.getReferenceById(userDetails.getId());
+            Payment payment = paymentRepository.findByName(EPayment.valueOf(requestDTO.getPaymentMethod().toUpperCase())).orElseThrow(() -> new ResourceNotFoundException("Payment not found!"));
+            List<Float> productPrices = new ArrayList<>();
+            List<Integer> itemUnits = new ArrayList<>();
+            requestDTO.getCartShipping().keySet().forEach(cartId -> {
+                try {
+                    Cart cartPrice = cartRepository.findById(cartId).orElseThrow(() -> new ResourceNotFoundException("Cart with ID" + cartId + " not found!"));
+                    productPrices.add(cartPrice.getTotalPrice());
+                    itemUnits.add(cartPrice.getItemUnit());
+                } catch (ResourceNotFoundException e) {
+                    e.printStackTrace();
+                }
+            });
+            Double totalPrice = productPrices.stream().mapToDouble(map -> map.doubleValue()).sum();
+            Integer totalItemUnit = itemUnits.stream().mapToInt(map -> map.intValue()).sum();
             Transaction transaction = Transaction.builder()
-                .user(userRepository.getReferenceById(requestDTO.getUserId()))
+                .user(user)
                 .sendAddress(addressRepository.getReferenceById(requestDTO.getSendAddressId()))
                 .transactionStatus(transactionStatusRepository.findByName(ETransactionStatus.WAITING_PAYMENT).get())
+                .payment(payment)
+                .totalItemUnit(totalItemUnit)
+                .totalPrice(totalPrice.floatValue())
                 .build();
-
-            switch (requestDTO.getPaymentMethod()) {
-                case "BANK_BCA":
-                    Payment bca = paymentRepository.findByName(EPayment.BANK_BCA).orElseThrow(() -> new ResourceNotFoundException("Error: Payment is not found!"));
-                    transaction.setPayment(bca);
-                    break;
-                case "BANK_BNI":
-                    Payment bni = paymentRepository.findByName(EPayment.BANK_BNI).orElseThrow(() -> new ResourceNotFoundException("Error: Payment is not found!"));
-                    transaction.setPayment(bni);
-                    break;
-                case "BANK_BRI":
-                    Payment bri = paymentRepository.findByName(EPayment.BANK_BRI).orElseThrow(() -> new ResourceNotFoundException("Error: Payment is not found!"));
-                    transaction.setPayment(bri);
-                    break;
-                case "BANK_MANDIRI":
-                    Payment mandiri = paymentRepository.findByName(EPayment.BANK_MANDIRI).orElseThrow(() -> new ResourceNotFoundException("Error: Payment is not found!"));
-                    transaction.setPayment(mandiri);
-                    break;
-                case "BANK_PERMATA":
-                    Payment permata = paymentRepository.findByName(EPayment.BANK_PERMATA).orElseThrow(() -> new ResourceNotFoundException("Error: Payment is not found!"));
-                    transaction.setPayment(permata);
-                    break;
-            }
             Transaction newTransaction = transactionRepository.save(transaction);
 
             for (Long cartId : requestDTO.getCartShipping().keySet()){
                 Cart cart = cartRepository.findById(cartId).orElseThrow(() -> new ResourceNotFoundException("Cart with ID" + cartId + "doesn't exist"));
                 cartList.add(cart);
+                Shipping shipping = shippingRepository.findByName(EShipping.valueOf(requestDTO.getCartShipping().get(cartId))).orElseThrow(() -> new ResourceNotFoundException("Shipping not found!"));
                 ProductTransaction productTransaction = ProductTransaction.builder()
                     .product(cart.getProduct())
                     .transaction(newTransaction)
                     .itemUnit(cart.getItemUnit())
                     .totalPrice(cart.getTotalPrice())
+                    .shipping(shipping)
                     .build();
-                switch (requestDTO.getCartShipping().get(cartId)) {
-                        case "JNE":
-                            Shipping jne = shippingRepository.findByName(EShipping.JNE).orElseThrow(() -> new ResourceNotFoundException("Error: Shipping is not found!"));
-                            productTransaction.setShipping(jne);
-                            break;
-                        case "JNT":
-                            Shipping jnt = shippingRepository.findByName(EShipping.JNT).orElseThrow(() -> new ResourceNotFoundException("Error: Shipping is not found!"));
-                            productTransaction.setShipping(jnt);
-                            break;
-                        case "SICEPAT":
-                            Shipping sicepat = shippingRepository.findByName(EShipping.SICEPAT).orElseThrow(() -> new ResourceNotFoundException("Error: Shipping is not found!"));
-                            productTransaction.setShipping(sicepat);
-                            break;
-                        case "ANTERAJA":
-                            Shipping anteraja = shippingRepository.findByName(EShipping.ANTERAJA).orElseThrow(() -> new ResourceNotFoundException("Error: Shipping is not found!"));
-                            productTransaction.setShipping(anteraja);
-                            break;
-                    }
                 productTransactionRepository.save(productTransaction);
             }
-
             return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "New transaction is created successfully!", null);
         } catch (ResourceNotFoundException e) {
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());

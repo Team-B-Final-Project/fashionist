@@ -10,13 +10,7 @@ import lombok.*;
 @Setter
 @Builder
 public class CreateTransactionRequestDTO {
-    private Long userId;
-
-    private Integer totalItemunits;
-
     private Map<Long, String> cartShipping;
-
-    private Float totalPrice;
 
     private Long sendAddressId;
 
