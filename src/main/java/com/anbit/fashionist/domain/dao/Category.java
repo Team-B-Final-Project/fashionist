@@ -2,6 +2,8 @@ package com.anbit.fashionist.domain.dao;
 
 import javax.persistence.*;
 
+import com.anbit.fashionist.constant.ECategory;
+
 import lombok.*;
 
 @AllArgsConstructor
@@ -16,7 +18,8 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private ECategory name;
 
     private String slug;
 }

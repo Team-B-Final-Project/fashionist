@@ -3,6 +3,8 @@ package com.anbit.fashionist.domain.dao;
 import com.anbit.fashionist.domain.common.Audit;
 import lombok.*;
 
+import java.util.List;
+
 import javax.persistence.*;
 
 
@@ -17,6 +19,9 @@ public class Product extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "product")
+    private List<ProductPicture> pictures;
 
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = Store.class)
     @JoinColumn(name = "store_id")

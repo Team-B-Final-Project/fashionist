@@ -12,5 +12,5 @@ public interface AuthService {
 
     ResponseEntity<?> authenticateUser(SignInRequestDTO signInRequest) throws ResourceNotFoundException;
 
-    ResponseEntity<?> registerUser(SignUpRequestDTO signUpRequestDTO) throws ResourceAlreadyExistException;
+    ResponseEntity<?> registerUser(SignUpRequestDTO signUpRequestDTO) throws ResourceAlreadyExistException, ResourceNotFoundException;
 }
