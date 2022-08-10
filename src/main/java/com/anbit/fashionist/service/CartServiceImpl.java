@@ -43,8 +43,9 @@ public class CartServiceImpl implements CartService {
                         .user(user.get())
                         .product(product.get())
                         .itemUnit(requestDTO.getItemUnit())
-                        .totalPrice(requestDTO.getTotalPrice())
                         .build();
+                Float totalPrice = product.get().getPrice() * requestDTO.getItemUnit();
+                cart.setTotalPrice(totalPrice);
                 this.cartRepository.save(cart);
                 return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(),"Cart added successfully!" , cart);
             }

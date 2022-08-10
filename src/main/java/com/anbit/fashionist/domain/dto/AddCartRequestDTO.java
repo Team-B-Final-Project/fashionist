@@ -12,6 +12,4 @@ public class AddCartRequestDTO {
     private Long productId;
 
     private Integer itemUnit;
-
-    private Float totalPrice;
 }
