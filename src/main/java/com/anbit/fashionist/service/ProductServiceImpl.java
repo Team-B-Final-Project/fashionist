@@ -94,7 +94,7 @@ public class ProductServiceImpl implements ProductService{
             pagination.put("perPage", 30);
             pagination.put("totalElements", pageProduct.getTotalElements());
             return ResponseHandler.generateSuccessResponseWithPagination(HttpStatus.OK, ZonedDateTime.now(), "Successfully reterieve data!", searchProductResponseDTOS, pagination);
-        }catch (Exception e){
+        }catch (ResourceNotFoundException e){
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
     }

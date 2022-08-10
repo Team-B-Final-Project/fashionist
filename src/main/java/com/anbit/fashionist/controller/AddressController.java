@@ -17,7 +17,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "5. Address Controller")
+@Tag(name = "2. Address Controller")
 @RestController
 @RequestMapping("/api/v1/address")
 @SecurityRequirement(name = "bearer-key")

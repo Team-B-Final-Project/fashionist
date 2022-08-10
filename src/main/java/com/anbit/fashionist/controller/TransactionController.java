@@ -2,6 +2,7 @@ package com.anbit.fashionist.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.anbit.fashionist.domain.dto.CreateTransactionRequestDTO;
@@ -12,7 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "4. Transaction Controller")
+@Tag(name = "6. Transaction Controller")
 @RestController
 @RequestMapping("/api/v1")
 @SecurityRequirement(name = "bearer-key")
@@ -28,6 +29,7 @@ public class TransactionController {
      */
     @Operation(summary = "Create a transaction with selected products")
     @PostMapping("/transaction/create")
+    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     public ResponseEntity<?> createTransaction(@RequestBody CreateTransactionRequestDTO requestDTO) throws ResourceNotFoundException {
         return transactionService.createTransaction(requestDTO);
     }
@@ -39,6 +41,7 @@ public class TransactionController {
      */
     @Operation(summary = "Get transaction histories per product of current user")
     @GetMapping("/transaction/histories")
+    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     public ResponseEntity<?> transactionHistories() throws ResourceNotFoundException {
         return transactionService.getTransactionHistories();
     }
@@ -50,8 +53,9 @@ public class TransactionController {
      * @throws ResourceNotFoundException
      */
     @Operation(summary = "Get details of product we bought")
-    @PostMapping("/transaction/{uuid}")
-    public ResponseEntity<?> transactionHistory(@PathVariable("uuid") Long id) throws ResourceNotFoundException{
+    @GetMapping("/transaction/{id}")
+    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
+    public ResponseEntity<?> transactionHistory(@PathVariable("id") Long id) throws ResourceNotFoundException{
         return transactionService.getTransactionHistory(id);
     }
 }

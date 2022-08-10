@@ -97,7 +97,7 @@ public class TransactionServiceImpl implements TransactionService {
             for (Long cartId : requestDTO.getCartShipping().keySet()){
                 Cart cart = cartRepository.findById(cartId).orElseThrow(() -> new ResourceNotFoundException("Cart with ID" + cartId + "doesn't exist"));
                 cartList.add(cart);
-                Shipping shipping = shippingRepository.findByName(EShipping.valueOf(requestDTO.getCartShipping().get(cartId))).orElseThrow(() -> new ResourceNotFoundException("Shipping not found!"));
+                Shipping shipping = shippingRepository.findByName(EShipping.valueOf(requestDTO.getCartShipping().get(cartId).toUpperCase())).orElseThrow(() -> new ResourceNotFoundException("Shipping not found!"));
                 ProductTransaction productTransaction = ProductTransaction.builder()
                     .product(cart.getProduct())
                     .transaction(newTransaction)
@@ -106,6 +106,7 @@ public class TransactionServiceImpl implements TransactionService {
                     .shipping(shipping)
                     .build();
                 productTransactionRepository.save(productTransaction);
+                cartRepository.delete(cart);
             }
             return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "New transaction is created successfully!", null);
         } catch (ResourceNotFoundException e) {
@@ -150,18 +151,17 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public ResponseEntity<?> getTransactionHistory(Long id) throws ResourceNotFoundException {
         try {
-            ProductTransaction pt = productTransactionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Error: Transaction is not found!"));
+            Transaction transaction = transactionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Error: Transaction is not found!"));
             TransactionHistoryResponseDTO responseDTO = TransactionHistoryResponseDTO.builder()
-                .id(pt.getId())
-                .totalItemUnit(pt.getItemUnit())
-                .totalPrice(pt.getTotalPrice())
+                .id(transaction.getId())
+                .totalItemUnit(transaction.getTotalItemUnit())
+                .totalPrice(transaction.getTotalPrice())
                 .shippingPrice(null)
-                .sendAddress(pt.getTransaction().getSendAddress())
-                .paymentMethod(pt.getTransaction().getPayment().getName().name())
-                .status(pt.getTransaction().getTransactionStatus().getName().name())
-                .receipt(pt.getTransaction().getReceipt())
+                .sendAddress(transaction.getSendAddress())
+                .paymentMethod(transaction.getPayment().getName().name())
+                .status(transaction.getTransactionStatus().getName().name())
+                .receipt(transaction.getReceipt())
                 .build();
-    
             return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Successfully retrieved data!", responseDTO);
         } catch (ResourceNotFoundException e) {
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
