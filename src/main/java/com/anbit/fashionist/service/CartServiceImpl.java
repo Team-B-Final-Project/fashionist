@@ -39,7 +39,7 @@ public class CartServiceImpl implements CartService {
             UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             Optional<User> user = userRepository.findByUsername(userDetails.getUsername());
             Product product = productRepository.findById(requestDTO.getProductId()).orElseThrow(() -> new ResourceNotFoundException("Product not found!"));
-            if (Boolean.TRUE.equals(cartRepository.existsByUser(user.get())) && Boolean.TRUE.equals(cartRepository.existsByProduct(product))) {
+            if (Boolean.TRUE.equals(cartRepository.existsByUserAndProduct(user.get(), product))) {
                 throw new ResourceAlreadyExistException("This product has been in the cart!");
             }
             Cart cart = Cart.builder()
