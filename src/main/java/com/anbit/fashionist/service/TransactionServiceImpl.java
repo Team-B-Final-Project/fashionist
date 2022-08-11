@@ -19,6 +19,7 @@ import com.anbit.fashionist.constant.EPayment;
 import com.anbit.fashionist.constant.EShipping;
 import com.anbit.fashionist.constant.ETransactionStatus;
 import com.anbit.fashionist.domain.common.UserDetailsImpl;
+import com.anbit.fashionist.domain.dao.Address;
 import com.anbit.fashionist.domain.dao.Cart;
 import com.anbit.fashionist.domain.dao.Payment;
 import com.anbit.fashionist.domain.dao.Product;
@@ -78,6 +79,10 @@ public class TransactionServiceImpl implements TransactionService {
             UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             User user = userRepository.getReferenceById(userDetails.getId());
             Payment payment = paymentRepository.findByName(EPayment.valueOf(requestDTO.getPaymentMethod().toUpperCase())).orElseThrow(() -> new ResourceNotFoundException("Payment not found!"));
+            Address address = addressRepository.findById(requestDTO.getSendAddressId()).orElseThrow(() -> new ResourceNotFoundException("Address not found!"));
+            if (address.getUser().getUsername() != userDetails.getUsername()) {
+                throw new ResourceNotFoundException("Address not found!");
+            }
             List<Float> productPrices = new ArrayList<>();
             List<Integer> itemUnits = new ArrayList<>();
             requestDTO.getCartShipping().keySet().forEach(cartId -> {
