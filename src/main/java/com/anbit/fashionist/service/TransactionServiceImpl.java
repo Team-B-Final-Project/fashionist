@@ -26,8 +26,10 @@ import com.anbit.fashionist.domain.dao.Product;
 import com.anbit.fashionist.domain.dao.ProductTransaction;
 import com.anbit.fashionist.domain.dao.Shipping;
 import com.anbit.fashionist.domain.dao.Transaction;
+import com.anbit.fashionist.domain.dao.TransactionStatus;
 import com.anbit.fashionist.domain.dao.User;
 import com.anbit.fashionist.domain.dto.CreateTransactionRequestDTO;
+import com.anbit.fashionist.domain.dto.CreateTransactionResponseDTO;
 import com.anbit.fashionist.domain.dto.TransactionHistoriesResponseDTO;
 import com.anbit.fashionist.domain.dto.TransactionHistoryResponseDTO;
 import com.anbit.fashionist.handler.ResponseHandler;
@@ -120,7 +122,7 @@ public class TransactionServiceImpl implements TransactionService {
                 productTransactionRepository.save(productTransaction);
                 cartRepository.delete(cart);
             }
-            return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "New transaction is created successfully!", null);
+            return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "New transaction is created successfully!", new CreateTransactionResponseDTO(totalPrice.floatValue()));
         } catch (ResourceNotFoundException e) {
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
@@ -145,6 +147,7 @@ public class TransactionServiceImpl implements TransactionService {
             List<TransactionHistoriesResponseDTO> responseDTO = new ArrayList<>();
             productTransactionList.forEach(ptl -> {
                 TransactionHistoriesResponseDTO dto = TransactionHistoriesResponseDTO.builder()
+                    .transactionId(ptl.getTransaction().getId())
                     .productName(ptl.getProduct().getName())
                     .productPrice(ptl.getProduct().getPrice())
                     .totalItems(ptl.getItemUnit())
@@ -189,6 +192,58 @@ public class TransactionServiceImpl implements TransactionService {
                 responseDTO.setProducts(products);
                 responseDTO.setSendAddress(transaction.getSendAddress());
             return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Successfully retrieved data!", responseDTO);
+        } catch (ResourceNotFoundException e) {
+            return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> makePayment(Long transactionId) throws ResourceNotFoundException {
+        try {
+            UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            User user = userRepository.getReferenceById(userDetails.getId());
+            Transaction transaction = transactionRepository.findById(transactionId).orElseThrow(() -> new ResourceNotFoundException("Transaction not found!"));
+            if (transaction.getUser() != user) {
+                throw new ResourceNotFoundException("Transaction is not found!");
+            }
+            TransactionStatus transactionStatus = transactionStatusRepository.findByName(ETransactionStatus.PACKING).orElseThrow(() -> new ResourceNotFoundException("Transaction status not found!"));
+            transaction.setTransactionStatus(transactionStatus);
+            transactionRepository.save(transaction);
+            return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Payment success!", null);
+        } catch (ResourceNotFoundException e) {
+            return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> sendProduct(Long transactionId, String receipt) throws ResourceNotFoundException {
+        try {
+            UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            User user = userRepository.getReferenceById(userDetails.getId());
+            Transaction transaction = transactionRepository.findById(transactionId).orElseThrow(() -> new ResourceNotFoundException("Transaction not found!"));
+            if (transaction.getUser() != user) {
+                throw new ResourceNotFoundException("Transaction is not found!");
+            }
+            TransactionStatus transactionStatus = transactionStatusRepository.findByName(ETransactionStatus.SENT).orElseThrow(() -> new ResourceNotFoundException("Transaction status not found!"));
+            transaction.setTransactionStatus(transactionStatus);
+            transaction.setReceipt(receipt);
+            transactionRepository.save(transaction);
+            return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Successfully input receipt!", null);
+        } catch (ResourceNotFoundException e) {
+            return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
+        }
+    }
+    
+    @Override
+    public ResponseEntity<?> productDelivered(Long transactionId, String receipt) throws ResourceNotFoundException {
+        try {
+            UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            User user = userRepository.getReferenceById(userDetails.getId());
+            Transaction transaction = transactionRepository.findById(transactionId).orElseThrow(() -> new ResourceNotFoundException("Transaction not found!"));
+            if (transaction.getUser() != user) {
+                throw new ResourceNotFoundException("Transaction is not found!");
+            }
+            return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Payment success!", null);
         } catch (ResourceNotFoundException e) {
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }

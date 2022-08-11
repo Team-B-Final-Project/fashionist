@@ -39,7 +39,7 @@ public class ProductController {
      * @throws ResourceNotFoundException
      */
     @Operation(summary = "Search product for customer with keyword and do some filter and sorting")
-    @PostMapping("/products/search")
+    @GetMapping("/products/search")
     public ResponseEntity<?> search(@RequestParam(value = "keyword", required = true) String keyword,
                                     @RequestParam(value = "category",required = false) String category,
                                     @RequestParam(value = "locations", required = false) String locations,
