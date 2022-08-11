@@ -164,7 +164,12 @@ public class TransactionServiceImpl implements TransactionService {
     @Transactional
     public ResponseEntity<?> getTransactionHistory(Long id) throws ResourceNotFoundException {
         try {
+            UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            User user = userRepository.getReferenceById(userDetails.getId());
             Transaction transaction = transactionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Error: Transaction is not found!"));
+            if (transaction.getUser() != user) {
+                throw new ResourceNotFoundException("Transaction is not found!");
+            }
             List<ProductTransaction> productTransactions = productTransactionRepository.findByTransaction(transaction);
             List<Product> products = new ArrayList<>();
             productTransactions.forEach(pr -> {
@@ -180,8 +185,8 @@ public class TransactionServiceImpl implements TransactionService {
                 .paymentMethod(transaction.getPayment().getName().name())
                 .status(transaction.getTransactionStatus().getName().name())
                 .receipt(transaction.getReceipt())
-                // .products(products)
                 .build();
+                responseDTO.setProducts(products);
                 responseDTO.setSendAddress(transaction.getSendAddress());
             return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Successfully retrieved data!", responseDTO);
         } catch (ResourceNotFoundException e) {

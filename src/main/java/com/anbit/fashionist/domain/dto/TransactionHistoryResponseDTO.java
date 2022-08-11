@@ -1,5 +1,6 @@
 package com.anbit.fashionist.domain.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.anbit.fashionist.domain.dao.Address;
@@ -29,7 +30,7 @@ public class TransactionHistoryResponseDTO {
 
     private String receipt;
 
-    private List<Product> products;
+    private List<ProductResponseDTO> products;
 
     public void setSendAddress(Address address) {
         AddressResponseDTO responseDTO = new AddressResponseDTO();
@@ -41,5 +42,19 @@ public class TransactionHistoryResponseDTO {
         this.sendAddress.setCity(address.getCity());
         this.sendAddress.setDistrict(address.getDistrict());
         this.sendAddress.setFullAddress(address.getFullAddress());
+    }
+
+    public void setProducts(List<Product> productList) {
+        List<ProductResponseDTO> responseDTO = new ArrayList<>();
+        this.products = responseDTO;
+        productList.forEach(product -> {
+            ProductResponseDTO dto = new ProductResponseDTO();
+            dto.setProductId(product.getId());
+            dto.setName(product.getName());
+            dto.setPrice(product.getPrice());
+            dto.setStock(product.getStock());
+            dto.setDescription(product.getDescription());
+            this.products.add(dto);
+        });
     }
 }
