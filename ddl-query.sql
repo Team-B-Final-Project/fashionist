@@ -66,8 +66,8 @@ CREATE TABLE public.address (
 );
 
 CREATE TABLE public.user (
-    "id" bigserial,
-    "profile_picture_id" bigserial NULL,
+    "id" bigserial NOT NULL,
+    "profile_picture_id" bigserial NOT NULL,
     "first_name" varchar(50) NOT NULL,
     "last_name" varchar(50) NULL,
     "username" varchar(20) NOT NULL,
