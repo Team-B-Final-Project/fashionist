@@ -14,8 +14,8 @@ CREATE TABLE public.profile_picture (
 );
 
 CREATE TABLE public.product_picture (
-    "id" serial4 NOT NULL,
-    "product_id" bigint NOT NULL,
+    "id" bigserial NOT NULL,
+    "product_id" bigserial NOT NULL,
     "level" int4 NOT NULL,
     "name" varchar NOT NULL,
     "type" varchar NOT NULL,
@@ -51,7 +51,7 @@ CREATE TABLE public.category (
 
 CREATE TABLE public.address (
     "id" bigserial NOT NULL,
-    "user_id" bigint NOT NULL,
+    "user_id" bigserial NOT NULL,
     "name" varchar(50) NOT NULL,
     "phone_number" char(12) NOT NULL,
     "province" varchar(50) NOT NULL,
@@ -67,7 +67,7 @@ CREATE TABLE public.address (
 
 CREATE TABLE public.user (
     "id" bigserial,
-    "profile_picture_id" bigint NULL,
+    "profile_picture_id" bigserial NULL,
     "first_name" varchar(50) NOT NULL,
     "last_name" varchar(50) NULL,
     "username" varchar(20) NOT NULL,
@@ -83,9 +83,9 @@ CREATE TABLE public.user (
 
 CREATE TABLE public.store (
     "id" bigserial,
-    "user_id" bigint NOT NULL,
+    "user_id" bigserial NOT NULL,
     "name" varchar(50) NOT NULL,
-    "address_id" bigint NOT NULL,
+    "address_id" bigserial NOT NULL,
     "created_at" timestamp NOT NULL DEFAULT NOW(),
     "updated_at" timestamp NOT NULL DEFAULT NOW(),
     "created_by" varchar NOT NULL,
@@ -95,14 +95,14 @@ CREATE TABLE public.store (
 );
 
 CREATE TABLE public.user_role (
-    "user_id" bigint NOT NULL,
-    "role_id" int NOT NULL,
+    "user_id" bigserial NOT NULL,
+    "role_id" serial4 NOT NULL,
     CONSTRAINT "user_role_pkey" PRIMARY KEY("user_id", "role_id")
 );
 
 CREATE TABLE public.product (
     "id" bigserial NOT NULL,
-    "store_id" bigint NOT NULL,
+    "store_id" bigserial NOT NULL,
     "name" varchar(50) NOT NULL,
     "description" varchar NOT NULL,
     "price" float NOT NULL,
@@ -117,9 +117,9 @@ CREATE TABLE public.product (
 );
 
 CREATE TABLE public.cart (
-    "id" bigint NOT NULL,
-    "user_id" bigint NOT NULL,
-    "product_id" bigint NOT NULL,
+    "id" bigserial NOT NULL,
+    "user_id" bigserial NOT NULL,
+    "product_id" bigserial NOT NULL,
     "item_unit" int4 NOT NULL,
     "total_price" float NOT NULL,
     "created_at" timestamp NOT NULL default NOW(),
@@ -130,13 +130,13 @@ CREATE TABLE public.cart (
 );
 
 CREATE TABLE public.transaction (
-    "id" bigint NOT NULL,
+    "id" bigserial NOT NULL,
     "tota_price" float NOT NULL,
     "total_item_unit" int4 NOT NULL,
-    "user_id" bigint NOT NULL,
-    "send_address_id" bigint NOT NULL,
-    "payment_id" bigint NOT NULL,
-    "transaction_status_id" bigint NOT NULL,
+    "user_id" bigserial NOT NULL,
+    "send_address_id" bigserial NOT NULL,
+    "payment_id" serial4 NOT NULL,
+    "transaction_status_id" bigserial NOT NULL,
     "receipt" varchar NOT NULL,
     "created_at" timestamp NOT NULL default NOW(),
     "updated_at" timestamp NOT NULL default NOW(),
@@ -147,8 +147,8 @@ CREATE TABLE public.transaction (
 
 CREATE TABLE public.product_transaction (
     "id" bigserial NOT NULL,
-    "transaction_id" bigint NOT NULL,
-    "product_id" bigint NOT NULL,
+    "transaction_id" bigserial NOT NULL,
+    "product_id" bigserial NOT NULL,
     "item_unit" int4 NOT NULL,
     "total_price" float NOT NULL,
     "shipping_id" int4 NOT NULL,
@@ -162,8 +162,8 @@ CREATE TABLE public.product_transaction (
 
 CREATE TABLE public.message (
     "id" bigserial NOT NULL,
-    "sender" bigint NOT NULL,
-    "receiver" bigint NOT NULL,
+    "sender" bigserial NOT NULL,
+    "receiver" bigserial NOT NULL,
     "title" varchar(50) NOT NULL,
     "text" varchar NOT NULL,
     "is_read" boolean NOT NULL,
