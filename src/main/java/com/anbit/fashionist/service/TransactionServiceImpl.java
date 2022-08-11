@@ -43,6 +43,7 @@ import com.anbit.fashionist.repository.ShippingRepository;
 import com.anbit.fashionist.repository.TransactionRepository;
 import com.anbit.fashionist.repository.TransactionStatusRepository;
 import com.anbit.fashionist.repository.UserRepository;
+import com.anbit.fashionist.util.RandomString;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -72,6 +73,9 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Autowired
     ShippingRepository shippingRepository;
+
+    @Autowired
+    RandomString randomString;
 
     
     @Override
@@ -122,7 +126,8 @@ public class TransactionServiceImpl implements TransactionService {
                 productTransactionRepository.save(productTransaction);
                 cartRepository.delete(cart);
             }
-            return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "New transaction is created successfully!", new CreateTransactionResponseDTO(totalPrice.floatValue()));
+            String virtualAccount = randomString.generateVirtualAccount(16);
+            return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "New transaction is created successfully!", new CreateTransactionResponseDTO(totalPrice.floatValue(), virtualAccount));
         } catch (ResourceNotFoundException e) {
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
