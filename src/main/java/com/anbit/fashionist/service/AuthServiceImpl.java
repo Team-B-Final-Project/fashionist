@@ -83,7 +83,10 @@ public class AuthServiceImpl implements AuthService {
                 throw new ResourceAlreadyExistException("Username already taken!");
             }
             if (userRepository.existsByEmail(signUpRequestDTO.getEmail())) {
-                throw new ResourceAlreadyExistException("Email already in use!");
+                throw new ResourceAlreadyExistException("Email already exists!");
+            }
+            if (userRepository.existsByPhoneNumber(signUpRequestDTO.getPhoneNumber())) {
+                throw new ResourceAlreadyExistException("Phone already exists!");
             }
             User user = User.builder()
                     .firstName(signUpRequestDTO.getFirstName())
@@ -100,9 +103,9 @@ public class AuthServiceImpl implements AuthService {
             userRepository.save(user);
             return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "You have been registered successfully!", null);
         } catch (ResourceAlreadyExistException e) {
-            return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, ZonedDateTime.now(), "", EErrorCode.MISSING_PARAM.getCode());
+            return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         } catch (ResourceNotFoundException e) {
-            return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), "", EErrorCode.MISSING_PARAM.getCode());
+            return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
     }
 }
