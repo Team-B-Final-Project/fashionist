@@ -2,7 +2,6 @@ package com.anbit.fashionist.domain.dto;
 
 import java.util.List;
 
-import com.anbit.fashionist.domain.dao.Address;
 import com.anbit.fashionist.domain.dao.Product;
 
 import lombok.*;
@@ -30,4 +29,31 @@ public class TransactionHistoryResponseDTO {
     private String receipt;
 
     private List<Product> products;
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Setter
+    public class Address {
+        private Long id;
+    
+        private String name;
+    
+        private String phoneNumber;
+    
+        private String province;
+    
+        private String city;
+        
+        private String district;
+    
+        private String fullAddress;
+    }
+
+    public void setSendAddress(com.anbit.fashionist.domain.dao.Address address) {
+        Address a = new Address();
+        this.sendAddress = a;
+        this.sendAddress.setId(address.getId());
+        this.sendAddress.setName(address.getName());
+    }
 }

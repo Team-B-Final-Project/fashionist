@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -154,6 +156,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<?> getTransactionHistory(Long id) throws ResourceNotFoundException {
         try {
             Transaction transaction = transactionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Error: Transaction is not found!"));
@@ -167,13 +170,14 @@ public class TransactionServiceImpl implements TransactionService {
                 .id(transaction.getId())
                 .totalItemUnit(transaction.getTotalItemUnit())
                 .totalPrice(transaction.getTotalPrice())
+                .sendAddress(null)
                 .shippingPrice(null)
-                .sendAddress(transaction.getSendAddress())
                 .paymentMethod(transaction.getPayment().getName().name())
                 .status(transaction.getTransactionStatus().getName().name())
                 .receipt(transaction.getReceipt())
-                .products(products)
+                // .products(products)
                 .build();
+                responseDTO.setSendAddress(transaction.getSendAddress());
             return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Successfully retrieved data!", responseDTO);
         } catch (ResourceNotFoundException e) {
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
