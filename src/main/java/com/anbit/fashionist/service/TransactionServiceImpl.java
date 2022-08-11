@@ -82,14 +82,14 @@ public class TransactionServiceImpl implements TransactionService {
             User user = userRepository.getReferenceById(userDetails.getId());
             Payment payment = paymentRepository.findByName(EPayment.valueOf(requestDTO.getPaymentMethod().toUpperCase())).orElseThrow(() -> new ResourceNotFoundException("Payment not found!"));
             Address address = addressRepository.findById(requestDTO.getSendAddressId()).orElseThrow(() -> new ResourceNotFoundException("Address not found!"));
-            if (address.getUser().getUsername() != userDetails.getUsername()) {
+            if (address.getUser() != user) {
                 throw new ResourceNotFoundException("Address not found!");
             }
             List<Float> productPrices = new ArrayList<>();
             List<Integer> itemUnits = new ArrayList<>();
             requestDTO.getCartShipping().keySet().forEach(cartId -> {
                 try {
-                    Cart cartPrice = cartRepository.findById(cartId).orElseThrow(() -> new ResourceNotFoundException("Cart with ID" + cartId + " not found!"));
+                    Cart cartPrice = cartRepository.findById(cartId).orElseThrow(() -> new ResourceNotFoundException("Cart with ID " + cartId + " not found!"));
                     productPrices.add(cartPrice.getTotalPrice());
                     itemUnits.add(cartPrice.getItemUnit());
                 } catch (ResourceNotFoundException e) {
