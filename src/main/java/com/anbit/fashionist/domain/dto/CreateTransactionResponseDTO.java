@@ -1,5 +1,7 @@
 package com.anbit.fashionist.domain.dto;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.anbit.fashionist.util.RandomString;
 
 import lombok.*;
@@ -9,7 +11,8 @@ import lombok.*;
 @Getter
 @Setter
 public class CreateTransactionResponseDTO {
-    private RandomString randomString;
+    @Autowired
+    RandomString randomString;
 
     private Float totalPrice;
 
