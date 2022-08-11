@@ -8,6 +8,7 @@ import lombok.*;
 @Setter
 @Builder
 public class SearchProductResponseDTO {
+    private Long id;
     private String name;
     private Float price;
     private String city;

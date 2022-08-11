@@ -80,6 +80,7 @@ public class ProductServiceImpl implements ProductService{
             List<SearchProductResponseDTO> searchProductResponseDTOS = new ArrayList<>();
             for (Product product : pageProduct.getContent()) {
                 SearchProductResponseDTO responseDTO = SearchProductResponseDTO.builder()
+                        .id(product.getId())
                         .name(product.getName())
                         .price(product.getPrice())
                         .city(product.getStore().getAddress().getCity())
