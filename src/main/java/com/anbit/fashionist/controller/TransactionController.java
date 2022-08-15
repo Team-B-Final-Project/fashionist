@@ -58,4 +58,17 @@ public class TransactionController {
     public ResponseEntity<?> transactionHistory(@PathVariable("id") Long id) throws ResourceNotFoundException{
         return transactionService.getTransactionHistory(id);
     }
+
+    /***
+     * Trigger when user pay transaction
+     * @param id
+     * @return
+     * @throws ResourceNotFoundException
+     */
+    @Operation(summary = "Trigger when user pay transaction")
+    @GetMapping("/transaction/pay")
+    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
+    public ResponseEntity<?> transactionPay(@RequestParam("id") Long transactionId) throws ResourceNotFoundException{
+        return transactionService.makePayment(transactionId);
+    }
 }

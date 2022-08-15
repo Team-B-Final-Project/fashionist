@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface CartRepository extends JpaRepository <Cart, Long> {
     boolean existsByUser(User user);
 
-    boolean existsByProduct(Product product);
+    boolean existsByUserAndProduct(User user, Product product);
 }
 

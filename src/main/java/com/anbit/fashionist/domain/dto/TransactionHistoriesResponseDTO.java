@@ -8,6 +8,8 @@ import lombok.*;
 @Setter
 @Builder
 public class TransactionHistoriesResponseDTO {
+    private Long transactionId;
+
     private String productName;
 
     private Float productPrice;

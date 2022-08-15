@@ -6,10 +6,18 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
-@Builder
-public class SearchProductResponseDTO {
+public class AddressResponseDTO {
     private Long id;
+
     private String name;
-    private Float price;
+
+    private String phoneNumber;
+
+    private String province;
+
     private String city;
+    
+    private String district;
+
+    private String fullAddress;
 }

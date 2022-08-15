@@ -11,4 +11,10 @@ public interface TransactionService {
     ResponseEntity<?> getTransactionHistories() throws ResourceNotFoundException;
     
     ResponseEntity<?> getTransactionHistory(Long id) throws ResourceNotFoundException;
+    
+    ResponseEntity<?> makePayment(Long transactionId) throws ResourceNotFoundException;
+
+    ResponseEntity<?> sendProduct(Long transactionId, String receipt) throws ResourceNotFoundException;
+
+    ResponseEntity<?> productDelivered(Long transactionId, String receipt) throws ResourceNotFoundException;
 }
