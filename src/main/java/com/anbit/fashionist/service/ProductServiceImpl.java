@@ -83,7 +83,7 @@ public class ProductServiceImpl implements ProductService{
                         .id(product.getId())
                         .name(product.getName())
                         .price(product.getPrice())
-                        .city(product.getStore().getAddress().getCity())
+                        .city(product.getStore().getAddress().getVillage().getDistrict().getRegency().getName())
                         .build();
                 searchProductResponseDTOS.add(responseDTO);
             }

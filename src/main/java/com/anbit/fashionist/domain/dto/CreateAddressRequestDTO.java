@@ -12,11 +12,7 @@ public class CreateAddressRequestDTO {
 
     private String phoneNumber;
 
-    private String province;
-
-    private String city;
-
-    private String district;
+    private Long villageId;
 
     private String fullAddress;
 }

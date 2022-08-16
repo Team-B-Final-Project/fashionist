@@ -1,6 +1,7 @@
 package com.anbit.fashionist.service;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import com.anbit.fashionist.domain.dao.District;
 import com.anbit.fashionist.domain.dao.Province;
 import com.anbit.fashionist.domain.dao.Regency;
 import com.anbit.fashionist.domain.dao.Village;
+import com.anbit.fashionist.domain.dto.GetRegionResonseDTO;
 import com.anbit.fashionist.handler.ResponseHandler;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
 
@@ -48,9 +50,18 @@ public class RegionServiceImpl implements RegionService {
             if (provinceList.isEmpty()) {
                 throw new ResourceNotFoundException("Province not found!");
             }
+            List<GetRegionResonseDTO> responseDTOs = new ArrayList<>();
+            provinceList.forEach(province -> {
+                GetRegionResonseDTO responseDTO = GetRegionResonseDTO.builder()
+                    .id(province.getId().longValue())
+                    .parentId(null)
+                    .name(province.getName())
+                    .build();
+                responseDTOs.add(responseDTO);
+            });
             Map<String, Object> metaData = new HashMap<>();
             metaData.put("total_item", provinceList.size());
-            return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, ZonedDateTime.now(), "Successfully retrieved data!", provinceList, metaData);
+            return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, ZonedDateTime.now(), "Successfully retrieved data!", responseDTOs, metaData);
         } catch (ResourceNotFoundException e) {
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
@@ -72,10 +83,19 @@ public class RegionServiceImpl implements RegionService {
             if (regencyList == null) {
                 throw new ResourceNotFoundException("Regency not found!");
             }
+            List<GetRegionResonseDTO> responseDTOs = new ArrayList<>();
+            regencyList.forEach(regency -> {
+                GetRegionResonseDTO responseDTO = GetRegionResonseDTO.builder()
+                    .id(regency.getId().longValue())
+                    .parentId(regency.getProvince().getId())
+                    .name(regency.getName())
+                    .build();
+                responseDTOs.add(responseDTO);
+            });
             Map<String, Object> metaData = new HashMap<>();
             metaData.put("total_item", regencyList.size());
-            return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, ZonedDateTime.now(), "Successfully retrieved data!", regencyList, metaData);
-        } catch (Exception e) {
+            return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, ZonedDateTime.now(), "Successfully retrieved data!", responseDTOs, metaData);
+        } catch (ResourceNotFoundException e) {
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
     }
@@ -96,10 +116,19 @@ public class RegionServiceImpl implements RegionService {
             if (districtList == null) {
                 throw new ResourceNotFoundException("District not found!");
             }
+            List<GetRegionResonseDTO> responseDTOs = new ArrayList<>();
+            districtList.forEach(district -> {
+                GetRegionResonseDTO responseDTO = GetRegionResonseDTO.builder()
+                    .id(district.getId().longValue())
+                    .parentId(district.getRegency().getId())
+                    .name(district.getName())
+                    .build();
+                responseDTOs.add(responseDTO);
+            });
             Map<String, Object> metaData = new HashMap<>();
             metaData.put("total_item", districtList.size());
-            return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, ZonedDateTime.now(), "Successfully retrieved data!", districtList, metaData);
-        } catch (Exception e) {
+            return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, ZonedDateTime.now(), "Successfully retrieved data!", responseDTOs, metaData);
+        } catch (ResourceNotFoundException e) {
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
     }
@@ -120,10 +149,19 @@ public class RegionServiceImpl implements RegionService {
             if (villageList == null) {
                 throw new ResourceNotFoundException("District not found!");
             }
+            List<GetRegionResonseDTO> responseDTOs = new ArrayList<>();
+            villageList.forEach(village -> {
+                GetRegionResonseDTO responseDTO = GetRegionResonseDTO.builder()
+                    .id(village.getId().longValue())
+                    .parentId(village.getDistrict().getId())
+                    .name(village.getName())
+                    .build();
+                responseDTOs.add(responseDTO);
+            });
             Map<String, Object> metaData = new HashMap<>();
             metaData.put("total_item", villageList.size());
-            return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, ZonedDateTime.now(), "Successfully retrieved data!", villageList, metaData);
-        } catch (Exception e) {
+            return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, ZonedDateTime.now(), "Successfully retrieved data!", responseDTOs, metaData);
+        } catch (ResourceNotFoundException e) {
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
     }

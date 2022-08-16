@@ -15,12 +15,14 @@ import com.anbit.fashionist.constant.EErrorCode;
 import com.anbit.fashionist.domain.common.UserDetailsImpl;
 import com.anbit.fashionist.domain.dao.Address;
 import com.anbit.fashionist.domain.dao.User;
+import com.anbit.fashionist.domain.dao.Village;
 import com.anbit.fashionist.domain.dto.CreateAddressRequestDTO;
-import com.anbit.fashionist.domain.dto.GetCurrentUserAddressesResponseDTO;
+import com.anbit.fashionist.domain.dto.AddressResponseDTO;
 import com.anbit.fashionist.handler.ResponseHandler;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.repository.AddressRepository;
 import com.anbit.fashionist.repository.UserRepository;
+import com.anbit.fashionist.repository.VillageRepository;
 
 @Service
 public class AddressServiceImpl implements AddressService {
@@ -30,23 +32,25 @@ public class AddressServiceImpl implements AddressService {
     @Autowired
     AddressRepository addressRepository;
 
+    @Autowired
+    VillageRepository villageRepository;
+
     @Override
     public ResponseEntity<?> createAddress(CreateAddressRequestDTO requestDTO) {
         try {
             UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             Optional<User> user = userRepository.findById(userDetails.getId());
+            Village village = villageRepository.findById(requestDTO.getVillageId()).orElseThrow(() -> new ResourceNotFoundException("Village not found!"));
             Address address = Address.builder()
                 .user(user.get())
                 .phoneNumber(requestDTO.getPhoneNumber())
                 .name(requestDTO.getName())
-                .province(requestDTO.getProvince())
-                .city(requestDTO.getCity())
-                .district(requestDTO.getDistrict())
+                .village(village)
                 .fullAddress(requestDTO.getFullAddress())
                 .build();
             addressRepository.save(address);
             return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Successfully create new address!", null);
-        } catch (Exception e) {
+        } catch (ResourceNotFoundException e) {
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
     }
@@ -60,17 +64,20 @@ public class AddressServiceImpl implements AddressService {
             if (addresses.isEmpty()) {
                 throw new ResourceNotFoundException("You have no address yet!");
             }
-            List<GetCurrentUserAddressesResponseDTO> responseDTOs = new ArrayList<>();
+            List<AddressResponseDTO> responseDTOs = new ArrayList<>();
             addresses.forEach(address -> {
-                GetCurrentUserAddressesResponseDTO responseDTO = GetCurrentUserAddressesResponseDTO.builder()
+                AddressResponseDTO responseDTO = AddressResponseDTO.builder()
                     .id(address.getId())
                     .name(address.getName())
                     .phoneNumber(address.getPhoneNumber())
-                    .province(address.getProvince())
-                    .city(address.getCity())
-                    .district(address.getDistrict())
                     .fullAddress(address.getFullAddress())
                     .build();
+                    responseDTO.setRegion(
+                        address.getVillage().getDistrict().getRegency().getProvince(), 
+                        address.getVillage().getDistrict().getRegency(), 
+                        address.getVillage().getDistrict(), 
+                        address.getVillage()
+                    );
                     responseDTOs.add(responseDTO);
                 });
             return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Successfully retrieved data!", responseDTOs);

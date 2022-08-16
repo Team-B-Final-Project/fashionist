@@ -27,29 +27,22 @@ public class Address extends Audit {
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
-    @Column(name = "province", nullable = false)
-    private String province;
-
-    @Column(name = "city", nullable = false)
-    private String city;
-    
-    @Column(name = "district", nullable = false)
-    private String district;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, targetEntity = Village.class)
+    @JoinColumn(name = "village_id")
+    private Village village;
 
     @Column(name = "full_address", nullable = false)
     private String fullAddress;
 
     @Override
     public String toString() {
-        return "Address [city=" + city + 
-            ", fullAddress=" + fullAddress + 
+        return "\n Address [fullAddress=" + fullAddress + 
             ", id=" + id + 
             ", name=" + name + 
             ", phoneNumber=" + phoneNumber + 
-            ", province=" + province + 
-            ", user=" + user + "]";
+            ", user=" + user + 
+            ", village=" + village + "]";
     }
-
 }
 
 
