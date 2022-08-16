@@ -2,6 +2,7 @@ package com.anbit.fashionist.service;
 
 import com.anbit.fashionist.constant.ECategory;
 import com.anbit.fashionist.constant.EErrorCode;
+import com.anbit.fashionist.controller.ProductController;
 import com.anbit.fashionist.domain.common.UserDetailsImpl;
 import com.anbit.fashionist.domain.dao.Category;
 import com.anbit.fashionist.domain.dao.Product;
@@ -16,6 +17,8 @@ import com.anbit.fashionist.repository.ProductPictureRepository;
 import com.anbit.fashionist.repository.ProductRepository;
 import com.anbit.fashionist.repository.UserRepository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -56,6 +59,9 @@ public class ProductServiceImpl implements ProductService{
     @Autowired
     ProductPictureRepository productPictureRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
+    private static final String loggerLine = "---------------------------------------";
+
     @Override
     public ResponseEntity<?> searchProducts(
         String keyword, 
@@ -94,8 +100,14 @@ public class ProductServiceImpl implements ProductService{
             pagination.put("totalPages", pageProduct.getTotalPages());
             pagination.put("perPage", 30);
             pagination.put("totalElements", pageProduct.getTotalElements());
+            logger.info(loggerLine);
+            logger.info("Search Product " + searchProductResponseDTOS);
+            logger.info(loggerLine);
             return ResponseHandler.generateSuccessResponseWithPagination(HttpStatus.OK, ZonedDateTime.now(), "Successfully reterieve data!", searchProductResponseDTOS, pagination);
         }catch (ResourceNotFoundException e){
+            logger.error(loggerLine);
+            logger.error(e.getMessage());
+            logger.error(loggerLine);
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
     }
@@ -119,8 +131,14 @@ public class ProductServiceImpl implements ProductService{
                 .category(category)
                 .build();
             productRepository.save(product);
+            logger.info(loggerLine);
+            logger.info("Create Product " + product);
+            logger.info(loggerLine);
             return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, ZonedDateTime.now(), "Product created successfully!", null);
         } catch (ResourceNotFoundException e) {
+            logger.error(loggerLine);
+            logger.error(e.getMessage());
+            logger.error(loggerLine);
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
     }
