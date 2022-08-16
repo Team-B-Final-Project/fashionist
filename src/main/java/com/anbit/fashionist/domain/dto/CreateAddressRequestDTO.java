@@ -14,5 +14,7 @@ public class CreateAddressRequestDTO {
 
     private Long villageId;
 
+    private String postalCode;
+
     private String fullAddress;
 }

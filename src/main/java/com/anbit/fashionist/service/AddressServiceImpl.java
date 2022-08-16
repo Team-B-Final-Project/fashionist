@@ -46,6 +46,7 @@ public class AddressServiceImpl implements AddressService {
                 .phoneNumber(requestDTO.getPhoneNumber())
                 .name(requestDTO.getName())
                 .village(village)
+                .postalCode(requestDTO.getPostalCode())
                 .fullAddress(requestDTO.getFullAddress())
                 .build();
             addressRepository.save(address);
@@ -71,6 +72,7 @@ public class AddressServiceImpl implements AddressService {
                     .name(address.getName())
                     .phoneNumber(address.getPhoneNumber())
                     .fullAddress(address.getFullAddress())
+                    .postalCode(address.getPostalCode())
                     .build();
                     responseDTO.setRegion(
                         address.getVillage().getDistrict().getRegency().getProvince(), 

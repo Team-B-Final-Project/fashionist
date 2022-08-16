@@ -21,6 +21,8 @@ public class AddressResponseDTO {
 
     private RegionResponseDTO region;
 
+    private String postalCode;
+
     private String fullAddress;
 
     public void setRegion(Province province, Regency regency, District district, Village village) {

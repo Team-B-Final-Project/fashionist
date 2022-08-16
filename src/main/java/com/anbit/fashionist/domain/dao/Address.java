@@ -31,6 +31,8 @@ public class Address extends Audit {
     @JoinColumn(name = "village_id")
     private Village village;
 
+    private String postalCode;
+
     @Column(name = "full_address", nullable = false)
     private String fullAddress;
 
