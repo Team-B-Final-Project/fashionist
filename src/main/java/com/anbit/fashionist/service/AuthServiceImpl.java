@@ -1,5 +1,6 @@
 package com.anbit.fashionist.service;
 
+import com.anbit.fashionist.controller.AuthController;
 import com.anbit.fashionist.domain.common.UserDetailsImpl;
 import com.anbit.fashionist.domain.dao.Role;
 import com.anbit.fashionist.domain.dao.User;
@@ -15,6 +16,8 @@ import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.repository.RoleRepository;
 import com.anbit.fashionist.repository.UserRepository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,6 +55,9 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     JwtUtils jwtUtils;
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+    private static final String loggerLine = "---------------------------------------";
+
     @Override
 
     public ResponseEntity<?> authenticateUser(SignInRequestDTO loginRequest) throws ResourceNotFoundException {
@@ -70,8 +76,14 @@ public class AuthServiceImpl implements AuthService {
             String jwt = jwtUtils.generateJwtToken(authentication);
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
             List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
+            logger.info(loggerLine);
+            logger.info("Aunthenticate User " + authentication);
+            logger.info(loggerLine);
             return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Successfully login!", new JwtResponseDTO(jwt, userDetails.getUsername(), roles));
         } catch (ResourceNotFoundException e) {
+            logger.error(loggerLine);
+            logger.error(e.getMessage());
+            logger.error(loggerLine);
             return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
     }
@@ -101,10 +113,19 @@ public class AuthServiceImpl implements AuthService {
             roles.add(customer);
             user.setRoles(roles);
             userRepository.save(user);
+            logger.info(loggerLine);
+            logger.info("Register User " + user);
+            logger.info(loggerLine);
             return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "You have been registered successfully!", null);
         } catch (ResourceAlreadyExistException e) {
+            logger.error(loggerLine);
+            logger.error(e.getMessage());
+            logger.error(loggerLine);
             return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         } catch (ResourceNotFoundException e) {
+            logger.error(loggerLine);
+            logger.error(e.getMessage());
+            logger.error(loggerLine);
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
     }

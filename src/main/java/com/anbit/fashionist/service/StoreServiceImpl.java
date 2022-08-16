@@ -4,6 +4,9 @@ import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.Set;
 
+import com.anbit.fashionist.controller.StoreController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +43,9 @@ public class StoreServiceImpl implements StoreService {
     @Autowired
     RoleRepository roleRepositor;
 
+    private static final Logger logger = LoggerFactory.getLogger(StoreController.class);
+    private static final String loggerLine = "---------------------------------------";
+
     @Override
     public ResponseEntity<?> createStore(CreateStoreRequestDTO requestDTO) throws ResourceAlreadyExistException, ResourceNotFoundException {
         try {
@@ -63,10 +69,19 @@ public class StoreServiceImpl implements StoreService {
             roles.add(seller);
             user.get().setRoles(roles);
             userRepository.save(user.get());
+            logger.info(loggerLine);
+            logger.info("Create Store " + store);
+            logger.info(loggerLine);
             return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, ZonedDateTime.now(), "Successfully create new store!", null);
         } catch (ResourceNotFoundException e) {
+            logger.error(loggerLine);
+            logger.error(e.getMessage());
+            logger.error(loggerLine);
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         } catch(ResourceAlreadyExistException e){
+            logger.error(loggerLine);
+            logger.error(e.getMessage());
+            logger.error(loggerLine);
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_ACCEPTABLE, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
     }

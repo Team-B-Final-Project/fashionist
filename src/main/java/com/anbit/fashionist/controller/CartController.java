@@ -26,11 +26,7 @@ public class CartController {
     @Autowired
     CartServiceImpl cartService;
 
-    /***
-     * Add product to cart
-     * @param cartRequestDTO
-     * @return
-     * @throws ResourceNotFoundException
+    /***xception
      * @throws ResourceAlreadyExistException
      */
     @PostMapping("/add/cart")

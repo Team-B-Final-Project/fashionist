@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.anbit.fashionist.controller.AddressController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,13 +33,16 @@ public class AddressServiceImpl implements AddressService {
     @Autowired
     AddressRepository addressRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger(AddressController.class);
+    private static final String loggerLine = "---------------------------------------";
+
     @Override
     public ResponseEntity<?> createAddress(CreateAddressRequestDTO requestDTO) {
         try {
             UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            Optional<User> user = userRepository.findById(userDetails.getId());
+            User user = userRepository.findById(userDetails.getId()).orElseThrow(() -> new ResourceNotFoundException("User not found!"));
             Address address = Address.builder()
-                .user(user.get())
+                .user(user)
                 .phoneNumber(requestDTO.getPhoneNumber())
                 .name(requestDTO.getName())
                 .province(requestDTO.getProvince())
@@ -45,8 +51,14 @@ public class AddressServiceImpl implements AddressService {
                 .fullAddress(requestDTO.getFullAddress())
                 .build();
             addressRepository.save(address);
+            logger.info(loggerLine);
+//            logger.info("Create Address " + address);
+            logger.info(loggerLine);
             return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Successfully create new address!", null);
-        } catch (Exception e) {
+        } catch (ResourceNotFoundException e) {
+            logger.error(loggerLine);
+            logger.error(e.getMessage());
+            logger.error(loggerLine);
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
     }
@@ -73,8 +85,14 @@ public class AddressServiceImpl implements AddressService {
                     .build();
                     responseDTOs.add(responseDTO);
                 });
+            logger.info(loggerLine);
+            logger.info("Current User Address " + user);
+            logger.info(loggerLine);
             return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Successfully retrieved data!", responseDTOs);
         } catch (ResourceNotFoundException e) {
+            logger.error(loggerLine);
+            logger.error(e.getMessage());
+            logger.error(loggerLine);
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
     }

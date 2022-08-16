@@ -8,6 +8,9 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import com.anbit.fashionist.controller.TransactionController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -77,6 +80,9 @@ public class TransactionServiceImpl implements TransactionService {
     @Autowired
     RandomString randomString;
 
+    private static final Logger logger = LoggerFactory.getLogger(TransactionController.class);
+    private static final String loggerLine = "---------------------------------------";
+
     
     @Override
     public ResponseEntity<?> createTransaction(CreateTransactionRequestDTO requestDTO) throws ResourceNotFoundException {
@@ -127,8 +133,14 @@ public class TransactionServiceImpl implements TransactionService {
                 cartRepository.delete(cart);
             }
             String virtualAccount = randomString.generateVirtualAccount(16);
+            logger.info(loggerLine);
+            logger.info("Create Transaction " + cartList);
+            logger.info(loggerLine);
             return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "New transaction is created successfully!", new CreateTransactionResponseDTO(totalPrice.floatValue(), virtualAccount));
         } catch (ResourceNotFoundException e) {
+            logger.error(loggerLine);
+            logger.error(e.getMessage());
+            logger.error(loggerLine);
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
     }
@@ -162,8 +174,14 @@ public class TransactionServiceImpl implements TransactionService {
             });
             Map<String, Object> metaData = new HashMap<>();
             metaData.put("_total", responseDTO.size());
+            logger.info(loggerLine);
+            logger.info("Transaction Histories " + responseDTO);
+            logger.info(loggerLine);
             return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, ZonedDateTime.now(), "Successfully reterieve data!", responseDTO, metaData);
         } catch (ResourceNotFoundException e) {
+            logger.error(loggerLine);
+            logger.error(e.getMessage());
+            logger.error(loggerLine);
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
     }
@@ -196,8 +214,14 @@ public class TransactionServiceImpl implements TransactionService {
                 .build();
                 responseDTO.setProducts(products);
                 responseDTO.setSendAddress(transaction.getSendAddress());
+                logger.info(loggerLine);
+                logger.info("Transaction History " + responseDTO);
+                logger.info(loggerLine);
             return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Successfully retrieved data!", responseDTO);
         } catch (ResourceNotFoundException e) {
+            logger.error(loggerLine);
+            logger.error(e.getMessage());
+            logger.error(loggerLine);
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
     }
@@ -214,8 +238,14 @@ public class TransactionServiceImpl implements TransactionService {
             TransactionStatus transactionStatus = transactionStatusRepository.findByName(ETransactionStatus.PACKING).orElseThrow(() -> new ResourceNotFoundException("Transaction status not found!"));
             transaction.setTransactionStatus(transactionStatus);
             transactionRepository.save(transaction);
+            logger.info(loggerLine);
+            logger.info("Make Payment " + transaction);
+            logger.info(loggerLine);
             return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Payment success!", null);
         } catch (ResourceNotFoundException e) {
+            logger.error(loggerLine);
+            logger.error(e.getMessage());
+            logger.error(loggerLine);
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
     }
@@ -233,8 +263,14 @@ public class TransactionServiceImpl implements TransactionService {
             transaction.setTransactionStatus(transactionStatus);
             transaction.setReceipt(receipt);
             transactionRepository.save(transaction);
+            logger.info(loggerLine);
+            logger.info("Successfully input receipt! " + transaction);
+            logger.info(loggerLine);
             return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Successfully input receipt!", null);
         } catch (ResourceNotFoundException e) {
+            logger.error(loggerLine);
+            logger.error(e.getMessage());
+            logger.error(loggerLine);
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
     }
@@ -248,8 +284,14 @@ public class TransactionServiceImpl implements TransactionService {
             if (transaction.getUser() != user) {
                 throw new ResourceNotFoundException("Transaction is not found!");
             }
+            logger.info(loggerLine);
+            logger.info("Payment success " + transaction);
+            logger.info(loggerLine);
             return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Payment success!", null);
         } catch (ResourceNotFoundException e) {
+            logger.error(loggerLine);
+            logger.error(e.getMessage());
+            logger.error(loggerLine);
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
     }
