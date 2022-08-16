@@ -21,6 +21,7 @@ import com.anbit.fashionist.domain.dao.Province;
 import com.anbit.fashionist.domain.dao.Regency;
 import com.anbit.fashionist.domain.dao.Village;
 import com.anbit.fashionist.domain.dto.GetRegionResonseDTO;
+import com.anbit.fashionist.domain.dto.PostalCodeResponseDTO;
 import com.anbit.fashionist.handler.ResponseHandler;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
 
@@ -161,6 +162,24 @@ public class RegionServiceImpl implements RegionService {
             Map<String, Object> metaData = new HashMap<>();
             metaData.put("total_item", villageList.size());
             return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, ZonedDateTime.now(), "Successfully retrieved data!", responseDTOs, metaData);
+        } catch (ResourceNotFoundException e) {
+            return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> getPostalCodes(Long villageId) throws ResourceNotFoundException {
+        try {
+            Village village = villageRepository.findById(villageId).orElseThrow(() -> new ResourceNotFoundException("Village not found!"));
+            List<PostalCodeResponseDTO> responseDTOs = new ArrayList<>();
+            String[] strArray = village.getPostal().split(",");
+            List.of(strArray).forEach(str -> {
+                PostalCodeResponseDTO responseDTO = PostalCodeResponseDTO.builder()
+                .postalCode(str)
+                .build();
+                responseDTOs.add(responseDTO);
+            });
+            return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Successfully retrieved data!", responseDTOs);
         } catch (ResourceNotFoundException e) {
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }

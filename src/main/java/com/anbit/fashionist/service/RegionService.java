@@ -12,4 +12,6 @@ public interface RegionService {
     ResponseEntity<?> getDistricts(String name, Integer regId) throws ResourceNotFoundException;
     
     ResponseEntity<?> getVillages(String name, Integer districtId) throws ResourceNotFoundException;
+    
+    ResponseEntity<?> getPostalCodes(Long villageId) throws ResourceNotFoundException;
 }

@@ -81,4 +81,11 @@ public class RegionController {
         @RequestParam(value  = "districtId", required = true) Integer districtId) throws ResourceNotFoundException {
         return regionService.getVillages(name, districtId); 
     }
+
+    @Operation(summary = "Get data of villages")
+    @GetMapping("/postal_codes")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<?> getPostalCodes(@RequestParam(value  = "villageId", required = true) Long villageId) throws ResourceNotFoundException {
+        return regionService.getPostalCodes(villageId); 
+    }
 }
