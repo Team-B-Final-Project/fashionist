@@ -174,6 +174,13 @@ CREATE TABLE public.message (
     CONSTRAINT "message_pkey" primary key ("id")
 );
 
+CREATE TABLE wishlist (
+    "id" serial4 NOT NULL,
+    "user_id" bigserial NOT null,
+    "product_id" bigserial NOT null,
+    CONSTRAINT "wishlist_pkey" primary key ("id")
+);
+
 ALTER TABLE public.product_picture
 ADD CONSTRAINT "product_fkey"
 FOREIGN KEY("product_id")
