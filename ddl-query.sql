@@ -276,3 +276,74 @@ ALTER TABLE public.address
 ADD CONSTRAINT "user_fkey"
 FOREIGN KEY("user_id")
 REFERENCES public.user("id");
+
+-- Create tables
+create table public.province (
+	id int4,
+	name varchar,
+	constraint province_pkey primary key (id)
+);
+
+create table public.regency (
+	id int4,
+	province_id int4,
+	name varchar,
+	constraint regency_pkey primary key(id)
+);
+
+create table public.district (
+	id int4,
+	regency_id int4,
+	name varchar,
+	constraint district_pkey primary key(id)
+);
+
+create table public.village (
+	id int8,
+	district_id int4,
+	name varchar,
+	postal varchar(50),
+	constraint village_pkey primary key(id)
+);
+
+-- Add contstraints
+
+alter table public.regency 
+add constraint province_fkey 
+foreign key(province_id) 
+references public.province(id);
+
+alter table public.district
+add constraint regency_fkey 
+foreign key(regency_id) 
+references public.regency(id);
+
+alter table public.village
+add constraint district_fkey 
+foreign key(district_id) 
+references public.district(id);
+
+-- Delete some column in address
+
+ALTER TABLE public.address 
+DROP COLUMN province;
+
+ALTER TABLE public.address 
+DROP COLUMN city;
+
+ALTER TABLE public.address 
+DROP COLUMN district;
+
+-- Add village column in address
+ALTER TABLE public.address 
+ADD COLUMN village_id int8;
+
+ALTER TABLE public.address 
+ADD COLUMN postal_code char(5);
+
+alter table public.address
+add constraint village_fkey 
+foreign key(village_id) 
+references public.village(id);
+
+
