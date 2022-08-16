@@ -58,10 +58,13 @@ public class AddressServiceImpl implements AddressService {
                 .build();
             addressRepository.save(address);
             logger.info(loggerLine);
-//            logger.info("Create Address " + address);
+            logger.info("Create Address " + address);
             logger.info(loggerLine);
             return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Successfully create new address!", null);
         } catch (ResourceNotFoundException e) {
+            logger.error(loggerLine);
+            logger.error(e.getMessage());
+            logger.error(loggerLine);
             return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
         }
     }
