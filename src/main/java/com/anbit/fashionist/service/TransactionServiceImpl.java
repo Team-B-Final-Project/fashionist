@@ -1,6 +1,5 @@
 package com.anbit.fashionist.service;
 
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.anbit.fashionist.constant.EErrorCode;
 import com.anbit.fashionist.constant.EPayment;
 import com.anbit.fashionist.constant.EShipping;
 import com.anbit.fashionist.constant.ETransactionStatus;
@@ -86,213 +84,171 @@ public class TransactionServiceImpl implements TransactionService {
     
     @Override
     public ResponseEntity<?> createTransaction(CreateTransactionRequestDTO requestDTO) throws ResourceNotFoundException {
-        try {
-            List<Cart> cartList = new ArrayList<>();
-            UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            User user = userRepository.getReferenceById(userDetails.getId());
-            Payment payment = paymentRepository.findByName(EPayment.valueOf(requestDTO.getPaymentMethod().toUpperCase())).orElseThrow(() -> new ResourceNotFoundException("Payment not found!"));
-            Address address = addressRepository.findById(requestDTO.getSendAddressId()).orElseThrow(() -> new ResourceNotFoundException("Address not found!"));
-            if (address.getUser() != user) {
-                throw new ResourceNotFoundException("Address not found!");
-            }
-            List<Float> productPrices = new ArrayList<>();
-            List<Integer> itemUnits = new ArrayList<>();
-            requestDTO.getCartShipping().keySet().forEach(cartId -> {
-                try {
-                    Cart cartPrice = cartRepository.findById(cartId).orElseThrow(() -> new ResourceNotFoundException("Cart with ID " + cartId + " not found!"));
-                    productPrices.add(cartPrice.getTotalPrice());
-                    itemUnits.add(cartPrice.getItemUnit());
-                } catch (ResourceNotFoundException e) {
-                    e.printStackTrace();
-                }
-            });
-            Double totalPrice = productPrices.stream().mapToDouble(map -> map.doubleValue()).sum();
-            Integer totalItemUnit = itemUnits.stream().mapToInt(map -> map.intValue()).sum();
-            Transaction transaction = Transaction.builder()
-                .user(user)
-                .sendAddress(addressRepository.getReferenceById(requestDTO.getSendAddressId()))
-                .transactionStatus(transactionStatusRepository.findByName(ETransactionStatus.WAITING_PAYMENT).get())
-                .payment(payment)
-                .totalItemUnit(totalItemUnit)
-                .totalPrice(totalPrice.floatValue())
-                .build();
-            Transaction newTransaction = transactionRepository.save(transaction);
-
-            for (Long cartId : requestDTO.getCartShipping().keySet()){
-                Cart cart = cartRepository.findById(cartId).orElseThrow(() -> new ResourceNotFoundException("Cart with ID" + cartId + "doesn't exist"));
-                cartList.add(cart);
-                Shipping shipping = shippingRepository.findByName(EShipping.valueOf(requestDTO.getCartShipping().get(cartId).toUpperCase())).orElseThrow(() -> new ResourceNotFoundException("Shipping not found!"));
-                ProductTransaction productTransaction = ProductTransaction.builder()
-                    .product(cart.getProduct())
-                    .transaction(newTransaction)
-                    .itemUnit(cart.getItemUnit())
-                    .totalPrice(cart.getTotalPrice())
-                    .shipping(shipping)
-                    .build();
-                productTransactionRepository.save(productTransaction);
-                cartRepository.delete(cart);
-            }
-            String virtualAccount = randomString.generateVirtualAccount(16);
-            logger.info(loggerLine);
-            logger.info("Create Transaction " + cartList);
-            logger.info(loggerLine);
-            return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "New transaction is created successfully!", new CreateTransactionResponseDTO(totalPrice.floatValue(), virtualAccount));
-        } catch (ResourceNotFoundException e) {
-            logger.error(loggerLine);
-            logger.error(e.getMessage());
-            logger.error(loggerLine);
-            return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
+        List<Cart> cartList = new ArrayList<>();
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.getReferenceById(userDetails.getId());
+        Payment payment = paymentRepository.findByName(EPayment.valueOf(requestDTO.getPaymentMethod().toUpperCase())).orElseThrow(() -> new ResourceNotFoundException("Payment not found!"));
+        Address address = addressRepository.findById(requestDTO.getSendAddressId()).orElseThrow(() -> new ResourceNotFoundException("Address not found!"));
+        if (address.getUser() != user) {
+            throw new ResourceNotFoundException("Address not found!");
         }
+        List<Float> productPrices = new ArrayList<>();
+        List<Integer> itemUnits = new ArrayList<>();
+        requestDTO.getCartShipping().keySet().forEach(cartId -> {
+            try {
+                Cart cartPrice = cartRepository.findById(cartId).orElseThrow(() -> new ResourceNotFoundException("Cart with ID " + cartId + " not found!"));
+                productPrices.add(cartPrice.getTotalPrice());
+                itemUnits.add(cartPrice.getItemUnit());
+            } catch (ResourceNotFoundException e) {
+                e.printStackTrace();
+            }
+        });
+        Double totalPrice = productPrices.stream().mapToDouble(map -> map.doubleValue()).sum();
+        Integer totalItemUnit = itemUnits.stream().mapToInt(map -> map.intValue()).sum();
+        Transaction transaction = Transaction.builder()
+            .user(user)
+            .sendAddress(addressRepository.getReferenceById(requestDTO.getSendAddressId()))
+            .transactionStatus(transactionStatusRepository.findByName(ETransactionStatus.WAITING_PAYMENT).get())
+            .payment(payment)
+            .totalItemUnit(totalItemUnit)
+            .totalPrice(totalPrice.floatValue())
+            .build();
+        Transaction newTransaction = transactionRepository.save(transaction);
+
+        for (Long cartId : requestDTO.getCartShipping().keySet()){
+            Cart cart = cartRepository.findById(cartId).orElseThrow(() -> new ResourceNotFoundException("Cart with ID" + cartId + "doesn't exist"));
+            cartList.add(cart);
+            Shipping shipping = shippingRepository.findByName(EShipping.valueOf(requestDTO.getCartShipping().get(cartId).toUpperCase())).orElseThrow(() -> new ResourceNotFoundException("Shipping not found!"));
+            ProductTransaction productTransaction = ProductTransaction.builder()
+                .product(cart.getProduct())
+                .transaction(newTransaction)
+                .itemUnit(cart.getItemUnit())
+                .totalPrice(cart.getTotalPrice())
+                .shipping(shipping)
+                .build();
+            productTransactionRepository.save(productTransaction);
+            cartRepository.delete(cart);
+        }
+        String virtualAccount = randomString.generateVirtualAccount(16);
+        logger.info(loggerLine);
+        logger.info("Create Transaction " + cartList);
+        logger.info(loggerLine);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "New transaction is created successfully!", new CreateTransactionResponseDTO(totalPrice.floatValue(), virtualAccount));
     }
 
     @Override
     public ResponseEntity<?> getTransactionHistories() throws ResourceNotFoundException {
-        try {
-            UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            User user = userRepository.getReferenceById(userDetails.getId());
-            List<Transaction> transactions = transactionRepository.findByUser(user);
-            if (transactions.isEmpty()) {
-                throw new ResourceNotFoundException("You have no transactions yet!");
-            }
-            List<ProductTransaction> productTransactionList = new ArrayList<>();
-            transactions.forEach(transaction -> {
-                List<ProductTransaction> productTransaction = productTransactionRepository.findByTransaction(transaction);
-                productTransaction.forEach(pt -> {
-                    productTransactionList.add(pt);
-                });
-            });
-            List<TransactionHistoriesResponseDTO> responseDTO = new ArrayList<>();
-            productTransactionList.forEach(ptl -> {
-                TransactionHistoriesResponseDTO dto = TransactionHistoriesResponseDTO.builder()
-                    .transactionId(ptl.getTransaction().getId())
-                    .productName(ptl.getProduct().getName())
-                    .productPrice(ptl.getProduct().getPrice())
-                    .totalItems(ptl.getItemUnit())
-                    .totalPricePerItem(ptl.getTotalPrice())
-                    .build();
-                responseDTO.add(dto);
-            });
-            Map<String, Object> metaData = new HashMap<>();
-            metaData.put("_total", responseDTO.size());
-            logger.info(loggerLine);
-            logger.info("Transaction Histories " + responseDTO);
-            logger.info(loggerLine);
-            return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, ZonedDateTime.now(), "Successfully reterieve data!", responseDTO, metaData);
-        } catch (ResourceNotFoundException e) {
-            logger.error(loggerLine);
-            logger.error(e.getMessage());
-            logger.error(loggerLine);
-            return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.getReferenceById(userDetails.getId());
+        List<Transaction> transactions = transactionRepository.findByUser(user);
+        if (transactions.isEmpty()) {
+            throw new ResourceNotFoundException("You have no transactions yet!");
         }
+        List<ProductTransaction> productTransactionList = new ArrayList<>();
+        transactions.forEach(transaction -> {
+            List<ProductTransaction> productTransaction = productTransactionRepository.findByTransaction(transaction);
+            productTransaction.forEach(pt -> {
+                productTransactionList.add(pt);
+            });
+        });
+        List<TransactionHistoriesResponseDTO> responseDTO = new ArrayList<>();
+        productTransactionList.forEach(ptl -> {
+            TransactionHistoriesResponseDTO dto = TransactionHistoriesResponseDTO.builder()
+                .transactionId(ptl.getTransaction().getId())
+                .productName(ptl.getProduct().getName())
+                .productPrice(ptl.getProduct().getPrice())
+                .totalItems(ptl.getItemUnit())
+                .totalPricePerItem(ptl.getTotalPrice())
+                .build();
+            responseDTO.add(dto);
+        });
+        Map<String, Object> metaData = new HashMap<>();
+        metaData.put("_total", responseDTO.size());
+        logger.info(loggerLine);
+        logger.info("Transaction Histories " + responseDTO);
+        logger.info(loggerLine);
+        return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, "Successfully reterieve data!", responseDTO, metaData);
     }
 
     @Override
     @Transactional
     public ResponseEntity<?> getTransactionHistory(Long id) throws ResourceNotFoundException {
-        try {
-            UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            User user = userRepository.getReferenceById(userDetails.getId());
-            Transaction transaction = transactionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Error: Transaction is not found!"));
-            if (transaction.getUser() != user) {
-                throw new ResourceNotFoundException("Transaction is not found!");
-            }
-            List<ProductTransaction> productTransactions = productTransactionRepository.findByTransaction(transaction);
-            List<Product> products = new ArrayList<>();
-            productTransactions.forEach(pr -> {
-                products.add(pr.getProduct());
-            });
-
-            TransactionHistoryResponseDTO responseDTO = TransactionHistoryResponseDTO.builder()
-                .id(transaction.getId())
-                .totalItemUnit(transaction.getTotalItemUnit())
-                .totalPrice(transaction.getTotalPrice())
-                .sendAddress(null)
-                .shippingPrice(null)
-                .paymentMethod(transaction.getPayment().getName().name())
-                .status(transaction.getTransactionStatus().getName().name())
-                .receipt(transaction.getReceipt())
-                .build();
-                responseDTO.setProducts(products);
-                responseDTO.setSendAddress(transaction.getSendAddress());
-                logger.info(loggerLine);
-                logger.info("Transaction History " + responseDTO);
-                logger.info(loggerLine);
-            return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Successfully retrieved data!", responseDTO);
-        } catch (ResourceNotFoundException e) {
-            logger.error(loggerLine);
-            logger.error(e.getMessage());
-            logger.error(loggerLine);
-            return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.getReferenceById(userDetails.getId());
+        Transaction transaction = transactionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Error: Transaction is not found!"));
+        if (transaction.getUser() != user) {
+            throw new ResourceNotFoundException("Transaction is not found!");
         }
+        List<ProductTransaction> productTransactions = productTransactionRepository.findByTransaction(transaction);
+        List<Product> products = new ArrayList<>();
+        productTransactions.forEach(pr -> {
+            products.add(pr.getProduct());
+        });
+
+        TransactionHistoryResponseDTO responseDTO = TransactionHistoryResponseDTO.builder()
+            .id(transaction.getId())
+            .totalItemUnit(transaction.getTotalItemUnit())
+            .totalPrice(transaction.getTotalPrice())
+            .sendAddress(null)
+            .shippingPrice(null)
+            .paymentMethod(transaction.getPayment().getName().name())
+            .status(transaction.getTransactionStatus().getName().name())
+            .receipt(transaction.getReceipt())
+            .build();
+            responseDTO.setProducts(products);
+            responseDTO.setSendAddress(transaction.getSendAddress());
+            logger.info(loggerLine);
+            logger.info("Transaction History " + responseDTO);
+            logger.info(loggerLine);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully retrieved data!", responseDTO);
     }
 
     @Override
     public ResponseEntity<?> makePayment(Long transactionId) throws ResourceNotFoundException {
-        try {
-            UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            User user = userRepository.getReferenceById(userDetails.getId());
-            Transaction transaction = transactionRepository.findById(transactionId).orElseThrow(() -> new ResourceNotFoundException("Transaction not found!"));
-            if (transaction.getUser() != user) {
-                throw new ResourceNotFoundException("Transaction is not found!");
-            }
-            TransactionStatus transactionStatus = transactionStatusRepository.findByName(ETransactionStatus.PACKING).orElseThrow(() -> new ResourceNotFoundException("Transaction status not found!"));
-            transaction.setTransactionStatus(transactionStatus);
-            transactionRepository.save(transaction);
-            logger.info(loggerLine);
-            logger.info("Make Payment " + transaction);
-            logger.info(loggerLine);
-            return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Payment success!", null);
-        } catch (ResourceNotFoundException e) {
-            logger.error(loggerLine);
-            logger.error(e.getMessage());
-            logger.error(loggerLine);
-            return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.getReferenceById(userDetails.getId());
+        Transaction transaction = transactionRepository.findById(transactionId).orElseThrow(() -> new ResourceNotFoundException("Transaction not found!"));
+        if (transaction.getUser() != user) {
+            throw new ResourceNotFoundException("Transaction is not found!");
         }
+        TransactionStatus transactionStatus = transactionStatusRepository.findByName(ETransactionStatus.PACKING).orElseThrow(() -> new ResourceNotFoundException("Transaction status not found!"));
+        transaction.setTransactionStatus(transactionStatus);
+        transactionRepository.save(transaction);
+        logger.info(loggerLine);
+        logger.info("Make Payment " + transaction);
+        logger.info(loggerLine);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Payment success!", null);
     }
 
     @Override
     public ResponseEntity<?> sendProduct(Long transactionId, String receipt) throws ResourceNotFoundException {
-        try {
-            UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            User user = userRepository.getReferenceById(userDetails.getId());
-            Transaction transaction = transactionRepository.findById(transactionId).orElseThrow(() -> new ResourceNotFoundException("Transaction not found!"));
-            if (transaction.getUser() != user) {
-                throw new ResourceNotFoundException("Transaction is not found!");
-            }
-            TransactionStatus transactionStatus = transactionStatusRepository.findByName(ETransactionStatus.SENT).orElseThrow(() -> new ResourceNotFoundException("Transaction status not found!"));
-            transaction.setTransactionStatus(transactionStatus);
-            transaction.setReceipt(receipt);
-            transactionRepository.save(transaction);
-            logger.info(loggerLine);
-            logger.info("Successfully input receipt! " + transaction);
-            logger.info(loggerLine);
-            return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Successfully input receipt!", null);
-        } catch (ResourceNotFoundException e) {
-            logger.error(loggerLine);
-            logger.error(e.getMessage());
-            logger.error(loggerLine);
-            return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.getReferenceById(userDetails.getId());
+        Transaction transaction = transactionRepository.findById(transactionId).orElseThrow(() -> new ResourceNotFoundException("Transaction not found!"));
+        if (transaction.getUser() != user) {
+            throw new ResourceNotFoundException("Transaction is not found!");
         }
+        TransactionStatus transactionStatus = transactionStatusRepository.findByName(ETransactionStatus.SENT).orElseThrow(() -> new ResourceNotFoundException("Transaction status not found!"));
+        transaction.setTransactionStatus(transactionStatus);
+        transaction.setReceipt(receipt);
+        transactionRepository.save(transaction);
+        logger.info(loggerLine);
+        logger.info("Successfully input receipt! " + transaction);
+        logger.info(loggerLine);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully input receipt!", null);
     }
     
     @Override
     public ResponseEntity<?> productDelivered(Long transactionId, String receipt) throws ResourceNotFoundException {
-        try {
-            UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            User user = userRepository.getReferenceById(userDetails.getId());
-            Transaction transaction = transactionRepository.findById(transactionId).orElseThrow(() -> new ResourceNotFoundException("Transaction not found!"));
-            if (transaction.getUser() != user) {
-                throw new ResourceNotFoundException("Transaction is not found!");
-            }
-            logger.info(loggerLine);
-            logger.info("Payment success " + transaction);
-            logger.info(loggerLine);
-            return ResponseHandler.generateSuccessResponse(HttpStatus.OK, ZonedDateTime.now(), "Payment success!", null);
-        } catch (ResourceNotFoundException e) {
-            logger.error(loggerLine);
-            logger.error(e.getMessage());
-            logger.error(loggerLine);
-            return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ZonedDateTime.now(), e.getMessage(), EErrorCode.MISSING_PARAM.getCode());
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.getReferenceById(userDetails.getId());
+        Transaction transaction = transactionRepository.findById(transactionId).orElseThrow(() -> new ResourceNotFoundException("Transaction not found!"));
+        if (transaction.getUser() != user) {
+            throw new ResourceNotFoundException("Transaction is not found!");
         }
+        logger.info(loggerLine);
+        logger.info("Payment success " + transaction);
+        logger.info(loggerLine);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Payment success!", null);
     }
 }
