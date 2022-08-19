@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.io.IOException;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -62,7 +64,7 @@ public class ProductController {
     @Operation(summary = "Upload a product for seller")
     @PostMapping("/product/upload")
     @PreAuthorize("hasAuthority('ROLE_SELLER')")
-    public ResponseEntity<?> create(@RequestBody UploadProductRequestDTO requestDTO) throws ResourceAlreadyExistException, ResourceNotFoundException {
+    public ResponseEntity<?> create(@Valid @RequestBody UploadProductRequestDTO requestDTO) throws ResourceAlreadyExistException, ResourceNotFoundException {
         return productService.createProduct(requestDTO);
     }
 }
