@@ -1,7 +1,7 @@
 package com.anbit.fashionist.domain.dto;
 
 
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 import lombok.*;
 
@@ -11,8 +11,14 @@ import lombok.*;
 @Setter
 @Builder
 public class AddCartRequestDTO {
+    @NotNull
+    @NotBlank
+    @Pattern(regexp = "[1-9]")
     private Long productId;
 
-    @Size(min = 1)
+    @Positive
+    @Pattern(regexp = "[1-9]")
+    @Max(1000)
+    @NotNull
     private Integer itemUnit;
 }
