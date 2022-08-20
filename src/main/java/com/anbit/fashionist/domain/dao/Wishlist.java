@@ -1,0 +1,38 @@
+package com.anbit.fashionist.domain.dao;
+
+import lombok.*;
+
+import javax.persistence.*;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Builder
+
+@Table(name = "wishlist")
+public class Wishlist {
+@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
+
+    @Override
+    public String toString() {
+        return "ProductServiceImpl{" +
+                "id=" + id +
+                "user_id=" + user +
+                ", product_id=" + product +
+                '}';
+
+
+    }
+}
