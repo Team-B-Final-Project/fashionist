@@ -5,6 +5,7 @@ import com.anbit.fashionist.domain.dto.SignInRequestDTO;
 import com.anbit.fashionist.domain.dto.SignUpRequestDTO;
 import com.anbit.fashionist.helper.ResourceAlreadyExistException;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
+import com.anbit.fashionist.helper.SignInFailException;
 import com.anbit.fashionist.service.AuthServiceImpl;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,12 +33,12 @@ public class AuthController {
      * Sign in and get the token for access
      * @param signInRequest
      * @return
+     * @throws SignInFailException
      */
     @Operation(summary = "Sign in and get the token for access")
     @PostMapping("/signin")
 
-    public ResponseEntity<?> authenticate(@Valid @RequestBody SignInRequestDTO signInRequest) throws ResourceNotFoundException
-    {
+    public ResponseEntity<?> authenticate(@Valid @RequestBody SignInRequestDTO signInRequest) throws SignInFailException {
         return authServiceImpl.authenticateUser(signInRequest);
     }
 
