@@ -1,6 +1,7 @@
 package com.anbit.fashionist.service;
 
 import com.anbit.fashionist.domain.common.UserDetailsImpl;
+import com.anbit.fashionist.domain.dao.Product;
 import com.anbit.fashionist.domain.dao.User;
 import com.anbit.fashionist.domain.dao.Wishlist;
 import com.anbit.fashionist.domain.dto.WishlistRequestDTO;
@@ -8,6 +9,7 @@ import com.anbit.fashionist.domain.dto.WishlistResponseDTO;
 import com.anbit.fashionist.handler.ResponseHandler;
 import com.anbit.fashionist.helper.ResourceAlreadyExistException;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
+import com.anbit.fashionist.repository.ProductRepository;
 import com.anbit.fashionist.repository.UserRepository;
 import com.anbit.fashionist.repository.WishlistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class WishlistServiceImpl implements WishlistService {
@@ -26,6 +29,9 @@ public class WishlistServiceImpl implements WishlistService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    ProductRepository productRepository;
 
     @Override
     public ResponseEntity<?> getAllWishlist() throws ResourceNotFoundException {
@@ -48,12 +54,29 @@ public class WishlistServiceImpl implements WishlistService {
 
     @Override
     public ResponseEntity<?> addWishlist(WishlistRequestDTO wishlistRequestDTO) throws ResourceNotFoundException, ResourceAlreadyExistException {
-        return null;
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Optional<User> user = userRepository.findByUsername(userDetails.getUsername());
+        Product product = productRepository.findById(wishlistRequestDTO.getProductId()).orElseThrow(() -> new ResourceNotFoundException("Product not found!"));
+        if (Boolean.TRUE.equals(wishlistRepository.existsByUserAndProduct(user.get(), product))) {
+            throw new ResourceAlreadyExistException("This product has been in the wishlist!");
+        }
+        Wishlist wishlist = Wishlist.builder()
+                .user(user.get())
+                .product(product)
+                .build();
+        this.wishlistRepository.save(wishlist);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Product added successfully to the wishlist!" , null);
     }
 
     @Override
-    public ResponseEntity<?> deleteWishlist(Long Id) throws ResourceNotFoundException {
-        return null;
+    public ResponseEntity<?> deleteWishlist(Long id) throws ResourceNotFoundException {
+        Wishlist wishlist = wishlistRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Cart not found!"));
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(!userDetails.getId().equals(wishlist.getUser().getId())){
+            throw new ResourceNotFoundException("You are not allowed to delete this wishlist!");
+        }
+        this.wishlistRepository.delete(wishlist);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK , "Product deleted from wishlist", null);
     }
 }
 
