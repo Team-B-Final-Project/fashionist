@@ -37,10 +37,13 @@ public class TransactionHistoryResponseDTO {
         this.sendAddress = responseDTO;
         this.sendAddress.setId(address.getId());
         this.sendAddress.setName(address.getName());
+        this.sendAddress.setRegion(
+            address.getVillage().getDistrict().getRegency().getProvince(), 
+            address.getVillage().getDistrict().getRegency(), 
+            address.getVillage().getDistrict(), 
+            address.getVillage()
+        );
         this.sendAddress.setPhoneNumber(address.getPhoneNumber());
-        this.sendAddress.setProvince(address.getProvince());
-        this.sendAddress.setCity(address.getCity());
-        this.sendAddress.setDistrict(address.getDistrict());
         this.sendAddress.setFullAddress(address.getFullAddress());
     }
 

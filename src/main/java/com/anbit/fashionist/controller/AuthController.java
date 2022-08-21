@@ -1,23 +1,24 @@
 package com.anbit.fashionist.controller;
 
-import com.anbit.fashionist.domain.dto.*;
+import java.util.UUID;
 
-import com.anbit.fashionist.helper.PasswordNotMatchException;
-import com.anbit.fashionist.helper.ResourceAlreadyExistException;
-import com.anbit.fashionist.helper.ResourceNotFoundException;
-import com.anbit.fashionist.helper.WrongOTPException;
-import com.anbit.fashionist.service.AuthServiceImpl;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import javax.mail.MessagingException;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.mail.MessagingException;
-import javax.validation.Valid;
-import java.util.UUID;
+import com.anbit.fashionist.domain.dto.*;
+import com.anbit.fashionist.helper.PasswordNotMatchException;
+import com.anbit.fashionist.helper.ResourceAlreadyExistException;
+import com.anbit.fashionist.helper.ResourceNotFoundException;
+import com.anbit.fashionist.helper.SignInFailException;
+import com.anbit.fashionist.helper.WrongOTPException;
+import com.anbit.fashionist.service.AuthServiceImpl;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "1. Auth Controller")
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -31,12 +32,12 @@ public class AuthController {
      * Sign in and get the token for access
      * @param signInRequest
      * @return
+     * @throws SignInFailException
      */
     @Operation(summary = "Sign in and get the token for access")
     @PostMapping("/signin")
 
-    public ResponseEntity<?> authenticate(@Valid @RequestBody SignInRequestDTO signInRequest) throws ResourceNotFoundException
-    {
+    public ResponseEntity<?> authenticate(@Valid @RequestBody SignInRequestDTO signInRequest) throws SignInFailException {
         return authServiceImpl.authenticateUser(signInRequest);
     }
 
@@ -60,7 +61,7 @@ public class AuthController {
      * @throws ResourceNotFoundException
      * @throws MessagingException
      */
-    @PostMapping("/forget_password")
+    @PostMapping("/forgetpassword")
     public ResponseEntity<?> forgetPassword(@Valid @RequestBody ForgetPasswordRequestDTO forgetPasswordRequestDTO) throws ResourceNotFoundException, MessagingException {
         return authServiceImpl.forgetPassword(forgetPasswordRequestDTO);
     }

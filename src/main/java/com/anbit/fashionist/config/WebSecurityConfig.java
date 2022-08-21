@@ -1,6 +1,8 @@
 package com.anbit.fashionist.config;
 
 import com.anbit.fashionist.service.UserDetailsServiceImpl;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +21,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
+@Setter
+@Getter
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -64,8 +68,9 @@ public class WebSecurityConfig {
         http.cors().and().csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests().antMatchers("/api/v1/auth/**", "/api/v1/swagger-ui/**", "/api/v1/api-docs/**").permitAll()
-                .anyRequest().authenticated();
+                .authorizeRequests().antMatchers("/api/v1/auth/**", "/api/v1/swagger-ui/**", "/api/v1/api-docs/**", "/api/v1/region/**").permitAll()
+                .anyRequest().authenticated().and()  
+                .httpBasic();
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         http.headers().frameOptions().sameOrigin();
 
