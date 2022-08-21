@@ -29,11 +29,12 @@ public class AddressController {
      * Add new address for customer or seller
      * @param requestDTO
      * @return
+     * @throws ResourceNotFoundException
      */
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER') or hasAuthority('ROLE_SELLER')")
     @Operation(summary = "Add new address for customer or seller")
     @PostMapping("/add")
-    public ResponseEntity<?> addAddress(@RequestBody CreateAddressRequestDTO requestDTO){
+    public ResponseEntity<?> addAddress(@RequestBody CreateAddressRequestDTO requestDTO) throws ResourceNotFoundException{
         return addressService.createAddress(requestDTO); 
     }
 
