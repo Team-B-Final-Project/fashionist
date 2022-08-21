@@ -1,24 +1,22 @@
 package com.anbit.fashionist.service;
 
-import com.anbit.fashionist.controller.AuthController;
-import com.anbit.fashionist.domain.common.UserDetailsImpl;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
+import javax.mail.MessagingException;
+
+
 import com.anbit.fashionist.domain.dao.Role;
-import com.anbit.fashionist.domain.dao.User;
-import com.anbit.fashionist.config.JwtUtils;
-import com.anbit.fashionist.constant.ERole;
-
-import com.anbit.fashionist.domain.dto.JwtResponseDTO;
-import com.anbit.fashionist.domain.dto.SignInRequestDTO;
-
 import com.anbit.fashionist.handler.ResponseHandler;
-import com.anbit.fashionist.helper.ResourceNotFoundException;
-import com.anbit.fashionist.helper.SignInFailException;
-import com.anbit.fashionist.repository.RoleRepository;
-import com.anbit.fashionist.repository.UserRepository;
-
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,13 +26,22 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.anbit.fashionist.domain.dto.SignUpRequestDTO;
+import com.anbit.fashionist.config.JwtUtils;
+import com.anbit.fashionist.constant.ERole;
+import com.anbit.fashionist.controller.AuthController;
+import com.anbit.fashionist.domain.common.UserDetailsImpl;
+import com.anbit.fashionist.domain.dao.ResetPasswordToken;
+import com.anbit.fashionist.domain.dao.User;
+import com.anbit.fashionist.domain.dto.*;
+import com.anbit.fashionist.helper.PasswordNotMatchException;
 import com.anbit.fashionist.helper.ResourceAlreadyExistException;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import com.anbit.fashionist.helper.ResourceNotFoundException;
+import com.anbit.fashionist.helper.SignInFailException;
+import com.anbit.fashionist.helper.WrongOTPException;
+import com.anbit.fashionist.repository.ResetPasswordTokenRepository;
+import com.anbit.fashionist.repository.RoleRepository;
+import com.anbit.fashionist.repository.UserRepository;
+import com.anbit.fashionist.util.EmailSender;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -43,9 +50,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     UserRepository userRepository;
-    
+
     @Autowired
     RoleRepository roleRepository;
+
+    @Autowired
+    ResetPasswordTokenRepository resetPasswordTokenRepository;
 
     @Autowired
     PasswordEncoder encoder;
@@ -53,11 +63,29 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     JwtUtils jwtUtils;
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+    @Autowired
+    OTPServiceImpl otpService;
+
+    @Autowired
+    EmailSender emailSender;
+
+    @Value("${com.anbit.fashionist.domain}")
+    String domain;
+
+    @Value("${server.port}")
+    String port;
+
+    @Value("${com.anbit.fashionist.name}")
+    String projectName;
+
+    @Value("${com.anbit.fashionist.team}")
+    String projectTeam;
+
+    private final HttpHeaders headers = new HttpHeaders();
+    private static final Logger logger = (Logger) LoggerFactory.getLogger(AuthController.class);
     private static final String loggerLine = "---------------------------------------";
 
     @Override
-
     public ResponseEntity<?> authenticateUser(SignInRequestDTO loginRequest) throws SignInFailException {
         User user = userRepository.findByUsername(loginRequest.getUsername()).orElseThrow(() -> new SignInFailException("Username or password is wrong!"));
         Boolean isPasswordCorrect = encoder.matches(loginRequest.getPassword(), user.getPassword());
@@ -98,7 +126,7 @@ public class AuthServiceImpl implements AuthService {
                 .password(encoder.encode(signUpRequestDTO.getPassword()))
                 .build();
         Set<Role> roles = new HashSet<>();
-        Role customer = roleRepository.findByName(ERole.ROLE_CUSTOMER).orElseThrow(() -> new ResourceNotFoundException("Role not found!"));
+        com.anbit.fashionist.domain.dao.Role customer = roleRepository.findByName(ERole.ROLE_CUSTOMER).orElseThrow(() -> new ResourceNotFoundException("Role not found!"));
         roles.add(customer);
         user.setRoles(roles);
         userRepository.save(user);
@@ -106,5 +134,62 @@ public class AuthServiceImpl implements AuthService {
         logger.info("Register User " + user);
         logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "You have been registered successfully!", null);
+    }
+
+    @Override
+    public ResponseEntity<?> forgetPassword(ForgetPasswordRequestDTO forgetPasswordRequestDTO) throws ResourceNotFoundException, MessagingException {
+        headers.set("APP-NAME", projectName + "-API " + projectTeam);
+
+            if (!userRepository.existsByEmailAddress(forgetPasswordRequestDTO.getEmailAddress())) {
+                throw new ResourceNotFoundException("User with email " + forgetPasswordRequestDTO.getEmailAddress() + " does not exist!");
+            }
+            String emailAddress = forgetPasswordRequestDTO.getEmailAddress();
+            int otp = otpService.generateOTP(emailAddress);
+            emailSender.sendOtpMessage(emailAddress, "FASHIONIST Reset Password Request", String.valueOf(otp));
+            logger.info(loggerLine);
+            logger.info("Forget Password " + emailAddress);
+            logger.info(loggerLine);
+            return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "OTP has been sent to your email!", null);
+
+    }
+
+    @Override
+    public ResponseEntity<?> confirmOTP(ConfirmOTPRequestDTO confirmOTPRequestDTO) throws WrongOTPException, ResourceNotFoundException{
+        headers.set("APP-NAME", projectName + "-API " + projectTeam);
+
+            if (otpService.getOTP(confirmOTPRequestDTO.getEmailAddress()) == 0) {
+                throw new ResourceNotFoundException("You have not generated OTP!");
+            }else if (otpService.getOTP(confirmOTPRequestDTO.getEmailAddress()) != confirmOTPRequestDTO.getOtp()) {
+                throw new WrongOTPException("Wrong OTP!");
+            }
+            resetPasswordTokenRepository.deleteByEmailAddress(confirmOTPRequestDTO.getEmailAddress());
+            ResetPasswordToken resetPasswordToken = resetPasswordTokenRepository.save(ResetPasswordToken.builder().emailAddress(confirmOTPRequestDTO.getEmailAddress()).build());
+            logger.info(loggerLine);
+            logger.info("Confirm OTP " + resetPasswordToken);
+            logger.info(loggerLine);
+            return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "OTP has been confirmed!", null);
+
+    }
+
+    @Override
+    public ResponseEntity<?> resetPassword(UUID token , ResetPasswordRequestDTO resetPasswordRequestDTO) throws PasswordNotMatchException, ResourceNotFoundException {
+        headers.set("APP-NAME", projectName + "-API " + projectTeam);
+
+            if (!resetPasswordRequestDTO.getNewPassword().equals(resetPasswordRequestDTO.getConfirmPassword())) {
+                throw new PasswordNotMatchException("Password not match!");
+            }
+            Optional<ResetPasswordToken> resetPasswordToken = resetPasswordTokenRepository.findByToken(token);
+            if (resetPasswordToken.isEmpty()) {
+                throw new ResourceNotFoundException("Token is not valid!");
+            }
+            Optional<User> optionalUser = userRepository.findByEmailAddress(resetPasswordToken.get().getEmailAddress());
+            User user = optionalUser.get();
+            user.setPassword(encoder.encode(resetPasswordRequestDTO.getNewPassword()));
+            userRepository.save(user);
+            resetPasswordTokenRepository.deleteByEmailAddress(resetPasswordToken.get().getEmailAddress());
+            logger.info(loggerLine);
+            logger.info("Reset Password " + user);
+            logger.info(loggerLine);
+            return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Password has been reset successfully!", null);
     }
 }

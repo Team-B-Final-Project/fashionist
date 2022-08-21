@@ -53,7 +53,7 @@ public class ProductController {
 
     /***
      * Upload a product for seller
-     * @param productRequestDTO
+     * @param requestDTO
      * @return
      * @throws ResourceAlreadyExistException
      * @throws ResourceNotFoundException
