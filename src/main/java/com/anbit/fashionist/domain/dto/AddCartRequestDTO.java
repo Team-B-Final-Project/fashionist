@@ -12,13 +12,13 @@ import lombok.*;
 @Builder
 public class AddCartRequestDTO {
     @NotNull
-    @NotBlank
-    @Pattern(regexp = "[1-9]")
+    @Min(1)
+    @Pattern(regexp = "^[0-9]+$")
     private Long productId;
 
-    @Positive
-    @Pattern(regexp = "[1-9]")
-    @Max(1000)
+    @Pattern(regexp = "^[0-9]+$")
+    @Min(1)
+    @Max(100)
     @NotNull
     private Integer itemUnit;
 }

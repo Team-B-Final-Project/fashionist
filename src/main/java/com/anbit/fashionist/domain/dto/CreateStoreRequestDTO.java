@@ -1,5 +1,11 @@
 package com.anbit.fashionist.domain.dto;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
 import lombok.*;
 
 @AllArgsConstructor
@@ -8,7 +14,12 @@ import lombok.*;
 @Setter
 @Builder
 public class CreateStoreRequestDTO {
+    @NotBlank
+    @Size(min = 1, max = 20)
+    @Pattern(regexp = "^[a-zA-Z0-9./-]+$")
     private String storeName;
 
+    @NotNull
+    @Min(1)
     private Long addressId;
 }

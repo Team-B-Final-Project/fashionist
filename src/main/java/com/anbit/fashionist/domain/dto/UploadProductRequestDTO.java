@@ -12,7 +12,7 @@ import lombok.*;
 public class UploadProductRequestDTO {
     
     @NotBlank
-    @Pattern(regexp = "^[a-zA-Z0-9-/+()., ?]+$", message = "can only contain letters, numbers and dashes")
+    @Pattern(regexp = "^[a-zA-Z0-9-/+()., ?]+$", message = "format is not valid")
     private String name;
     
     @NotBlank
@@ -27,6 +27,6 @@ public class UploadProductRequestDTO {
     private Integer stock;
     
     @NotBlank
-    @Pattern(regexp = "^[a-zA-Z0-9._]+$", message = "can only contain letters and underscore")
+    @Pattern(regexp = "^[a-zA-Z0-9_]+$", message = "can only contain letters and underscore")
     private String categoryName;
 }

@@ -1,5 +1,7 @@
 package com.anbit.fashionist.controller;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,7 +36,7 @@ public class AddressController {
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER') or hasAuthority('ROLE_SELLER')")
     @Operation(summary = "Add new address for customer or seller")
     @PostMapping("/add")
-    public ResponseEntity<?> addAddress(@RequestBody CreateAddressRequestDTO requestDTO) throws ResourceNotFoundException{
+    public ResponseEntity<?> addAddress(@Valid @RequestBody CreateAddressRequestDTO requestDTO) throws ResourceNotFoundException{
         return addressService.createAddress(requestDTO); 
     }
 

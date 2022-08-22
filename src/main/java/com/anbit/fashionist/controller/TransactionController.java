@@ -1,5 +1,7 @@
 package com.anbit.fashionist.controller;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,7 +32,7 @@ public class TransactionController {
     @Operation(summary = "Create a transaction with selected products")
     @PostMapping("/transaction/create")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
-    public ResponseEntity<?> createTransaction(@RequestBody CreateTransactionRequestDTO requestDTO) throws ResourceNotFoundException {
+    public ResponseEntity<?> createTransaction(@Valid @RequestBody CreateTransactionRequestDTO requestDTO) throws ResourceNotFoundException {
         return transactionService.createTransaction(requestDTO);
     }
 
@@ -55,7 +57,7 @@ public class TransactionController {
     @Operation(summary = "Get details of product we bought")
     @GetMapping("/transaction/{id}")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
-    public ResponseEntity<?> transactionHistory(@PathVariable("id") Long id) throws ResourceNotFoundException{
+    public ResponseEntity<?> transactionHistory(@Valid @PathVariable("id") Long id) throws ResourceNotFoundException{
         return transactionService.getTransactionHistory(id);
     }
 
@@ -68,7 +70,7 @@ public class TransactionController {
     @Operation(summary = "Trigger when user pay transaction")
     @GetMapping("/transaction/pay")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
-    public ResponseEntity<?> transactionPay(@RequestParam("id") Long transactionId) throws ResourceNotFoundException{
+    public ResponseEntity<?> transactionPay(@Valid @RequestParam("id") Long transactionId) throws ResourceNotFoundException{
         return transactionService.makePayment(transactionId);
     }
 }
