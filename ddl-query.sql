@@ -181,6 +181,18 @@ CREATE TABLE wishlist (
     CONSTRAINT "wishlist_pkey" primary key ("id")
 );
 
+CREATE TABLE reset_password_token (
+    "id" serial4 NOT NULL,
+    "email_address" varchar(50) NOT NULL,
+    "token" uuid NOT NULl,
+    CONSTRAINT "reset_password_token_pkey" ("id")	
+);
+
+ALTER TABLE public.reset_password_token
+ADD CONSTRAINT "reset_password_token_fkey"
+FOREIGN KEY("email_address")
+REFERENCES public.user("email");
+
 ALTER TABLE public.product_picture
 ADD CONSTRAINT "product_fkey"
 FOREIGN KEY("product_id")
