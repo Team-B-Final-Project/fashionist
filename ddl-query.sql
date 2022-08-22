@@ -185,8 +185,27 @@ CREATE TABLE reset_password_token (
     "id" serial4 NOT NULL,
     "email_address" varchar(50) NOT NULL,
     "token" uuid NOT NULl,
-    CONSTRAINT "reset_password_token_pkey" ("id")	
+    CONSTRAINT "reset_password_token_pkey" primary key ("id")	
 );
+
+CREATE TABLE public.review(
+"id" bigserial NOT NULL,
+"rating" float NOT NULL,
+"comment" varchar NOT NULL,
+"user_id" bigserial NOT NULL,
+"product_id" bigserial NOT NULL,
+constraint "review_pkey" primary key ("id")
+);
+
+ALTER TABLE public.review
+add constraint "user_id_fkey"
+foreign key("user_id")
+references public.user("id");
+
+ALTER TABLE public.review
+add constraint "product_id_fkey"
+foreign key("product_id")
+references public.product("id");
 
 ALTER TABLE public.reset_password_token
 ADD CONSTRAINT "email_fkey"
