@@ -189,7 +189,7 @@ CREATE TABLE reset_password_token (
 );
 
 ALTER TABLE public.reset_password_token
-ADD CONSTRAINT "reset_password_token_fkey"
+ADD CONSTRAINT "email_fkey"
 FOREIGN KEY("email_address")
 REFERENCES public.user("email");
 
