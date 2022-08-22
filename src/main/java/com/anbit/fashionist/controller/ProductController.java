@@ -11,6 +11,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.io.IOException;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,14 +43,14 @@ public class ProductController {
      */
     @Operation(summary = "Search product for customer with keyword and do some filter and sorting")
     @GetMapping("/products/search")
-    public ResponseEntity<?> search(@RequestParam(value = "keyword", required = true) String keyword,
-                                    @RequestParam(value = "category",required = false) String category,
-                                    @RequestParam(value = "locations", required = false) String locations,
-                                    @RequestParam(value = "sortBy", required = false) String sortBy,
-                                    @RequestParam(value = "order", required = false) String order,
-                                    @RequestParam(value = "minPrice", required = false) Float minPrice,
-                                    @RequestParam(value = "maxPrice", required = false) Float maxPrice,
-                                    @RequestParam(value = "page", required = true, defaultValue = "1") int page) throws ResourceNotFoundException {
+    public ResponseEntity<?> search(@Valid @RequestParam(value = "keyword", required = true) @Pattern(regexp = "^[a-zA-Z0-9-/+()., ?]+$", message = "format is not valid") String keyword,
+                                    @Valid @RequestParam(value = "category",required = false) String category,
+                                    @Valid @RequestParam(value = "locations", required = false) String locations,
+                                    @Valid @RequestParam(value = "sortBy", required = false) String sortBy,
+                                    @Valid @RequestParam(value = "order", required = false) String order,
+                                    @Valid @RequestParam(value = "minPrice", required = false) Float minPrice,
+                                    @Valid @RequestParam(value = "maxPrice", required = false) Float maxPrice,
+                                    @Valid @RequestParam(value = "page", required = true, defaultValue = "1") int page) throws ResourceNotFoundException {
         return productService.searchProducts(keyword, category, locations, sortBy, order, minPrice, maxPrice, page);
     }
 
@@ -62,7 +65,7 @@ public class ProductController {
     @Operation(summary = "Upload a product for seller")
     @PostMapping("/product/upload")
     @PreAuthorize("hasAuthority('ROLE_SELLER')")
-    public ResponseEntity<?> create(@RequestBody UploadProductRequestDTO requestDTO) throws ResourceAlreadyExistException, ResourceNotFoundException {
+    public ResponseEntity<?> create(@Valid @RequestBody UploadProductRequestDTO requestDTO) throws ResourceAlreadyExistException, ResourceNotFoundException {
         return productService.createProduct(requestDTO);
     }
 }

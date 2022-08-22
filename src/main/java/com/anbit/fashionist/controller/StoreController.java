@@ -1,5 +1,7 @@
 package com.anbit.fashionist.controller;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,6 +15,7 @@ import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.service.StoreServiceImpl;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -34,7 +37,7 @@ public class StoreController {
     @Operation(summary = "Open store for user who doesn't have any store yet")
     @PostMapping("/store/create")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
-    public ResponseEntity<?> openStore(CreateStoreRequestDTO requestDTO) throws ResourceNotFoundException, ResourceAlreadyExistException {
+    public ResponseEntity<?> openStore(@Valid @RequestBody CreateStoreRequestDTO requestDTO) throws ResourceNotFoundException, ResourceAlreadyExistException {
         return storeService.createStore(requestDTO);
     }
 }

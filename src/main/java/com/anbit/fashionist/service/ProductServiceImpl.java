@@ -92,8 +92,8 @@ public class ProductServiceImpl implements ProductService{
         }
         Map<String, Object> pagination = new HashMap<>();
         pagination.put("currentPage", page);
-        pagination.put("nextPage", null);
-        pagination.put("previousPage", null);
+        pagination.put("nextPage", pageProduct.hasNext());
+        pagination.put("previousPage", pageProduct.hasPrevious());
         pagination.put("totalPages", pageProduct.getTotalPages());
         pagination.put("perPage", 30);
         pagination.put("totalElements", pageProduct.getTotalElements());
@@ -111,7 +111,13 @@ public class ProductServiceImpl implements ProductService{
         if (store.equals(null)) {
             throw new ResourceNotFoundException("You don't have any store yet!");
         }
-        Category category = categoryRepository.findByName(ECategory.valueOf(requestDTO.getCategoryName().toUpperCase())).orElseThrow(() -> new ResourceNotFoundException("Category not found!"));
+        ECategory eCategory;
+        try {
+            eCategory = ECategory.valueOf(requestDTO.getCategoryName().toUpperCase());
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("Category name is not valid");
+        }
+        Category category = categoryRepository.findByName(eCategory).orElseThrow(() -> new ResourceNotFoundException("Category not found!"));
         Product product = Product.builder()
             .name(requestDTO.getName())
             .price(requestDTO.getPrice())

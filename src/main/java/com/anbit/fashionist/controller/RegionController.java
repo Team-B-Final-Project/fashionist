@@ -1,5 +1,7 @@
 package com.anbit.fashionist.controller;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,7 +32,7 @@ public class RegionController {
     @Operation(summary = "Get data of provinces")
     @GetMapping("/provinces")
     @PreAuthorize("permitAll()")
-    public ResponseEntity<?> getProvinces(@RequestParam(value  = "name", required = false) String name) throws ResourceNotFoundException {
+    public ResponseEntity<?> getProvinces(@Valid @RequestParam(value  = "name", required = false) String name) throws ResourceNotFoundException {
         return regionService.getProvinces(name); 
     }
 
@@ -45,8 +47,8 @@ public class RegionController {
     @GetMapping("/regencies")
     @PreAuthorize("permitAll()")
     public ResponseEntity<?> getRegencies(
-        @RequestParam(value  = "name", required = false) String name, 
-        @RequestParam(value  = "provinceId", required = true) Integer provinceId) throws ResourceNotFoundException {
+        @Valid @RequestParam(value  = "name", required = false) String name, 
+        @Valid @RequestParam(value  = "provinceId", required = true) Integer provinceId) throws ResourceNotFoundException {
         return regionService.getRegencies(name, provinceId); 
     }
 
@@ -61,8 +63,8 @@ public class RegionController {
     @GetMapping("/districts")
     @PreAuthorize("permitAll()")
     public ResponseEntity<?> getDistricts(
-        @RequestParam(value  = "name", required = false) String name, 
-        @RequestParam(value  = "regencyId", required = true) Integer regId) throws ResourceNotFoundException {
+        @Valid @RequestParam(value  = "name", required = false) String name, 
+        @Valid @RequestParam(value  = "regencyId", required = true) Integer regId) throws ResourceNotFoundException {
         return regionService.getDistricts(name, regId); 
     }
 
@@ -77,15 +79,15 @@ public class RegionController {
     @GetMapping("/villages")
     @PreAuthorize("permitAll()")
     public ResponseEntity<?> getVillages(
-        @RequestParam(value  = "name", required = false) String name, 
-        @RequestParam(value  = "districtId", required = true) Integer districtId) throws ResourceNotFoundException {
+        @Valid @RequestParam(value  = "name", required = false) String name, 
+        @Valid @RequestParam(value  = "districtId", required = true) Integer districtId) throws ResourceNotFoundException {
         return regionService.getVillages(name, districtId); 
     }
 
     @Operation(summary = "Get data of villages")
     @GetMapping("/postal_codes")
     @PreAuthorize("permitAll()")
-    public ResponseEntity<?> getPostalCodes(@RequestParam(value  = "villageId", required = true) Long villageId) throws ResourceNotFoundException {
+    public ResponseEntity<?> getPostalCodes(@Valid @RequestParam(value  = "villageId", required = true) Long villageId) throws ResourceNotFoundException {
         return regionService.getPostalCodes(villageId); 
     }
 }
