@@ -2,12 +2,10 @@ package com.anbit.fashionist.domain.dao;
 
 import lombok.*;
 
-import javax.management.ObjectName;
+
 import javax.persistence.*;
 
 import com.anbit.fashionist.constant.ERole;
-
-import java.util.List;
 
 
 @Getter

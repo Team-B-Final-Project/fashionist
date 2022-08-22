@@ -1,6 +1,6 @@
 package com.anbit.fashionist.domain.dto;
 
-import com.anbit.fashionist.domain.dao.Product;
+import javax.validation.constraints.*;
 
 import lombok.*;
 
@@ -11,22 +11,22 @@ import lombok.*;
 @Builder
 public class UploadProductRequestDTO {
     
+    @NotBlank
+    @Pattern(regexp = "^[a-zA-Z0-9-/+()., ?]+$", message = "format is not valid")
     private String name;
     
+    @NotBlank
     private String description;
     
+    @NotNull
+    @Min(1)
     private Float price;
     
+    @NotNull
+    @Min(1)
     private Integer stock;
-
+    
+    @NotBlank
+    @Pattern(regexp = "^[a-zA-Z0-9_]+$", message = "can only contain letters and underscore")
     private String categoryName;
-
-    public Product convertToEntity() {
-        return Product.builder()
-                .name(this.name)
-                .description(this.description)
-                .price(this.price)
-                .stock(this.stock)
-                .build();
-    }
 }

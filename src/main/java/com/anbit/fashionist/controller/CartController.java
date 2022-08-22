@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +45,7 @@ public class CartController {
      */
     @PatchMapping("/edit/cart")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
-    public ResponseEntity<?> edit(@RequestBody EditCartTotalItemRequestDTO requestDTO) throws ResourceNotFoundException {
+    public ResponseEntity<?> edit(@Valid @RequestBody EditCartTotalItemRequestDTO requestDTO) throws ResourceNotFoundException {
         return cartService.editCartTotalItem(requestDTO);
     }
     
@@ -55,7 +57,7 @@ public class CartController {
      */
     @DeleteMapping("/delete/cart/{id}")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
-    public ResponseEntity<?> delete(@PathVariable Long id) throws ResourceNotFoundException {
+    public ResponseEntity<?> delete(@Valid @PathVariable @Min(1) @Pattern(regexp = "^/d$") Long id) throws ResourceNotFoundException {
         return cartService.deleteCart(id);
     }
 }
