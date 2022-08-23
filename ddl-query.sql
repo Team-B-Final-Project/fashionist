@@ -376,5 +376,21 @@ alter table public.address
 add constraint village_fkey 
 foreign key(village_id) 
 references public.village(id);
+--------------------------------------------
+CREATE TABLE public.product_category (
+    "product_id" bigserial NOT NULL,
+    "category_id" serial4 NOT NULL,
+    CONSTRAINT "product_category_pkey" PRIMARY KEY("product_id", "category_id")
+);
+
+ALTER TABLE public.product_category
+ADD CONSTRAINT "product_fkey"
+FOREIGN KEY("product_id")
+REFERENCES public.product("id");
+
+ALTER TABLE public.product_category
+ADD CONSTRAINT "category_fkey"
+FOREIGN KEY("category_id")
+REFERENCES public.category("id");
 
 
