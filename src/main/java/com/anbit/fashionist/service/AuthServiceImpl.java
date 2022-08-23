@@ -1,7 +1,7 @@
 package com.anbit.fashionist.service;
 
-import com.anbit.fashionist.controller.AuthController;
 import com.anbit.fashionist.domain.common.UserDetailsImpl;
+import com.anbit.fashionist.domain.dao.ProfilePicture;
 import com.anbit.fashionist.domain.dao.Role;
 import com.anbit.fashionist.domain.dao.User;
 import com.anbit.fashionist.config.JwtUtils;
@@ -16,8 +16,6 @@ import com.anbit.fashionist.helper.SignInFailException;
 import com.anbit.fashionist.repository.RoleRepository;
 import com.anbit.fashionist.repository.UserRepository;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +40,9 @@ public class AuthServiceImpl implements AuthService {
     AuthenticationManager authenticationManager;
 
     @Autowired
+    ProfileService profileService;
+
+    @Autowired
     UserRepository userRepository;
     
     @Autowired
@@ -53,11 +54,7 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     JwtUtils jwtUtils;
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
-    private static final String loggerLine = "---------------------------------------";
-
     @Override
-
     public ResponseEntity<?> authenticateUser(SignInRequestDTO loginRequest) throws SignInFailException {
         User user = userRepository.findByUsername(loginRequest.getUsername()).orElseThrow(() -> new SignInFailException("Username or password is wrong!"));
         Boolean isPasswordCorrect = encoder.matches(loginRequest.getPassword(), user.getPassword());
@@ -72,9 +69,6 @@ public class AuthServiceImpl implements AuthService {
         String jwt = jwtUtils.generateJwtToken(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
-        logger.info(loggerLine);
-        logger.info("Aunthenticate User " + authentication);
-        logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully login!", new JwtResponseDTO(jwt, userDetails.getUsername(), roles));
     }
 
@@ -89,7 +83,9 @@ public class AuthServiceImpl implements AuthService {
         if (userRepository.existsByPhoneNumber(signUpRequestDTO.getPhoneNumber())) {
             throw new ResourceAlreadyExistException("Phone already exists!");
         }
+        ProfilePicture profilePicture = profileService.getDefaultProfilePicture();
         User user = User.builder()
+                .profilePicture(profilePicture)
                 .firstName(signUpRequestDTO.getFirstName())
                 .lastName(signUpRequestDTO.getLastName())
                 .username(signUpRequestDTO.getUsername())
@@ -102,9 +98,13 @@ public class AuthServiceImpl implements AuthService {
         roles.add(customer);
         user.setRoles(roles);
         userRepository.save(user);
-        logger.info(loggerLine);
-        logger.info("Register User " + user);
-        logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "You have been registered successfully!", null);
+    }
+
+    @Override
+    public User getCurrentUser() {
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.getReferenceById(userDetails.getId());
+        return user;
     }
 }

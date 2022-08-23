@@ -19,7 +19,8 @@ public enum EErrorCode {
     ACCOUNT_DISABLED(1302, "You Account is disabled by the admin"),
     INVALID_PHONE_NUMBER(1303, "Invalid phone number"),
     RESOURCE_EXIST(1304, "Resource already exists"),
-    WRONG_OTP(1305, "Wrong OTP value");
+    WRONG_OTP(1305, "Wrong OTP value"),
+    FILE_NOT_EXIST(1306, "File not exist");
 
 
     private final int code;
