@@ -14,6 +14,8 @@ import com.anbit.fashionist.repository.ProductPictureRepository;
 import com.anbit.fashionist.repository.ProductRepository;
 import com.anbit.fashionist.repository.UserRepository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -55,6 +57,10 @@ public class ProductServiceImpl implements ProductService{
     @Autowired
     ProductPictureRepository productPictureRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger("ResponseHandler");
+    
+    private static final String loggerLine = "---------------------------------------";
+
     @Override
     public ResponseEntity<?> searchProducts(
             String keyword, 
@@ -92,6 +98,9 @@ public class ProductServiceImpl implements ProductService{
         pagination.put("totalPages", pageProduct.getTotalPages());
         pagination.put("perPage", 30);
         pagination.put("totalElements", pageProduct.getTotalElements());
+        logger.info(loggerLine);
+        logger.info("Successfully reterieve data!");
+        logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponseWithPagination(HttpStatus.OK, "Successfully reterieve data!", searchProductResponseDTOS, pagination);
     }
 
@@ -112,6 +121,9 @@ public class ProductServiceImpl implements ProductService{
             .category(category)
             .build();
         productRepository.save(product);
+        logger.info(loggerLine);
+        logger.info("Product created successfully!");
+        logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, "Product created successfully!", null);
     }
 }

@@ -2,6 +2,8 @@ package com.anbit.fashionist.service;
 
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +40,10 @@ public class StoreServiceImpl implements StoreService {
     @Autowired
     RoleRepository roleRepositor;
 
+    private static final Logger logger = LoggerFactory.getLogger("ResponseHandler");
+    
+    private static final String loggerLine = "---------------------------------------";
+
     @Override
     public ResponseEntity<?> createStore(CreateStoreRequestDTO requestDTO) throws ResourceAlreadyExistException, ResourceNotFoundException {
         User user = authService.getCurrentUser();
@@ -59,6 +65,9 @@ public class StoreServiceImpl implements StoreService {
         roles.add(seller);
         user.setRoles(roles);
         userRepository.save(user);
+        logger.info(loggerLine);
+        logger.info(store.toString());
+        logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, "Successfully create new store!", null);
     }
 }

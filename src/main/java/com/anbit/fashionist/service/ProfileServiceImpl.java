@@ -2,6 +2,8 @@ package com.anbit.fashionist.service;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -46,6 +48,10 @@ public class ProfileServiceImpl implements ProfileService {
     @Value("${com.anbit.fashionist.upload-dir}")
     String uploadDirectory;
 
+    private static final Logger logger = LoggerFactory.getLogger("ResponseHandler");
+    
+    private static final String loggerLine = "---------------------------------------";
+
     @Override
     public ResponseEntity<?> getProfile() {
         User user = authService.getCurrentUser();
@@ -59,6 +65,9 @@ public class ProfileServiceImpl implements ProfileService {
             .dateOfBirth(user.getDateOfBirth())
             .phoneNumber(user.getPhoneNumber())
             .build();
+        logger.info(loggerLine);
+        logger.info(responseDTO.toString());
+        logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully retrieved data!", responseDTO);
     }
 
@@ -71,6 +80,9 @@ public class ProfileServiceImpl implements ProfileService {
         user.setDateOfBirth(requestDTO.getDateOfBirth());
         user.setPhoneNumber(requestDTO.getPhoneNumber());
         User editedUser = userRepository.save(user);
+        logger.info(loggerLine);
+        logger.info(editedUser.toString());
+        logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully update profile!", editedUser);
     }
     
@@ -93,6 +105,9 @@ public class ProfileServiceImpl implements ProfileService {
             profilePictureRepository.delete(currentProfilePicture);
         }
         userRepository.save(user);
+        logger.info(loggerLine);
+        logger.info(user.toString());
+        logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully update profile picture!", null);
     }
 
@@ -100,6 +115,9 @@ public class ProfileServiceImpl implements ProfileService {
     public ResponseEntity<byte[]> getProfilePicture(String fileName) throws IOException {
         ClassPathResource file = new ClassPathResource("file_upload/images/profile_picture/" + fileName);
         byte[] bytes = StreamUtils.copyToByteArray(file.getInputStream());
+        logger.info(loggerLine);
+        logger.info(fileName);
+        logger.info(loggerLine);
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(bytes);
     }
 

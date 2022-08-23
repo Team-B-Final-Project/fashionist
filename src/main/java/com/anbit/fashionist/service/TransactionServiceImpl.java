@@ -7,6 +7,8 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -75,6 +77,10 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Autowired
     RandomString randomString;
+
+    private static final Logger logger = LoggerFactory.getLogger("ResponseHandler");
+    
+    private static final String loggerLine = "---------------------------------------";
     
     @Override
     public ResponseEntity<?> createTransaction(CreateTransactionRequestDTO requestDTO) throws ResourceNotFoundException {
@@ -123,6 +129,9 @@ public class TransactionServiceImpl implements TransactionService {
             cartRepository.delete(cart);
         }
         String virtualAccount = randomString.generateVirtualAccount(16);
+        logger.info(loggerLine);
+        logger.info(virtualAccount);
+        logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "New transaction is created successfully!", new CreateTransactionResponseDTO(totalPrice.floatValue(), virtualAccount));
     }
 
@@ -153,6 +162,9 @@ public class TransactionServiceImpl implements TransactionService {
         });
         Map<String, Object> metaData = new HashMap<>();
         metaData.put("_total", responseDTO.size());
+        logger.info(loggerLine);
+        logger.info(responseDTO.toString());
+        logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, "Successfully reterieve data!", responseDTO, metaData);
     }
 
@@ -182,6 +194,9 @@ public class TransactionServiceImpl implements TransactionService {
             .build();
             responseDTO.setProducts(products);
             responseDTO.setSendAddress(transaction.getSendAddress());
+        logger.info(loggerLine);
+        logger.info(responseDTO.toString());
+        logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully retrieved data!", responseDTO);
     }
 
@@ -195,6 +210,9 @@ public class TransactionServiceImpl implements TransactionService {
         TransactionStatus transactionStatus = transactionStatusRepository.findByName(ETransactionStatus.PACKING).orElseThrow(() -> new ResourceNotFoundException("Transaction status not found!"));
         transaction.setTransactionStatus(transactionStatus);
         transactionRepository.save(transaction);
+        logger.info(loggerLine);
+        logger.info(transaction.toString());
+        logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Payment success!", null);
     }
 
@@ -209,6 +227,9 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setTransactionStatus(transactionStatus);
         transaction.setReceipt(receipt);
         transactionRepository.save(transaction);
+        logger.info(loggerLine);
+        logger.info(transaction.toString());
+        logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully input receipt!", null);
     }
     
@@ -219,6 +240,9 @@ public class TransactionServiceImpl implements TransactionService {
         if (transaction.getUser() != user) {
             throw new ResourceNotFoundException("Transaction is not found!");
         }
+        logger.info(loggerLine);
+        logger.info(transaction.toString());
+        logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Payment success!", null);
     }
 }

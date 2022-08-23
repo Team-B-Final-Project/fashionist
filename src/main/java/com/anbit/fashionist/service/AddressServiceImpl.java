@@ -3,6 +3,8 @@ package com.anbit.fashionist.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +35,10 @@ public class AddressServiceImpl implements AddressService {
     @Autowired
     VillageRepository villageRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger("ResponseHandler");
+    
+    private static final String loggerLine = "---------------------------------------";
+
     @Override
     public ResponseEntity<?> createAddress(CreateAddressRequestDTO requestDTO) throws ResourceNotFoundException {
         User user = authService.getCurrentUser();
@@ -47,6 +53,9 @@ public class AddressServiceImpl implements AddressService {
             .fullAddress(requestDTO.getFullAddress())
             .build();
         addressRepository.save(address);
+        logger.info(loggerLine);
+        logger.info("Successfully create new address!");
+        logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully create new address!", null);
     }
 
@@ -74,6 +83,9 @@ public class AddressServiceImpl implements AddressService {
                 );
                 responseDTOs.add(responseDTO);
             });
+        logger.info(loggerLine);
+        logger.info(responseDTOs.toString());
+        logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully retrieved data!", responseDTOs);
     }
 }

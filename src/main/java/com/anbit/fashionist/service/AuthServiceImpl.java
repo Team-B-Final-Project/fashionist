@@ -16,6 +16,8 @@ import com.anbit.fashionist.helper.SignInFailException;
 import com.anbit.fashionist.repository.RoleRepository;
 import com.anbit.fashionist.repository.UserRepository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,6 +56,10 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     JwtUtils jwtUtils;
 
+    private static final Logger logger = LoggerFactory.getLogger("ResponseHandler");
+    
+    private static final String loggerLine = "---------------------------------------";
+
     @Override
     public ResponseEntity<?> authenticateUser(SignInRequestDTO loginRequest) throws SignInFailException {
         User user = userRepository.findByUsername(loginRequest.getUsername()).orElseThrow(() -> new SignInFailException("Username or password is wrong!"));
@@ -69,6 +75,9 @@ public class AuthServiceImpl implements AuthService {
         String jwt = jwtUtils.generateJwtToken(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
+        logger.info(loggerLine);
+        logger.info("Successfully login!");
+        logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully login!", new JwtResponseDTO(jwt, userDetails.getUsername(), roles));
     }
 
@@ -97,7 +106,10 @@ public class AuthServiceImpl implements AuthService {
         Role customer = roleRepository.findByName(ERole.ROLE_CUSTOMER).orElseThrow(() -> new ResourceNotFoundException("Role not found!"));
         roles.add(customer);
         user.setRoles(roles);
-        userRepository.save(user);
+        User newUser = userRepository.save(user);
+        logger.info(loggerLine);
+        logger.info(newUser.toString());
+        logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "You have been registered successfully!", null);
     }
 

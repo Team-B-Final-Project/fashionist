@@ -12,6 +12,9 @@ import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.repository.CartRepository;
 import com.anbit.fashionist.repository.ProductRepository;
 import com.anbit.fashionist.repository.UserRepository;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +36,10 @@ public class CartServiceImpl implements CartService {
     @Autowired
     UserRepository userRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger("ResponseHandler");
+    
+    private static final String loggerLine = "---------------------------------------";
+
     @Override
     public ResponseEntity<?> addCart(AddCartRequestDTO requestDTO) throws ResourceNotFoundException, ResourceAlreadyExistException {
         User user = authService.getCurrentUser();
@@ -47,7 +54,10 @@ public class CartServiceImpl implements CartService {
                 .build();
         Float totalPrice = product.getPrice() * requestDTO.getItemUnit();
         cart.setTotalPrice(totalPrice);
-        this.cartRepository.save(cart);
+        Cart newCart = this.cartRepository.save(cart);
+        logger.info(loggerLine);
+        logger.info(newCart.toString());
+        logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Product added successfully to the cart!" , null);
     }
 
@@ -61,7 +71,10 @@ public class CartServiceImpl implements CartService {
         Float totalPrice = cart.getProduct().getPrice() * requestDTO.getItemUnit();
         cart.setTotalPrice(totalPrice);
         cart.setItemUnit(requestDTO.getItemUnit());
-        this.cartRepository.save(cart);
+        Cart updatedCart = this.cartRepository.save(cart);
+        logger.info(loggerLine);
+        logger.info(updatedCart.toString());
+        logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Cart item unit updated!", null);
     }
 
@@ -73,6 +86,9 @@ public class CartServiceImpl implements CartService {
             throw new ResourceNotFoundException("You are not allowed to delete this cart!");
         }
         this.cartRepository.delete(cart);
+        logger.info(loggerLine);
+        logger.info(cart.toString());
+        logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK , "Product deleted from cart", null);
     }
 }
