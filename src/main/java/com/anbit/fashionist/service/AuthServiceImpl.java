@@ -16,7 +16,7 @@ import com.anbit.fashionist.handler.ResponseHandler;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -81,7 +81,7 @@ public class AuthServiceImpl implements AuthService {
     @Value("${com.anbit.fashionist.team}")
     String projectTeam;
 
-    private final HttpHeaders headers = new HttpHeaders();
+
     private static final Logger logger = (Logger) LoggerFactory.getLogger(AuthController.class);
     private static final String loggerLine = "---------------------------------------";
 
@@ -138,9 +138,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResponseEntity<?> forgetPassword(ForgetPasswordRequestDTO forgetPasswordRequestDTO) throws ResourceNotFoundException, MessagingException {
-        headers.set("APP-NAME", projectName + "-API " + projectTeam);
+    
 
-            if (!userRepository.existsByEmailAddress(forgetPasswordRequestDTO.getEmailAddress())) {
+            if (!userRepository.existsByEmail(forgetPasswordRequestDTO.getEmailAddress())) {
                 throw new ResourceNotFoundException("User with email " + forgetPasswordRequestDTO.getEmailAddress() + " does not exist!");
             }
             String emailAddress = forgetPasswordRequestDTO.getEmailAddress();
@@ -155,7 +155,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResponseEntity<?> confirmOTP(ConfirmOTPRequestDTO confirmOTPRequestDTO) throws WrongOTPException, ResourceNotFoundException{
-        headers.set("APP-NAME", projectName + "-API " + projectTeam);
 
             if (otpService.getOTP(confirmOTPRequestDTO.getEmailAddress()) == 0) {
                 throw new ResourceNotFoundException("You have not generated OTP!");
@@ -173,7 +172,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResponseEntity<?> resetPassword(UUID token , ResetPasswordRequestDTO resetPasswordRequestDTO) throws PasswordNotMatchException, ResourceNotFoundException {
-        headers.set("APP-NAME", projectName + "-API " + projectTeam);
 
             if (!resetPasswordRequestDTO.getNewPassword().equals(resetPasswordRequestDTO.getConfirmPassword())) {
                 throw new PasswordNotMatchException("Password not match!");
@@ -182,7 +180,7 @@ public class AuthServiceImpl implements AuthService {
             if (resetPasswordToken.isEmpty()) {
                 throw new ResourceNotFoundException("Token is not valid!");
             }
-            Optional<User> optionalUser = userRepository.findByEmailAddress(resetPasswordToken.get().getEmailAddress());
+            Optional<User> optionalUser = userRepository.findByEmail(resetPasswordToken.get().getEmailAddress());
             User user = optionalUser.get();
             user.setPassword(encoder.encode(resetPasswordRequestDTO.getNewPassword()));
             userRepository.save(user);
