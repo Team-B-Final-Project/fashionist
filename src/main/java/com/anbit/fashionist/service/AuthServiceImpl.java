@@ -163,7 +163,8 @@ public class AuthServiceImpl implements AuthService {
         logger.info(loggerLine);
         logger.info("Confirm OTP " + resetPasswordToken);
         logger.info(loggerLine);
-        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "OTP has been confirmed!", null);
+
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "OTP has been confirmed!", new ConfirmOTPResponseDTO(resetPasswordToken.getToken().toString()));
     }
 
     @Override
