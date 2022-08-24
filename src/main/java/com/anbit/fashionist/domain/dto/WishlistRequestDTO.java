@@ -8,7 +8,6 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class WishlistRequestDTO {
-    private Long userId;
     private Long productId;
 
 }

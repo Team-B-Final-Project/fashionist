@@ -1,5 +1,6 @@
 package com.anbit.fashionist.controller;
 
+import com.anbit.fashionist.domain.dto.WishlistRequestDTO;
 import com.anbit.fashionist.helper.ResourceAlreadyExistException;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.service.WishlistServiceImpl;
@@ -26,10 +27,10 @@ public class WishlistController {
     WishlistServiceImpl wishlistService;
 
     @Operation(summary = "Add product to your wishlist")
-    @PostMapping("/wishlist/add/{id}")
+    @PostMapping("/wishlist/add")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
-    public ResponseEntity<?> productListCreate(@Valid @PathVariable("id") Long id) throws ResourceNotFoundException, ResourceAlreadyExistException {
-        return wishlistService.addWishlist(id);
+    public ResponseEntity<?> productListCreate(@RequestBody WishlistRequestDTO request) throws ResourceNotFoundException, ResourceAlreadyExistException {
+        return wishlistService.addWishlist(request);
     }
 
     @Operation(summary = "Get all your wishlist")
