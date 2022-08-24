@@ -11,6 +11,7 @@
 	<groupId>com.anbit</groupId>
 	<artifactId>fashionist</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
 	<name>fashionist</name>
 	<description>fashionist application created by anbit team</description>
 	<properties>
@@ -29,7 +30,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
