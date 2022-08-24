@@ -1,9 +1,9 @@
 package com.anbit.fashionist.service;
 
-import com.anbit.fashionist.domain.common.UserDetailsImpl;
 import com.anbit.fashionist.domain.dao.Product;
 import com.anbit.fashionist.domain.dao.User;
 import com.anbit.fashionist.domain.dao.Wishlist;
+import com.anbit.fashionist.domain.dto.WishlistRequestDTO;
 import com.anbit.fashionist.domain.dto.WishlistResponseDTO;
 import com.anbit.fashionist.handler.ResponseHandler;
 import com.anbit.fashionist.helper.ResourceAlreadyExistException;
@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -42,41 +41,41 @@ public class WishlistServiceImpl implements WishlistService {
 
     @Override
     public ResponseEntity<?> getAllWishlist() throws ResourceNotFoundException {
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.getReferenceById(userDetails.getId());
-        List<Wishlist> wishlists = wishlistRepository.findByUser(user);
-        if (wishlists.isEmpty()) {
-            throw new ResourceNotFoundException("You have no wishlist yet!");
+        List<Wishlist> wishlistLists = wishlistRepository.findAll();
+        List<WishlistResponseDTO> wishlistResponseDTOs = new ArrayList<>();
+        if (wishlistLists.isEmpty()) {
+            throw new ResourceNotFoundException("You have no whislist yet!");
         }
-        List<WishlistResponseDTO> responseDTOS = new ArrayList<>();
-        wishlists.forEach(wishlist -> {
+
+        wishlistLists.forEach(wishlist -> {
             WishlistResponseDTO responseDTO = WishlistResponseDTO.builder()
                     .id(wishlist.getId())
-                    .product(wishlist.getProduct())
+                    .productId(wishlist.getProduct().getId())
                     .build();
-            responseDTOS.add(responseDTO);
+            wishlistResponseDTOs.add(responseDTO);
         });
+
+
         logger.info(loggerLine);
         logger.info("Successfully retrieved data!");
         logger.info(loggerLine);
-        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully retrieved data!", responseDTOS);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully retrieved data!", wishlistResponseDTOs);
     }
 
     @Override
-    public ResponseEntity<?> addWishlist(Long id) throws ResourceNotFoundException, ResourceAlreadyExistException {
-        Wishlist wishlist = wishlistRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Wishlist not found!"));
+    public ResponseEntity<?> addWishlist(WishlistRequestDTO requestDTO) throws ResourceNotFoundException, ResourceAlreadyExistException {
         User user = authService.getCurrentUser();
-        Product product = productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product not found!"));
+        Product product = productRepository.findById(requestDTO.getProductId()).orElseThrow(() -> new ResourceNotFoundException("Product not found!"));
         if (Boolean.TRUE.equals(wishlistRepository.existsByUserAndProduct(user, product))) {
             throw new ResourceAlreadyExistException("This product has been in the wishlist!");
         }
         Wishlist wishlistSave = Wishlist.builder()
                 .user(user)
-                .product(productRepository.findById(Long id).orElseThrow(()->new ResourceNotFoundException("Product Not Found!")))
+                .product(product)
                 .build();
-        this.wishlistRepository.save(wishlistSave);
+        Wishlist newWhistlist = this.wishlistRepository.save(wishlistSave);
         logger.info(loggerLine);
-        logger.info(wishlist.toString());
+        logger.info(wishlistSave.toString());
         logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Product added successfully to the wishlist!" , null);
     }
