@@ -61,6 +61,7 @@ public class AuthController {
      * @throws ResourceNotFoundException
      * @throws MessagingException
      */
+    @Operation(summary = "Get OTP to reset password")
     @PostMapping("/forgetpassword")
     public ResponseEntity<?> forgetPassword(@Valid @RequestBody ForgetPasswordRequestDTO forgetPasswordRequestDTO) throws ResourceNotFoundException, MessagingException {
         return authServiceImpl.forgetPassword(forgetPasswordRequestDTO);
@@ -73,6 +74,7 @@ public class AuthController {
      * @throws WrongOTPException
      * @throws ResourceNotFoundException
      */
+    @Operation(summary = "Confirm OTP to get the token to reset the password")
     @PostMapping("/confirm_otp")
     public ResponseEntity<?> confirmOTP(@Valid @RequestBody ConfirmOTPRequestDTO confirmOTPRequestDTO) throws WrongOTPException, ResourceNotFoundException {
         return authServiceImpl.confirmOTP(confirmOTPRequestDTO);
@@ -86,6 +88,7 @@ public class AuthController {
      * @throws PasswordNotMatchException
      * @throws ResourceNotFoundException
      */
+    @Operation(summary = "Reset the password")
     @PatchMapping("/reset_password")
     public ResponseEntity<?> resetPassword(@RequestParam("token") UUID token, @Valid @RequestBody ResetPasswordRequestDTO resetPasswordRequestDTO) throws PasswordNotMatchException, ResourceNotFoundException {
         return authServiceImpl.resetPassword(token, resetPasswordRequestDTO);

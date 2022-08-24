@@ -1,6 +1,5 @@
 package com.anbit.fashionist.service;
 
-import com.anbit.fashionist.domain.common.UserDetailsImpl;
 import com.anbit.fashionist.domain.dao.Cart;
 import com.anbit.fashionist.domain.dao.Product;
 import com.anbit.fashionist.domain.dao.User;
@@ -18,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 
@@ -81,8 +79,8 @@ public class CartServiceImpl implements CartService {
     @Override
     public ResponseEntity<?> deleteCart(Long id) throws  ResourceNotFoundException {
         Cart cart = cartRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Cart not found!"));
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(!userDetails.getId().equals(cart.getUser().getId())){
+        User user = authService.getCurrentUser();
+        if(!user.getId().equals(cart.getUser().getId())){
             throw new ResourceNotFoundException("You are not allowed to delete this cart!");
         }
         this.cartRepository.delete(cart);
