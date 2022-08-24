@@ -3,16 +3,13 @@ package com.anbit.fashionist.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.anbit.fashionist.controller.AddressController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.anbit.fashionist.domain.common.UserDetailsImpl;
 import com.anbit.fashionist.domain.dao.Address;
 import com.anbit.fashionist.domain.dao.User;
 import com.anbit.fashionist.domain.dao.Village;
@@ -27,6 +24,9 @@ import com.anbit.fashionist.repository.VillageRepository;
 @Service
 public class AddressServiceImpl implements AddressService {
     @Autowired
+    AuthServiceImpl authService;
+
+    @Autowired
     UserRepository userRepository;
 
     @Autowired
@@ -35,14 +35,13 @@ public class AddressServiceImpl implements AddressService {
     @Autowired
     VillageRepository villageRepository;
 
-    private static final Logger logger = LoggerFactory.getLogger(AddressController.class);
-
+    private static final Logger logger = LoggerFactory.getLogger("ResponseHandler");
+    
     private static final String loggerLine = "---------------------------------------";
 
     @Override
     public ResponseEntity<?> createAddress(CreateAddressRequestDTO requestDTO) throws ResourceNotFoundException {
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.findById(userDetails.getId()).orElseThrow(() -> new ResourceNotFoundException("User not found!"));
+        User user = authService.getCurrentUser();
         Village village = villageRepository.findById(requestDTO.getVillageId()).orElseThrow(() -> new ResourceNotFoundException("Village not found!"));
 
         Address address = Address.builder()
@@ -55,15 +54,14 @@ public class AddressServiceImpl implements AddressService {
             .build();
         addressRepository.save(address);
         logger.info(loggerLine);
-        logger.info("Create Address " + address);
+        logger.info("Successfully create new address!");
         logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully create new address!", null);
     }
 
     @Override
     public ResponseEntity<?> getCurrentUserAddresses() throws ResourceNotFoundException {
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.getReferenceById(userDetails.getId());
+        User user = authService.getCurrentUser();
         List<Address> addresses = addressRepository.findByUser(user);
         if (addresses.isEmpty()) {
             throw new ResourceNotFoundException("You have no address yet!");
@@ -86,9 +84,8 @@ public class AddressServiceImpl implements AddressService {
                 responseDTOs.add(responseDTO);
             });
         logger.info(loggerLine);
-        logger.info("Current User Address " + user);
+        logger.info(responseDTOs.toString());
         logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully retrieved data!", responseDTOs);
-        
     }
 }

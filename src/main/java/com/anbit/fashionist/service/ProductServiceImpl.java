@@ -1,8 +1,6 @@
 package com.anbit.fashionist.service;
 
 import com.anbit.fashionist.constant.ECategory;
-import com.anbit.fashionist.controller.ProductController;
-import com.anbit.fashionist.domain.common.UserDetailsImpl;
 import com.anbit.fashionist.domain.dao.Category;
 import com.anbit.fashionist.domain.dao.Product;
 import com.anbit.fashionist.domain.dao.Store;
@@ -29,7 +27,6 @@ import com.anbit.fashionist.helper.ResourceAlreadyExistException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 
@@ -42,6 +39,9 @@ import java.util.Map;
 
 @Service
 public class ProductServiceImpl implements ProductService{
+    @Autowired
+    AuthServiceImpl authService;
+    
     @Autowired
     ProductRepository productRepository;
 
@@ -57,7 +57,8 @@ public class ProductServiceImpl implements ProductService{
     @Autowired
     ProductPictureRepository productPictureRepository;
 
-    private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
+    private static final Logger logger = LoggerFactory.getLogger("ResponseHandler");
+    
     private static final String loggerLine = "---------------------------------------";
 
     @Override
@@ -98,15 +99,14 @@ public class ProductServiceImpl implements ProductService{
         pagination.put("perPage", 30);
         pagination.put("totalElements", pageProduct.getTotalElements());
         logger.info(loggerLine);
-        logger.info("Search Product " + searchProductResponseDTOS);
+        logger.info("Successfully reterieve data!");
         logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponseWithPagination(HttpStatus.OK, "Successfully reterieve data!", searchProductResponseDTOS, pagination);
     }
 
     @Override
     public ResponseEntity<?> createProduct(UploadProductRequestDTO requestDTO) throws ResourceAlreadyExistException, ResourceNotFoundException {
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.getReferenceById(userDetails.getId());
+        User user = authService.getCurrentUser();
         Store store = user.getStore();
         if (store.equals(null)) {
             throw new ResourceNotFoundException("You don't have any store yet!");
@@ -128,7 +128,7 @@ public class ProductServiceImpl implements ProductService{
             .build();
         productRepository.save(product);
         logger.info(loggerLine);
-        logger.info("Create Product " + product);
+        logger.info("Product created successfully!");
         logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, "Product created successfully!", null);
     }

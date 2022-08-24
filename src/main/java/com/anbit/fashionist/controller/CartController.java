@@ -7,6 +7,7 @@ import com.anbit.fashionist.helper.ResourceAlreadyExistException;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.service.CartServiceImpl;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -31,6 +32,7 @@ public class CartController {
     /***xception
      * @throws ResourceAlreadyExistException
      */
+    @Operation(summary = "Add a product to your cart")
     @PostMapping("/add/cart")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     public ResponseEntity<?> add(@Valid @RequestBody AddCartRequestDTO requestDTO) throws ResourceNotFoundException, ResourceAlreadyExistException {
@@ -43,6 +45,7 @@ public class CartController {
      * @return
      * @throws ResourceNotFoundException
      */
+    @Operation(summary = "Edit total item unit of a product in cart")
     @PatchMapping("/edit/cart")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     public ResponseEntity<?> edit(@Valid @RequestBody EditCartTotalItemRequestDTO requestDTO) throws ResourceNotFoundException {
@@ -55,6 +58,7 @@ public class CartController {
      * @return
      * @throws ResourceNotFoundException
      */
+    @Operation(summary = "delete product from cart")
     @DeleteMapping("/delete/cart/{id}")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     public ResponseEntity<?> delete(@Valid @PathVariable @Min(1) @Pattern(regexp = "^/d$") Long id) throws ResourceNotFoundException {

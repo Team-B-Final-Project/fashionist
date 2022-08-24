@@ -1,6 +1,7 @@
 package com.anbit.fashionist.service;
 
 
+import com.anbit.fashionist.domain.dao.User;
 import java.util.UUID;
 
 import javax.mail.MessagingException;
@@ -14,7 +15,6 @@ import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.helper.SignInFailException;
 import com.anbit.fashionist.helper.WrongOTPException;
 
-
 public interface AuthService {
 
     ResponseEntity<?> authenticateUser(SignInRequestDTO signInRequest) throws SignInFailException;
@@ -27,4 +27,5 @@ public interface AuthService {
 
     ResponseEntity<?> resetPassword(UUID token, ResetPasswordRequestDTO resetPasswordRequestDTO) throws PasswordNotMatchException, ResourceNotFoundException;
 
+    User getCurrentUser();
 }

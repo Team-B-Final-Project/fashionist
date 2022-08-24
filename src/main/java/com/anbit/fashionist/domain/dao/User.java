@@ -1,5 +1,6 @@
 package com.anbit.fashionist.domain.dao;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,6 +30,10 @@ public class User extends Audit{
     private String firstName;
 
     private String lastName;
+
+    private String sex;
+
+    private Date dateOfBirth;
 
     private String username;
 

@@ -1,7 +1,6 @@
 package com.anbit.fashionist.controller;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.FileNotFoundException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +8,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -33,20 +31,19 @@ public class ErrorExceptionHandlingController extends ResponseEntityExceptionHan
         var error = EErrorCode.MALFORMED_JSON;
         return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), error.getCode(), error.getDescription());
     }
-
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        var error = EErrorCode.INVALIND_REQUEST;
-        List<String> messages = new ArrayList<>();
-        ex.getFieldErrors().forEach(err -> {
-            messages.add(err.getField() + " " + err.getDefaultMessage());
-        });
-        return ResponseHandler.generateValidationErrorResponse(HttpStatus.BAD_REQUEST, messages, error.getCode(), error.getDescription());
-    }
     
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException e) {
         var error = EErrorCode.NOT_FOUND;
+        logger.error(loggerLine);
+        logger.error(error.getDescription());
+        logger.error(loggerLine);
+        return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, e.getMessage(), error.getCode(), error.getDescription());
+    }
+
+    @ExceptionHandler(FileNotFoundException.class)
+    public ResponseEntity<?> handleFileNotFoundException(FileNotFoundException e) {
+        var error = EErrorCode.FILE_NOT_EXIST;
         logger.error(loggerLine);
         logger.error(error.getDescription());
         logger.error(loggerLine);
