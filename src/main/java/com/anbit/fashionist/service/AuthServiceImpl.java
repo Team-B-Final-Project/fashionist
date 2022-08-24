@@ -1,5 +1,12 @@
 package com.anbit.fashionist.service;
 
+import com.anbit.fashionist.domain.common.UserDetailsImpl;
+import com.anbit.fashionist.domain.dao.ProfilePicture;
+import com.anbit.fashionist.domain.dao.Role;
+import com.anbit.fashionist.domain.dao.User;
+import com.anbit.fashionist.config.JwtUtils;
+import com.anbit.fashionist.constant.ERole;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -9,9 +16,11 @@ import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
 
-
-import com.anbit.fashionist.domain.dao.Role;
 import com.anbit.fashionist.handler.ResponseHandler;
+import com.anbit.fashionist.helper.ResourceNotFoundException;
+import com.anbit.fashionist.helper.SignInFailException;
+import com.anbit.fashionist.repository.RoleRepository;
+import com.anbit.fashionist.repository.UserRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,27 +36,23 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.anbit.fashionist.config.JwtUtils;
-import com.anbit.fashionist.constant.ERole;
 import com.anbit.fashionist.controller.AuthController;
-import com.anbit.fashionist.domain.common.UserDetailsImpl;
 import com.anbit.fashionist.domain.dao.ResetPasswordToken;
-import com.anbit.fashionist.domain.dao.User;
 import com.anbit.fashionist.domain.dto.*;
 import com.anbit.fashionist.helper.PasswordNotMatchException;
 import com.anbit.fashionist.helper.ResourceAlreadyExistException;
-import com.anbit.fashionist.helper.ResourceNotFoundException;
-import com.anbit.fashionist.helper.SignInFailException;
 import com.anbit.fashionist.helper.WrongOTPException;
 import com.anbit.fashionist.repository.ResetPasswordTokenRepository;
-import com.anbit.fashionist.repository.RoleRepository;
-import com.anbit.fashionist.repository.UserRepository;
 import com.anbit.fashionist.util.EmailSender;
+
 
 @Service
 public class AuthServiceImpl implements AuthService {
     @Autowired
     AuthenticationManager authenticationManager;
+
+    @Autowired
+    ProfileService profileService;
 
     @Autowired
     UserRepository userRepository;
@@ -109,7 +114,9 @@ public class AuthServiceImpl implements AuthService {
         if (userRepository.existsByPhoneNumber(signUpRequestDTO.getPhoneNumber())) {
             throw new ResourceAlreadyExistException("Phone already exists!");
         }
+        ProfilePicture profilePicture = profileService.getDefaultProfilePicture();
         User user = User.builder()
+                .profilePicture(profilePicture)
                 .firstName(signUpRequestDTO.getFirstName())
                 .lastName(signUpRequestDTO.getLastName())
                 .username(signUpRequestDTO.getUsername())
@@ -175,5 +182,12 @@ public class AuthServiceImpl implements AuthService {
         logger.info("Reset Password " + user);
         logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Password has been reset successfully!", null);
+    }
+
+    @Override
+    public User getCurrentUser() {
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.getReferenceById(userDetails.getId());
+        return user;
     }
 }

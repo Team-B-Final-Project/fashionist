@@ -1,7 +1,7 @@
 package com.anbit.fashionist.domain.dao;
 
-import com.anbit.fashionist.domain.common.Audit;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,8 +13,9 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Entity
+@Builder
 @Table(name = "profile_picture", schema = "public")
-public class ProfilePicture extends Audit {
+public class ProfilePicture {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,5 +26,5 @@ public class ProfilePicture extends Audit {
 
     private Long size;
 
-    private byte[] data;
+    private String url;
 }

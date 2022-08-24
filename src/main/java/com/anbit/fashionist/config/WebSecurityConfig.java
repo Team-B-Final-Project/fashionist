@@ -68,7 +68,7 @@ public class WebSecurityConfig {
         http.cors().and().csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests().antMatchers("/api/v1/auth/**", "/api/v1/swagger-ui/**", "/api/v1/api-docs/**", "/api/v1/region/**").permitAll()
+                .authorizeRequests().antMatchers("/api/v1/auth/**", "/api/v1/swagger-ui/**", "/api/v1/api-docs/**", "/api/v1/region/**", "/file_upload/**").permitAll()
                 .anyRequest().authenticated().and()  
                 .httpBasic();
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
@@ -80,7 +80,7 @@ public class WebSecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().antMatchers(
-                "/images/**",
+                "/api/v1/profile/file/**",
                 "/js/**",
                 "/webjars/**",
                 "/v2/api-docs",

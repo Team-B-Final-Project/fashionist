@@ -12,6 +12,9 @@ import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.repository.ProductRepository;
 import com.anbit.fashionist.repository.UserRepository;
 import com.anbit.fashionist.repository.WishlistRepository;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +28,9 @@ import java.util.Optional;
 @Service
 public class WishlistServiceImpl implements WishlistService {
     @Autowired
+    AuthServiceImpl authService;
+    
+    @Autowired
     WishlistRepository wishlistRepository;
 
     @Autowired
@@ -32,6 +38,10 @@ public class WishlistServiceImpl implements WishlistService {
 
     @Autowired
     ProductRepository productRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger("ResponseHandler");
+    
+    private static final String loggerLine = "---------------------------------------";
 
     @Override
     public ResponseEntity<?> getAllWishlist() throws ResourceNotFoundException {
@@ -49,6 +59,9 @@ public class WishlistServiceImpl implements WishlistService {
                     .build();
             responseDTOS.add(responseDTO);
         });
+        logger.info(loggerLine);
+        logger.info("Successfully retrieved data!");
+        logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully retrieved data!", responseDTOS);
     }
 
@@ -65,17 +78,23 @@ public class WishlistServiceImpl implements WishlistService {
                 .product(product)
                 .build();
         this.wishlistRepository.save(wishlist);
+        logger.info(loggerLine);
+        logger.info(wishlist.toString());
+        logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Product added successfully to the wishlist!" , null);
     }
 
     @Override
     public ResponseEntity<?> deleteWishlist(Long id) throws ResourceNotFoundException {
         Wishlist wishlist = wishlistRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Cart not found!"));
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(!userDetails.getId().equals(wishlist.getUser().getId())){
+        User user = authService.getCurrentUser();
+        if(!user.getId().equals(wishlist.getUser().getId())){
             throw new ResourceNotFoundException("You are not allowed to delete this wishlist!");
         }
         this.wishlistRepository.delete(wishlist);
+        logger.info(loggerLine);
+        logger.info(wishlist.toString());
+        logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK , "Product deleted from wishlist", null);
     }
 }

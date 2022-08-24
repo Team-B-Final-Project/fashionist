@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 public class ResponseHandler {
+    
     public static ResponseEntity<Object> generateSuccessResponse(HttpStatus status, String message, Object data){
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("http_status", status);
@@ -19,7 +19,7 @@ public class ResponseHandler {
         responseMap.put("data", data);
         return new ResponseEntity<Object>(responseMap, status);
     }
-
+    
     public static ResponseEntity<Object> generateSuccessResponseWithMeta(HttpStatus status, String message, Object data, Object metaData){
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("http_status", status);

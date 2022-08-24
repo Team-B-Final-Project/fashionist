@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +39,10 @@ public class RegionServiceImpl implements RegionService {
     @Autowired
     VillageRepository villageRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger("ResponseHandler");
+    
+    private static final String loggerLine = "---------------------------------------";
+
     @Override
     public ResponseEntity<?> getProvinces(String name) throws ResourceNotFoundException {
         List<Province> provinceList;
@@ -59,6 +65,9 @@ public class RegionServiceImpl implements RegionService {
         });
         Map<String, Object> metaData = new HashMap<>();
         metaData.put("total_item", provinceList.size());
+        logger.info(loggerLine);
+        logger.info("Successfully retrieved data!");
+        logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, "Successfully retrieved data!", responseDTOs, metaData);
     }
 
@@ -88,6 +97,9 @@ public class RegionServiceImpl implements RegionService {
         });
         Map<String, Object> metaData = new HashMap<>();
         metaData.put("total_item", regencyList.size());
+        logger.info(loggerLine);
+        logger.info("Successfully retrieved data!");
+        logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, "Successfully retrieved data!", responseDTOs, metaData);
     }
 
@@ -117,6 +129,9 @@ public class RegionServiceImpl implements RegionService {
         });
         Map<String, Object> metaData = new HashMap<>();
         metaData.put("total_item", districtList.size());
+        logger.info(loggerLine);
+        logger.info("Successfully retrieved data!");
+        logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, "Successfully retrieved data!", responseDTOs, metaData);
     }
 
@@ -146,6 +161,9 @@ public class RegionServiceImpl implements RegionService {
         });
         Map<String, Object> metaData = new HashMap<>();
         metaData.put("total_item", villageList.size());
+        logger.info(loggerLine);
+        logger.info("Successfully retrieved data!");
+        logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, "Successfully retrieved data!", responseDTOs, metaData);
     }
 
@@ -160,6 +178,9 @@ public class RegionServiceImpl implements RegionService {
             .build();
             responseDTOs.add(responseDTO);
         });
+        logger.info(loggerLine);
+        logger.info("Successfully retrieved data!");
+        logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully retrieved data!", responseDTOs);
     }
 }
