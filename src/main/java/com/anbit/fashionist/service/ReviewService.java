@@ -7,6 +7,6 @@ import org.springframework.http.ResponseEntity;
 
 public interface ReviewService {
 
-    ResponseEntity<?> getReviews() throws ResourceNotFoundException;
+    ResponseEntity<?> getReviews(Long productId) throws ResourceNotFoundException;
     ResponseEntity<?> createReview(ReviewRequestDTO reviewRequestDTO) throws ResourceAlreadyExistException, ResourceNotFoundException;
 }

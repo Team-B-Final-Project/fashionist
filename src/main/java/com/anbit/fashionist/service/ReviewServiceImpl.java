@@ -4,6 +4,7 @@ package com.anbit.fashionist.service;
 import com.anbit.fashionist.controller.AddressController;
 import com.anbit.fashionist.domain.common.UserDetailsImpl;
 
+import com.anbit.fashionist.domain.dao.Product;
 import com.anbit.fashionist.domain.dao.Review;
 import com.anbit.fashionist.domain.dao.User;
 
@@ -66,10 +67,9 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public ResponseEntity<?> getReviews() throws ResourceNotFoundException {
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.getReferenceById(userDetails.getId());
-        List<Review> reviews = reviewRepository.findByUser(user);
+    public ResponseEntity<?> getReviews(Long productId) throws ResourceNotFoundException {
+        Product product = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+        List<Review> reviews = reviewRepository.findByProduct(product);
         if (reviews.isEmpty()) {
             throw new ResourceNotFoundException("You have no review yet!");
         }
@@ -84,7 +84,7 @@ public class ReviewServiceImpl implements ReviewService {
             reviewDTO.add(responseDTO);
         });
         logger.info(loggerLine);
-        logger.info("Current User Review " + user);
+        logger.info("Current User Review " + reviewDTO);
         logger.info(loggerLine);
 
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully retrieved data!", reviewDTO);
