@@ -21,7 +21,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
-
+@Getter
+@Setter
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -86,7 +87,7 @@ public class WebSecurityConfig {
                 "/configuration/ui",
                 "/swagger-resources/**",
                 "/configuration/security",
-                "/swagger-ui.html",
-                "/webjars/**");
+                "/swagger-ui.html"
+                );
     }
 }
