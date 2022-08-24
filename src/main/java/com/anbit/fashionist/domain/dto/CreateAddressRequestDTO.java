@@ -34,6 +34,6 @@ public class CreateAddressRequestDTO {
     private String postalCode;
 
     @NotBlank
-    @Pattern(regexp = "^[a-zA-Z0-9/.]+$", message = "can only contain letters and underscore")
+    @Pattern(regexp = "^[a-zA-Z0-9/. ]+$", message = "can only contain letter, slash, point, number, and underscore")
     private String fullAddress;
 }

@@ -6,6 +6,7 @@ import com.anbit.fashionist.domain.dao.Role;
 import com.anbit.fashionist.domain.dao.User;
 import com.anbit.fashionist.config.JwtUtils;
 import com.anbit.fashionist.constant.ERole;
+import com.anbit.fashionist.constant.ESex;
 
 import java.util.HashSet;
 import java.util.List;
@@ -119,6 +120,7 @@ public class AuthServiceImpl implements AuthService {
                 .profilePicture(profilePicture)
                 .firstName(signUpRequestDTO.getFirstName())
                 .lastName(signUpRequestDTO.getLastName())
+                .sex(ESex.valueOf(signUpRequestDTO.getSex().toUpperCase()).getName())
                 .username(signUpRequestDTO.getUsername())
                 .email(signUpRequestDTO.getEmail())
                 .phoneNumber(signUpRequestDTO.getPhoneNumber())
