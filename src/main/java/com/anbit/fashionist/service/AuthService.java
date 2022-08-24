@@ -14,6 +14,7 @@ import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.helper.SignInFailException;
 import com.anbit.fashionist.helper.WrongOTPException;
 
+
 public interface AuthService {
 
     ResponseEntity<?> authenticateUser(SignInRequestDTO signInRequest) throws SignInFailException;
