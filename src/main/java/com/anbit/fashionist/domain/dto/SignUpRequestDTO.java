@@ -15,6 +15,10 @@ public class SignUpRequestDTO {
     @Size(min = 2, max = 20)
     @Pattern(regexp = "[a-zA-Z]+", message = "can only contain letters with no whitespace")
     private String firstName;
+
+    @NotBlank
+    @Pattern(regexp = "^[a-zA-Z0-9_]+$", message = "can only contain letters and underscore")
+    private String sex;
     
     @Size(min = 2, max = 20)
     @Pattern(regexp = "[a-zA-Z]+", message = "can only contain letters with no whitespace")
