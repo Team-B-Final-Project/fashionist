@@ -15,7 +15,7 @@ import lombok.*;
 @Builder
 public class CreateAddressRequestDTO {
     @NotBlank
-    @Pattern(regexp = "^[a-zA-Z0-9/]+$", message = "can only contain letters and underscore")
+    @Pattern(regexp = "^[a-zA-Z0-9/, ]+$", message = "can only contain letters and underscore")
     private String name;
 
     @NotBlank

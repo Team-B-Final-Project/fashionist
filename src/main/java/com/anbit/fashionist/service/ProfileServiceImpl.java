@@ -83,7 +83,7 @@ public class ProfileServiceImpl implements ProfileService {
         logger.info(loggerLine);
         logger.info(editedUser.toString());
         logger.info(loggerLine);
-        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully update profile!", editedUser);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully update profile!", null);
     }
     
     @Override
