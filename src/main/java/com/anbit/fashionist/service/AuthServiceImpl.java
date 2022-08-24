@@ -45,6 +45,7 @@ import com.anbit.fashionist.helper.WrongOTPException;
 import com.anbit.fashionist.repository.ResetPasswordTokenRepository;
 import com.anbit.fashionist.util.EmailSender;
 
+
 @Service
 public class AuthServiceImpl implements AuthService {
     @Autowired
@@ -97,7 +98,7 @@ public class AuthServiceImpl implements AuthService {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
         logger.info(loggerLine);
-        logger.info("Successfully login!");
+        logger.info("Aunthenticate User " + authentication);
         logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully login!", new JwtResponseDTO(jwt, userDetails.getUsername(), roles));
     }
@@ -127,9 +128,9 @@ public class AuthServiceImpl implements AuthService {
         com.anbit.fashionist.domain.dao.Role customer = roleRepository.findByName(ERole.ROLE_CUSTOMER).orElseThrow(() -> new ResourceNotFoundException("Role not found!"));
         roles.add(customer);
         user.setRoles(roles);
-        User newUser = userRepository.save(user);
+        userRepository.save(user);
         logger.info(loggerLine);
-        logger.info(newUser.toString());
+        logger.info("Register User " + user);
         logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "You have been registered successfully!", null);
     }
