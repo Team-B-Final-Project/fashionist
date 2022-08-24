@@ -6,5 +6,7 @@ import com.anbit.fashionist.helper.ResourceNotFoundException;
 import org.springframework.http.ResponseEntity;
 
 public interface ReviewService {
+
+    ResponseEntity<?> getReviews() throws ResourceNotFoundException;
     ResponseEntity<?> createReview(ReviewRequestDTO reviewRequestDTO) throws ResourceAlreadyExistException, ResourceNotFoundException;
 }

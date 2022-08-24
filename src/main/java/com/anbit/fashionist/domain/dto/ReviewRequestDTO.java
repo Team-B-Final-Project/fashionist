@@ -1,5 +1,6 @@
 package com.anbit.fashionist.domain.dto;
 
+import com.anbit.fashionist.domain.dao.Review;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
@@ -22,4 +23,6 @@ public class ReviewRequestDTO {
 
     @NotBlank
     private Long userId;
+
+
 }
