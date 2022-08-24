@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.time.ZonedDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ResponseHandler {
@@ -48,6 +49,17 @@ public class ResponseHandler {
         responseMap.put("accessed_time", ZonedDateTime.now());
         responseMap.put("error_code", errorCode);
         responseMap.put("error_message", errorMessage);
+        responseMap.put("error_description", errorDescription);
+        return new ResponseEntity<Object>(responseMap, status);
+    }
+
+    public static ResponseEntity<Object> generateValidationErrorResponse(HttpStatus status, List<String> errorMessages, int errorCode, String errorDescription){
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("hhtp_status", status);
+        responseMap.put("success", false);
+        responseMap.put("accessed_time", ZonedDateTime.now());
+        responseMap.put("error_code", errorCode);
+        responseMap.put("error_message", errorMessages);
         responseMap.put("error_description", errorDescription);
         return new ResponseEntity<Object>(responseMap, status);
     }

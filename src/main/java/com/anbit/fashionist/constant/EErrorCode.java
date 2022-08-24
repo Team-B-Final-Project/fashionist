@@ -20,7 +20,8 @@ public enum EErrorCode {
     INVALID_PHONE_NUMBER(1303, "Invalid phone number"),
     RESOURCE_EXIST(1304, "Resource already exists"),
     WRONG_OTP(1305, "Wrong OTP value"),
-    FILE_NOT_EXIST(1306, "File not exist");
+    INVALIND_REQUEST(1306, "Invalid request"),
+    FILE_NOT_EXIST(1307, "File not exist");
 
 
     private final int code;

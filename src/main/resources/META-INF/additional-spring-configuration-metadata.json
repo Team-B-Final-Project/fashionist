@@ -1,0 +1,7 @@
+{"properties": [
+  {
+    "name": "com.anbit.fashionist.jwtSecret",
+    "type": "java.lang.String",
+    "description": "A description for 'com.anbit.fashionist.jwtSecret'"
+  }
+]}
