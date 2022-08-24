@@ -72,12 +72,18 @@ public class ProductServiceImpl implements ProductService{
             Float maxPrice, 
             int page) throws ResourceNotFoundException {
         Pageable pageable;
+        Page<Product> pageProduct;
         if (sortBy != null){
             pageable = PageRequest.of(page -1,30, Sort.by(sortBy).ascending());
         } else {
             pageable = PageRequest.of(page -1,30, Sort.by("name").ascending());
         }
-        Page<Product> pageProduct = productRepository.findByNameContainingIgnoreCase(keyword, pageable);
+        if (category != null) {
+            Category categoryByName = categoryRepository.findByName(ECategory.valueOf(category.toUpperCase())).orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+            pageProduct = productRepository.findByCategoryAndNameContainingIgnoreCase(categoryByName, keyword, pageable);
+        }else {
+            pageProduct = productRepository.findByNameContainingIgnoreCase(keyword, pageable);
+        }
         if (pageProduct.getContent().isEmpty()) {
             throw new ResourceNotFoundException("Product not found");
         }

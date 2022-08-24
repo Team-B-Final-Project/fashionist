@@ -16,7 +16,7 @@ import lombok.*;
 public class CreateStoreRequestDTO {
     @NotBlank
     @Size(min = 1, max = 20)
-    @Pattern(regexp = "^[a-zA-Z0-9./-]+$")
+    @Pattern(regexp = "^[a-zA-Z0-9.-/ ]+$", message = "can only contain letter, number, slash, dash and underscore")
     private String storeName;
 
     @NotNull

@@ -1,5 +1,6 @@
 package com.anbit.fashionist.repository;
 
+import com.anbit.fashionist.domain.dao.Category;
 import com.anbit.fashionist.domain.dao.Product;
 
 import org.springframework.data.domain.Page;
@@ -12,4 +13,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findByName(String keyword, Pageable pageable);
 
     Page<Product> findByNameContainingIgnoreCase(String keyword, Pageable pageable);
+
+    Page<Product> findByCategoryAndNameContainingIgnoreCase(Category category ,String keyword, Pageable pageable);
 }
