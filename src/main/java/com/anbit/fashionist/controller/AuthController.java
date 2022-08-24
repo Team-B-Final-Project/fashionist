@@ -6,7 +6,10 @@ import javax.mail.MessagingException;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.*;
 
 import com.anbit.fashionist.domain.dto.*;
@@ -24,6 +27,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/v1/auth")
+
+@EnableAutoConfiguration
 public class AuthController {
     @Autowired
     AuthServiceImpl authServiceImpl;
@@ -61,8 +66,10 @@ public class AuthController {
      * @throws ResourceNotFoundException
      * @throws MessagingException
      */
+
     @Operation(summary = "Get OTP to reset password")
     @PostMapping("/forgetpassword")
+
     public ResponseEntity<?> forgetPassword(@Valid @RequestBody ForgetPasswordRequestDTO forgetPasswordRequestDTO) throws ResourceNotFoundException, MessagingException {
         return authServiceImpl.forgetPassword(forgetPasswordRequestDTO);
     }

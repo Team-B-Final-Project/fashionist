@@ -19,7 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "2. Product Controller")
+@Tag(name = "3. Product Controller")
 @RestController
 @RequestMapping("/api/v1")
 @SecurityRequirement(name = "bearer-key")

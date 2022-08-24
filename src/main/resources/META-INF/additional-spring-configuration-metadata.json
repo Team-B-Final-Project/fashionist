@@ -1,7 +1,28 @@
 {"properties": [
+ 
   {
-    "name": "com.anbit.fashionist.jwtSecret",
+    "name": "com.anbit.fashionist.jwtExpirationMs",
     "type": "java.lang.String",
-    "description": "A description for 'com.anbit.fashionist.jwtSecret'"
+    "description": "A description for 'com.anbit.fashionist.jwtExpirationMs'"
+  },
+  {
+    "name": "com.anbit.fashionist.domain",
+    "type": "java.lang.String",
+    "description": "A description for 'com.anbit.fashionist.domain'"
+  },
+  {
+    "name": "com.anbit.fashionist.project-version",
+    "type": "java.lang.String",
+    "description": "A description for 'com.anbit.fashionist.project-version'"
+  },
+  {
+    "name": "com.anbit.fashionist.name",
+    "type": "java.lang.String",
+    "description": "A description for 'com.anbit.fashionist.name'"
+  },
+  {
+    "name": "com.anbit.fashionist.team",
+    "type": "java.lang.String",
+    "description": "A description for 'com.anbit.fashionist.team'"
   }
 ]}
