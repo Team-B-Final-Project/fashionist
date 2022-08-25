@@ -2,8 +2,6 @@ package com.anbit.fashionist.domain.dao;
 
 import javax.persistence.*;
 
-import org.hibernate.annotations.Type;
-
 import lombok.*;
 
 @AllArgsConstructor
@@ -30,7 +28,5 @@ public class ProductPicture {
 
     private Long size;
 
-    @Lob
-    @Type(type = "org.hibernate.type.BinaryType")
-    private byte[] data;
+    private String url;
 }

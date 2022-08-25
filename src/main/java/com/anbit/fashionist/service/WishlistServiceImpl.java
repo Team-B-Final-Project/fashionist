@@ -75,7 +75,7 @@ public class WishlistServiceImpl implements WishlistService {
                 .user(user)
                 .product(product)
                 .build();
-        Wishlist newWhistlist = this.wishlistRepository.save(wishlistSave);
+        this.wishlistRepository.save(wishlistSave);
         logger.info(loggerLine);
         logger.info(wishlistSave.toString());
         logger.info(loggerLine);
