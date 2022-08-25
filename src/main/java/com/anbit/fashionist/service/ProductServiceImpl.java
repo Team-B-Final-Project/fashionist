@@ -3,6 +3,7 @@ package com.anbit.fashionist.service;
 import com.anbit.fashionist.constant.ECategory;
 import com.anbit.fashionist.domain.dao.Category;
 import com.anbit.fashionist.domain.dao.Product;
+import com.anbit.fashionist.domain.dao.ProductPicture;
 import com.anbit.fashionist.domain.dao.Store;
 import com.anbit.fashionist.domain.dao.User;
 import com.anbit.fashionist.domain.dto.SearchProductResponseDTO;
@@ -13,10 +14,12 @@ import com.anbit.fashionist.repository.CategoryRepository;
 import com.anbit.fashionist.repository.ProductPictureRepository;
 import com.anbit.fashionist.repository.ProductRepository;
 import com.anbit.fashionist.repository.UserRepository;
+import com.anbit.fashionist.util.FileUploadUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,8 +31,10 @@ import com.anbit.fashionist.helper.ResourceAlreadyExistException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,6 +61,12 @@ public class ProductServiceImpl implements ProductService{
 
     @Autowired
     ProductPictureRepository productPictureRepository;
+
+    @Value("${com.anbit.fashionist.domain}")
+    String domain;
+
+    @Value("${com.anbit.fashionist.upload-dir}")
+    String uploadDirectory;
 
     private static final Logger logger = LoggerFactory.getLogger("ResponseHandler");
     
@@ -111,7 +122,7 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public ResponseEntity<?> createProduct(UploadProductRequestDTO requestDTO) throws ResourceAlreadyExistException, ResourceNotFoundException {
+    public ResponseEntity<?> createProduct(UploadProductRequestDTO requestDTO, MultipartFile[] files) throws ResourceAlreadyExistException, ResourceNotFoundException {
         User user = authService.getCurrentUser();
         Store store = user.getStore();
         if (store.equals(null)) {
@@ -132,7 +143,27 @@ public class ProductServiceImpl implements ProductService{
             .description(requestDTO.getDescription())
             .category(category)
             .build();
-        productRepository.save(product);
+        Product newProduct = productRepository.save(product);
+        List<ProductPicture> productPictureList = new ArrayList<>();
+        for (int i = 0; i < files.length; i++) {
+            String fileName = StringUtils.cleanPath(product.getId() + files[i].getOriginalFilename());
+            String uploadDir = uploadDirectory + "/images/product/" + newProduct.getId();
+            try {
+                FileUploadUtil.saveFile(uploadDir, fileName, files[i]);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            ProductPicture productPicture = ProductPicture.builder()
+                .name(fileName)
+                .product(newProduct)
+                .level(i+1)
+                .type(files[i].getContentType())
+                .size(files[i].getSize())
+                .url(domain + "/api/v1/product/file/" + fileName)
+                .build();
+            productPictureList.add(productPicture);
+        }
+        productPictureRepository.saveAll(productPictureList);
         logger.info(loggerLine);
         logger.info("Product created successfully!");
         logger.info(loggerLine);

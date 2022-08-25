@@ -32,5 +32,5 @@ public class ProductPicture {
 
     @Lob
     @Type(type = "org.hibernate.type.BinaryType")
-    private byte[] data;
+    private String url;
 }

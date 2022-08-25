@@ -15,9 +15,11 @@ import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "3. Product Controller")
 @RestController
@@ -63,9 +65,9 @@ public class ProductController {
      * @throws IOException
      */
     @Operation(summary = "Upload a product for seller")
-    @PostMapping("/product/upload")
+    @PostMapping(value = "/product/upload", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @PreAuthorize("hasAuthority('ROLE_SELLER')")
-    public ResponseEntity<?> create(@Valid @RequestBody UploadProductRequestDTO requestDTO) throws ResourceAlreadyExistException, ResourceNotFoundException {
-        return productService.createProduct(requestDTO);
+    public ResponseEntity<?> create(@Valid @RequestPart UploadProductRequestDTO requestDTO, @RequestPart MultipartFile[] files) throws ResourceAlreadyExistException, ResourceNotFoundException {
+        return productService.createProduct(requestDTO, files);
     }
 }
