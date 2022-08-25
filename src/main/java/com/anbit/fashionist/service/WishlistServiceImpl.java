@@ -3,8 +3,8 @@ package com.anbit.fashionist.service;
 import com.anbit.fashionist.domain.dao.Product;
 import com.anbit.fashionist.domain.dao.User;
 import com.anbit.fashionist.domain.dao.Wishlist;
+import com.anbit.fashionist.domain.dto.SearchProductResponseDTO;
 import com.anbit.fashionist.domain.dto.WishlistRequestDTO;
-import com.anbit.fashionist.domain.dto.WishlistResponseDTO;
 import com.anbit.fashionist.handler.ResponseHandler;
 import com.anbit.fashionist.helper.ResourceAlreadyExistException;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
@@ -42,15 +42,17 @@ public class WishlistServiceImpl implements WishlistService {
     @Override
     public ResponseEntity<?> getAllWishlist() throws ResourceNotFoundException {
         List<Wishlist> wishlistLists = wishlistRepository.findAll();
-        List<WishlistResponseDTO> wishlistResponseDTOs = new ArrayList<>();
+        List<SearchProductResponseDTO> wishlistResponseDTOs = new ArrayList<>();
         if (wishlistLists.isEmpty()) {
             throw new ResourceNotFoundException("You have no whislist yet!");
         }
 
         wishlistLists.forEach(wishlist -> {
-            WishlistResponseDTO responseDTO = WishlistResponseDTO.builder()
+            SearchProductResponseDTO responseDTO = SearchProductResponseDTO.builder()
                     .id(wishlist.getId())
-                    .productId(wishlist.getProduct().getId())
+                    .name(wishlist.getProduct().getName())
+                    .price(wishlist.getProduct().getPrice())
+                    .city(wishlist.getProduct().getStore().getAddress().getVillage().getDistrict().getRegency().getName())
                     .build();
             wishlistResponseDTOs.add(responseDTO);
         });
