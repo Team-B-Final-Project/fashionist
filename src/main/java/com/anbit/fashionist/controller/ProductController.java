@@ -10,14 +10,19 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "3. Product Controller")
 @RestController
@@ -63,9 +68,11 @@ public class ProductController {
      * @throws IOException
      */
     @Operation(summary = "Upload a product for seller")
-    @PostMapping("/product/upload")
+    @PostMapping(value = "/product/upload", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @PreAuthorize("hasAuthority('ROLE_SELLER')")
-    public ResponseEntity<?> create(@Valid @RequestBody UploadProductRequestDTO requestDTO) throws ResourceAlreadyExistException, ResourceNotFoundException {
-        return productService.createProduct(requestDTO);
+    public ResponseEntity<?> create(
+        @Valid @RequestPart UploadProductRequestDTO requestDTO, 
+        @Valid @RequestPart @NotEmpty @Size(min = 1, max = 5) List<MultipartFile> files) throws ResourceAlreadyExistException, ResourceNotFoundException, IOException {
+        return productService.createProduct(requestDTO, files);
     }
 }

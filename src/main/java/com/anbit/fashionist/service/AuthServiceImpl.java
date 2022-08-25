@@ -121,6 +121,7 @@ public class AuthServiceImpl implements AuthService {
                 .firstName(signUpRequestDTO.getFirstName())
                 .lastName(signUpRequestDTO.getLastName())
                 .sex(ESex.valueOf(signUpRequestDTO.getSex().toUpperCase()).getName())
+                .dateOfBirth(signUpRequestDTO.getDateOfBirth())
                 .username(signUpRequestDTO.getUsername())
                 .email(signUpRequestDTO.getEmail())
                 .phoneNumber(signUpRequestDTO.getPhoneNumber())

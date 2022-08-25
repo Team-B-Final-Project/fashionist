@@ -34,3 +34,4 @@ build/
 
 mvnw
 
+/src/main/resources/file_upload

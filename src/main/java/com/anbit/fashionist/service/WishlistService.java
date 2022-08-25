@@ -7,6 +7,6 @@ import org.springframework.http.ResponseEntity;
 
 public interface WishlistService {
     ResponseEntity<?> getAllWishlist() throws ResourceNotFoundException;
-    ResponseEntity<?> addWishlist(WishlistRequestDTO wishlistRequestDTO) throws ResourceNotFoundException, ResourceAlreadyExistException;
+    public ResponseEntity<?> addWishlist(WishlistRequestDTO requestDTO) throws ResourceNotFoundException, ResourceAlreadyExistException;
     ResponseEntity<?> deleteWishlist(Long Id) throws ResourceNotFoundException;
 }

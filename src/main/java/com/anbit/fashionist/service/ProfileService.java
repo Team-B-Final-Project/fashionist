@@ -16,7 +16,5 @@ public interface ProfileService {
     
     ResponseEntity<?> changeProfilePicture(MultipartFile file) throws IOException;
 
-    ResponseEntity<byte[]> getProfilePicture(String fileName) throws IOException;
-
     ProfilePicture getDefaultProfilePicture() throws ResourceNotFoundException;
 }

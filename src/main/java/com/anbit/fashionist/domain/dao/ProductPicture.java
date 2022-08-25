@@ -2,8 +2,6 @@ package com.anbit.fashionist.domain.dao;
 
 import javax.persistence.*;
 
-import org.hibernate.annotations.Type;
-
 import lombok.*;
 
 @AllArgsConstructor
@@ -17,6 +15,8 @@ public class ProductPicture {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
+    private String publicId;
 
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = Product.class)
     @JoinColumn(name = "product_id")
@@ -30,7 +30,5 @@ public class ProductPicture {
 
     private Long size;
 
-    @Lob
-    @Type(type = "org.hibernate.type.BinaryType")
-    private byte[] data;
+    private String url;
 }
