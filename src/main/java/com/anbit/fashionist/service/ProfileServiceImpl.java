@@ -123,11 +123,23 @@ public class ProfileServiceImpl implements ProfileService {
         logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully update profile picture!", null);
     }
-
+    
+    @Override
+    public ResponseEntity<?> deleteProfilePicture() throws IOException, ResourceNotFoundException {
+        User user = authService.getCurrentUser();
+        ProfilePicture defaultProfilePicture = getDefaultProfilePicture();
+        user.setProfilePicture(defaultProfilePicture);
+        ProfilePicture currentProfilePicture = profilePictureRepository.findById(user.getProfilePicture().getId()).orElseThrow(() -> new ResourceNotFoundException("Profile picture not found"));
+        profilePictureRepository.delete(currentProfilePicture);
+        userRepository.save(user);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully set profile picture to default!", null);
+    }
+    
     @Override
     public ProfilePicture getDefaultProfilePicture() throws ResourceNotFoundException {
-        ProfilePicture profilePicture = profilePictureRepository.findById(1L).orElseThrow(() -> new ResourceNotFoundException("ProfilePicture not found!"));
+        ProfilePicture profilePicture = profilePictureRepository.findById(1L).orElseThrow(() -> new ResourceNotFoundException("Profile picture not found!"));
         return profilePicture;
     }
+
 
 }
