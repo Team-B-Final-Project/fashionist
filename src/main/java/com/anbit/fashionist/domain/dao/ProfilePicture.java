@@ -20,6 +20,8 @@ public class ProfilePicture {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String publicId;
+
     private String name;
 
     private String type;

@@ -1,9 +1,16 @@
 package com.anbit.fashionist.config;
 
 import com.anbit.fashionist.service.UserDetailsServiceImpl;
+import com.cloudinary.Cloudinary;
+
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,6 +38,15 @@ public class WebSecurityConfig {
 
     @Autowired
     private AuthEntryPoinJwt unauthorizedHandler;
+
+    @Value("${com.anbit.fashionist.cloud-name}")
+    String cloudName;
+    
+    @Value("${com.anbit.fashionist.api-key}")
+    String apiKey;
+    
+    @Value("${com.anbit.fashionist.api-secret}")
+    String apiSecret;
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -60,6 +76,17 @@ public class WebSecurityConfig {
         authProvider.setPasswordEncoder(passwordEncoder());
 
         return authProvider;
+    }
+
+    @Bean
+    public Cloudinary cloudinaryConfig() {
+        Cloudinary cloudinary = null;
+        Map<String, String> config = new HashMap<>();
+        config.put("cloud_name", cloudName);
+        config.put("api_key", apiKey);
+        config.put("api_secret", apiSecret);
+        cloudinary = new Cloudinary(config);
+        return cloudinary;
     }
 
     @Bean

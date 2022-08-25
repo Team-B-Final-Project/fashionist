@@ -14,6 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.anbit.fashionist.constant.EErrorCode;
@@ -28,6 +29,12 @@ public class ErrorExceptionHandlingController extends ResponseEntityExceptionHan
     private static final Logger logger = LoggerFactory.getLogger(ErrorExceptionHandlingController.class);
 
     private static final String loggerLine = "---------------------------------------";
+
+    @Override
+    protected ResponseEntity<Object> handleMissingServletRequestPart(MissingServletRequestPartException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        var error = EErrorCode.INVALIND_REQUEST;
+        return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), error.getCode(), error.getDescription());
+    }
 
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
@@ -48,6 +55,15 @@ public class ErrorExceptionHandlingController extends ResponseEntityExceptionHan
         return ResponseHandler.generateValidationErrorResponse(HttpStatus.BAD_REQUEST, messages, error.getCode(), error.getDescription());
     }
     
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<?> handleRuntimeException(RuntimeException e) {
+        var error = EErrorCode.SERVER_ERROR;
+        logger.error(loggerLine);
+        logger.error(error.getDescription());
+        logger.error(loggerLine);
+        return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), error.getCode(), error.getDescription());
+    }
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException e) {
         var error = EErrorCode.NOT_FOUND;

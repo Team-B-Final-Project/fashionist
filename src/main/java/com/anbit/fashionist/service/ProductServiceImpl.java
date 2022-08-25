@@ -14,7 +14,8 @@ import com.anbit.fashionist.repository.CategoryRepository;
 import com.anbit.fashionist.repository.ProductPictureRepository;
 import com.anbit.fashionist.repository.ProductRepository;
 import com.anbit.fashionist.repository.UserRepository;
-import com.anbit.fashionist.util.FileUploadUtil;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +62,9 @@ public class ProductServiceImpl implements ProductService{
 
     @Autowired
     ProductPictureRepository productPictureRepository;
+
+    @Autowired
+    Cloudinary cloudinaryConfig;
 
     @Value("${com.anbit.fashionist.domain}")
     String domain;
@@ -122,7 +126,7 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public ResponseEntity<?> createProduct(UploadProductRequestDTO requestDTO, MultipartFile[] files) throws ResourceAlreadyExistException, ResourceNotFoundException {
+    public ResponseEntity<?> createProduct(UploadProductRequestDTO requestDTO, List<MultipartFile> files) throws ResourceAlreadyExistException, ResourceNotFoundException, IOException {
         User user = authService.getCurrentUser();
         Store store = user.getStore();
         if (store.equals(null)) {
@@ -145,21 +149,19 @@ public class ProductServiceImpl implements ProductService{
             .build();
         Product newProduct = productRepository.save(product);
         List<ProductPicture> productPictureList = new ArrayList<>();
-        for (int i = 0; i < files.length; i++) {
-            String fileName = StringUtils.cleanPath(product.getId() + files[i].getOriginalFilename());
-            String uploadDir = uploadDirectory + "/images/product/" + newProduct.getId();
-            try {
-                FileUploadUtil.saveFile(uploadDir, fileName, files[i]);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        for (int i = 0; i < files.size(); i++) {
+            String fileName = StringUtils.cleanPath(files.get(i).getOriginalFilename());
+            Map<?,?> uploadResult = cloudinaryConfig.uploader().upload(files.get(i).getBytes(), ObjectUtils.asMap(
+                "public_id", newProduct.getId() + Integer.toString(i) + "-" + fileName.replace("[.].*", ""), 
+                "folder", "/image/product_picture/"));
             ProductPicture productPicture = ProductPicture.builder()
+                .publicId(uploadResult.get("public_id").toString())
                 .name(fileName)
                 .product(newProduct)
                 .level(i+1)
-                .type(files[i].getContentType())
-                .size(files[i].getSize())
-                .url(domain + "/api/v1/product/file/" + fileName)
+                .type(uploadResult.get("resource_type").toString() + "/" + uploadResult.get("format").toString())
+                .size(files.get(i).getSize())
+                .url(uploadResult.get("secure_url").toString())
                 .build();
             productPictureList.add(productPicture);
         }

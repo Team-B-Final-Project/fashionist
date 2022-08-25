@@ -10,9 +10,12 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -67,7 +70,9 @@ public class ProductController {
     @Operation(summary = "Upload a product for seller")
     @PostMapping(value = "/product/upload", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @PreAuthorize("hasAuthority('ROLE_SELLER')")
-    public ResponseEntity<?> create(@Valid @RequestBody UploadProductRequestDTO requestDTO, MultipartFile[] files) throws ResourceAlreadyExistException, ResourceNotFoundException {
+    public ResponseEntity<?> create(
+        @Valid @RequestPart UploadProductRequestDTO requestDTO, 
+        @Valid @RequestPart @NotEmpty @Size(min = 1, max = 5) List<MultipartFile> files) throws ResourceAlreadyExistException, ResourceNotFoundException, IOException {
         return productService.createProduct(requestDTO, files);
     }
 }
