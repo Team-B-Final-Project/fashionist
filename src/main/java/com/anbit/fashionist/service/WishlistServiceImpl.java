@@ -46,10 +46,14 @@ public class WishlistServiceImpl implements WishlistService {
         if (wishlistLists.isEmpty()) {
             throw new ResourceNotFoundException("You have no whislist yet!");
         }
-
         wishlistLists.forEach(wishlist -> {
+            List<String> prooductPictureUrl = new ArrayList<>();
+            wishlist.getProduct().getPictures().forEach(picture -> {
+                prooductPictureUrl.add(picture.getUrl());
+            });
             SearchProductResponseDTO responseDTO = SearchProductResponseDTO.builder()
-                    .id(wishlist.getId())
+                    .id(wishlist.getProduct().getId())
+                    .productPictureUrl(prooductPictureUrl)
                     .name(wishlist.getProduct().getName())
                     .price(wishlist.getProduct().getPrice())
                     .city(wishlist.getProduct().getStore().getAddress().getVillage().getDistrict().getRegency().getName())

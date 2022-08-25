@@ -104,8 +104,13 @@ public class ProductServiceImpl implements ProductService{
         }
         List<SearchProductResponseDTO> searchProductResponseDTOS = new ArrayList<>();
         for (Product product : pageProduct.getContent()) {
+            List<String> prooductPictureUrl = new ArrayList<>();
+            product.getPictures().forEach(picture -> {
+                prooductPictureUrl.add(picture.getUrl());
+            });
             SearchProductResponseDTO responseDTO = SearchProductResponseDTO.builder()
                     .id(product.getId())
+                    .productPictureUrl(prooductPictureUrl)
                     .name(product.getName())
                     .price(product.getPrice())
                     .city(product.getStore().getAddress().getVillage().getDistrict().getRegency().getName())
