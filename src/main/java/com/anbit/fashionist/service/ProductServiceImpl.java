@@ -93,12 +93,11 @@ public class ProductServiceImpl implements ProductService{
         } else {
             pageable = PageRequest.of(page -1,30, Sort.by("name").ascending());
         }
+        Category categoryByName = null;
         if (category != null) {
-            Category categoryByName = categoryRepository.findByName(ECategory.valueOf(category.toUpperCase())).orElseThrow(() -> new ResourceNotFoundException("Category not found"));
-            pageProduct = productRepository.findByCategoryAndNameContainingIgnoreCase(categoryByName, keyword, pageable);
-        }else {
-            pageProduct = productRepository.findByNameContainingIgnoreCase(keyword, pageable);
+            categoryByName = categoryRepository.findByName(ECategory.valueOf(category.toUpperCase())).orElseThrow(() -> new ResourceNotFoundException("Category not found"));
         }
+        pageProduct = productRepository.searchProduct(categoryByName, keyword, pageable);
         if (pageProduct.getContent().isEmpty()) {
             throw new ResourceNotFoundException("Product not found");
         }
