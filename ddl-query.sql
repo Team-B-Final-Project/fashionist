@@ -190,7 +190,7 @@ CREATE TABLE reset_password_token (
 
 CREATE TABLE public.review(
 "id" bigserial NOT NULL,
-"rating" float NOT NULL,
+"rating" double NOT NULL,
 "comment" varchar NOT NULL,
 "user_id" bigserial NOT NULL,
 "product_id" bigserial NOT NULL,
