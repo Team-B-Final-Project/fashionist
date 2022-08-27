@@ -64,4 +64,17 @@ public class CartController {
     public ResponseEntity<?> delete(@Valid @PathVariable @Min(1) @Pattern(regexp = "^/d$") Long id) throws ResourceNotFoundException {
         return cartService.deleteCart(id);
     }
+
+    /***
+     * Get all cart
+     * @return
+     * @throws ResourceNotFoundException
+     */
+
+    @Operation(summary = "Get all cart")
+    @GetMapping("/get/cart")
+    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
+    public ResponseEntity<?> getAll() throws ResourceNotFoundException {
+        return cartService.getCart();
+    }
 }
