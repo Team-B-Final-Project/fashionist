@@ -67,8 +67,8 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public ResponseEntity<?> getReviews(Long productId) throws ResourceNotFoundException {
-        Transaction transaction = transactionRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+    public ResponseEntity<?> getReviews(Long transactionId) throws ResourceNotFoundException {
+        Transaction transaction = transactionRepository.findById(transactionId).orElseThrow(() -> new ResourceNotFoundException("Product not found"));
         List<Review> reviews = reviewRepository.findByTransaction(transaction);
         if (reviews.isEmpty()) {
             throw new ResourceNotFoundException("You have no review yet!");

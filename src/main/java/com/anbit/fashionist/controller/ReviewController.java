@@ -33,9 +33,9 @@ public class ReviewController {
     }
 
     @Operation(summary = "Get review for product")
-    @GetMapping("/review/get/{productId}")
+    @GetMapping("/review/get/{transactionId}")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
-    public ResponseEntity<?> getReviews(@Valid @PathVariable Long productId) throws ResourceNotFoundException {
-        return this.reviewService.getReviews(productId);
+    public ResponseEntity<?> getReviews(@Valid @PathVariable Long transactionId) throws ResourceNotFoundException {
+        return this.reviewService.getReviews(transactionId);
     }
 }
