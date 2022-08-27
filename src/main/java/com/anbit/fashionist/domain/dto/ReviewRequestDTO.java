@@ -15,7 +15,7 @@ public class ReviewRequestDTO {
     private String comment;
 
     @NotBlank
-    private float rating;
+    private double rating;
 
     @NotBlank
     private Long productId;

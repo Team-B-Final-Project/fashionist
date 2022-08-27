@@ -62,8 +62,9 @@ public class ReviewServiceImpl implements ReviewService {
                 .rating(reviewRequestDTO.getRating())
                 .comment(reviewRequestDTO.getComment())
                 .build();
-        this.reviewRepository.save(reviewSave);
-        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Review created successfully!", null);
+        Review reviewSaved = this.reviewRepository.save(reviewSave);
+        
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Review created successfully!", reviewSaved);
     }
 
     @Override

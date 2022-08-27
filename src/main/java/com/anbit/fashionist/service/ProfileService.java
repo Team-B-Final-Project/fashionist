@@ -15,6 +15,8 @@ public interface ProfileService {
     ResponseEntity<?> editProfile(EditProfileRequestDTO requestDTO);
     
     ResponseEntity<?> changeProfilePicture(MultipartFile file) throws IOException;
+    
+    ResponseEntity<?> deleteProfilePicture() throws IOException, ResourceNotFoundException;
 
     ProfilePicture getDefaultProfilePicture() throws ResourceNotFoundException;
 }

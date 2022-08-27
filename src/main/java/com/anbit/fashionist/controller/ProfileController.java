@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.anbit.fashionist.domain.dto.EditProfileRequestDTO;
+import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.service.ProfileServiceImpl;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -66,6 +68,19 @@ public class ProfileController {
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     public ResponseEntity<?> changeProfilePicture(@Valid @RequestParam MultipartFile file) throws IOException{
         return profileService.changeProfilePicture(file);
+    }
+
+    /***
+     * Delete the current authenticated user's profile picture
+     * @param requestDTO
+     * @return
+     * @throws ResourceNotFoundException
+     */
+    @Operation(summary = "Delete the current authenticated user's profile picture")
+    @DeleteMapping("/profile_picture")
+    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
+    public ResponseEntity<?> deleteProfilePicture() throws IOException, ResourceNotFoundException{
+        return profileService.deleteProfilePicture();
     }
     
 }

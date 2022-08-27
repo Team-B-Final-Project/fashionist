@@ -93,19 +93,23 @@ public class ProductServiceImpl implements ProductService{
         } else {
             pageable = PageRequest.of(page -1,30, Sort.by("name").ascending());
         }
+        Category categoryByName = null;
         if (category != null) {
-            Category categoryByName = categoryRepository.findByName(ECategory.valueOf(category.toUpperCase())).orElseThrow(() -> new ResourceNotFoundException("Category not found"));
-            pageProduct = productRepository.findByCategoryAndNameContainingIgnoreCase(categoryByName, keyword, pageable);
-        }else {
-            pageProduct = productRepository.findByNameContainingIgnoreCase(keyword, pageable);
+            categoryByName = categoryRepository.findByName(ECategory.valueOf(category.toUpperCase())).orElseThrow(() -> new ResourceNotFoundException("Category not found"));
         }
+        pageProduct = productRepository.searchProduct(categoryByName, keyword, pageable);
         if (pageProduct.getContent().isEmpty()) {
             throw new ResourceNotFoundException("Product not found");
         }
         List<SearchProductResponseDTO> searchProductResponseDTOS = new ArrayList<>();
         for (Product product : pageProduct.getContent()) {
+            List<String> prooductPictureUrl = new ArrayList<>();
+            product.getPictures().forEach(picture -> {
+                prooductPictureUrl.add(picture.getUrl());
+            });
             SearchProductResponseDTO responseDTO = SearchProductResponseDTO.builder()
                     .id(product.getId())
+                    .productPictureUrl(prooductPictureUrl)
                     .name(product.getName())
                     .price(product.getPrice())
                     .city(product.getStore().getAddress().getVillage().getDistrict().getRegency().getName())

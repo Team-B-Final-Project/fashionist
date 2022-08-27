@@ -170,9 +170,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResponseEntity<?> resetPassword(UUID token , ResetPasswordRequestDTO resetPasswordRequestDTO) throws PasswordNotMatchException, ResourceNotFoundException {
-        if (!resetPasswordRequestDTO.getNewPassword().equals(resetPasswordRequestDTO.getConfirmPassword())) {
-            throw new PasswordNotMatchException("Password not match!");
-        }
         Optional<ResetPasswordToken> resetPasswordToken = resetPasswordTokenRepository.findByToken(token);
         if (resetPasswordToken.isEmpty()) {
             throw new ResourceNotFoundException("Token is not valid!");
