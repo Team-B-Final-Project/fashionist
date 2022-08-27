@@ -34,10 +34,10 @@ public class WishlistController {
     }
 
     @Operation(summary = "Get all your wishlist")
-    @GetMapping("/wishlist/all")
+    @GetMapping("/wishlist/all/{id}")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
-    public ResponseEntity<?> findAllWishlist() throws ResourceNotFoundException {
-        return wishlistService.getAllWishlist();
+    public ResponseEntity<?> findAllWishlist(@PathVariable Long id) throws ResourceNotFoundException {
+        return wishlistService.getAllWishlist(id);
     }
 
     @Operation(summary = "Delete your wishlist")

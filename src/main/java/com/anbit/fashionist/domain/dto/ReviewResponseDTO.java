@@ -9,6 +9,6 @@ import lombok.*;
 @Builder
 public class ReviewResponseDTO {
    private Long id;
-   private float rating;
+   private double rating;
    private String comment;
 }

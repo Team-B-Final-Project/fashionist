@@ -1,5 +1,6 @@
 package com.anbit.fashionist.service;
 
+import com.anbit.fashionist.domain.dao.Cart;
 import com.anbit.fashionist.domain.dao.Product;
 import com.anbit.fashionist.domain.dao.User;
 import com.anbit.fashionist.domain.dao.Wishlist;
@@ -40,20 +41,23 @@ public class WishlistServiceImpl implements WishlistService {
     private static final String loggerLine = "---------------------------------------";
 
     @Override
-    public ResponseEntity<?> getAllWishlist() throws ResourceNotFoundException {
+    public ResponseEntity<?> getAllWishlist(Long id) throws ResourceNotFoundException {
         List<Wishlist> wishlistLists = wishlistRepository.findAll();
         List<SearchProductResponseDTO> wishlistResponseDTOs = new ArrayList<>();
-        if (wishlistLists.isEmpty()) {
-            throw new ResourceNotFoundException("You have no whislist yet!");
+        Wishlist wishtlist = wishlistRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Wishlist not found!"));
+        User user = authService.getCurrentUser();
+        if(!user.getId().equals(wishtlist.getUser().getId())){
+            throw new ResourceNotFoundException("You are not allowed to see this wishlist!");
         }
+
         wishlistLists.forEach(wishlist -> {
-            List<String> prooductPictureUrl = new ArrayList<>();
+            List<String> productPictureUrl = new ArrayList<>();
             wishlist.getProduct().getPictures().forEach(picture -> {
-                prooductPictureUrl.add(picture.getUrl());
+                productPictureUrl.add(picture.getUrl());
             });
             SearchProductResponseDTO responseDTO = SearchProductResponseDTO.builder()
                     .id(wishlist.getProduct().getId())
-                    .productPictureUrl(prooductPictureUrl)
+                    .productPictureUrl(productPictureUrl)
                     .name(wishlist.getProduct().getName())
                     .price(wishlist.getProduct().getPrice())
                     .city(wishlist.getProduct().getStore().getAddress().getVillage().getDistrict().getRegency().getName())
