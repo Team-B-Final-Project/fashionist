@@ -99,6 +99,7 @@ public class WebSecurityConfig {
                     "/api/v1/swagger-ui/**", 
                     "/api/v1/api-docs/**", 
                     "/api/v1/region/**", 
+                    "/api/v1/products/search/**", 
                     "/api/v1/profile/file/**",
                     "/api/v1/profile/file/**",
                     "/js/**",
