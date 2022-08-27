@@ -3,6 +3,7 @@ package com.anbit.fashionist.domain.dto;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,10 +15,10 @@ public class ReviewRequestDTO {
     @NotBlank
     private String comment;
 
-    @NotBlank
+    @NotNull
     private double rating;
 
-    @NotBlank
+    @NotNull
     private Long transactionId;
 
 }

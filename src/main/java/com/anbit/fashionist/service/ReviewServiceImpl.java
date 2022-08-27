@@ -6,6 +6,7 @@ import com.anbit.fashionist.domain.common.UserDetailsImpl;
 
 import com.anbit.fashionist.domain.dao.Product;
 import com.anbit.fashionist.domain.dao.Review;
+import com.anbit.fashionist.domain.dao.Transaction;
 import com.anbit.fashionist.domain.dao.User;
 
 import com.anbit.fashionist.domain.dto.ReviewRequestDTO;
@@ -17,6 +18,7 @@ import com.anbit.fashionist.repository.ProductRepository;
 import com.anbit.fashionist.repository.ReviewRepository;
 
 
+import com.anbit.fashionist.repository.TransactionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ReviewServiceImpl implements ReviewService {
@@ -37,7 +40,7 @@ public class ReviewServiceImpl implements ReviewService {
     ReviewRepository reviewRepository;
 
     @Autowired
-    ProductRepository productRepository;
+    TransactionRepository transactionRepository;
 
    private static final Logger logger = LoggerFactory.getLogger(AddressController.class);
 
@@ -47,14 +50,14 @@ public class ReviewServiceImpl implements ReviewService {
     public ResponseEntity<?> createReview(ReviewRequestDTO reviewRequestDTO) throws ResourceAlreadyExistException, ResourceNotFoundException{
         User user = authService.getCurrentUser();
 
-        Product product = productRepository.findById(reviewRequestDTO.getProductId()).orElseThrow(() -> new ResourceNotFoundException("Product not found!"));
-        if(Boolean.TRUE.equals(reviewRepository.existsByProductAndUser(product, user))) {
+        Transaction transaction = transactionRepository.findById(reviewRequestDTO.getTransactionId()).orElseThrow(() -> new ResourceNotFoundException("Transaction not found!"));
+        if(Boolean.TRUE.equals(reviewRepository.existsByTransactionAndUser(transaction, user))) {
             throw new ResourceAlreadyExistException("You have already reviewed this product!");
         }
 
         Review reviewSave = Review.builder()
                 .user(user)
-                .product(productRepository.findById(reviewRequestDTO.getProductId()).orElseThrow(() -> new ResourceNotFoundException("Product not found!")))
+                .transaction(transactionRepository.findById(reviewRequestDTO.getTransactionId()).orElseThrow(() -> new ResourceNotFoundException("Transaction not found!")))
                 .rating(reviewRequestDTO.getRating())
                 .comment(reviewRequestDTO.getComment())
                 .build();
@@ -67,26 +70,26 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ResponseEntity<?> getReviews(Long productId) throws ResourceNotFoundException {
-        Product product = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product not found"));
-        List<Review> reviews = reviewRepository.findByProduct(product);
+        Transaction transaction = transactionRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+        List<Review> reviews = reviewRepository.findByTransaction(transaction);
         if (reviews.isEmpty()) {
             throw new ResourceNotFoundException("You have no review yet!");
         }
 
-        List<ReviewResponseDTO> reviewDTO = new ArrayList<>();
+        List<ReviewResponseDTO> reviewResponseDTOS = new ArrayList<>();
         reviews.forEach(review -> {
-            ReviewResponseDTO responseDTO = ReviewResponseDTO.builder()
+            ReviewResponseDTO reviewResponseDTO = ReviewResponseDTO.builder()
                     .id(review.getId())
                     .rating(review.getRating())
                     .comment(review.getComment())
                     .build();
-            reviewDTO.add(responseDTO);
+            reviewResponseDTOS.add(reviewResponseDTO);
         });
        logger.info(loggerLine);
-       logger.info("Current User Review " + reviewDTO);
+       logger.info("Current User Review " + reviewResponseDTOS);
        logger.info(loggerLine);
 
-        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully retrieved data!", reviewDTO);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully retrieved data!", reviewResponseDTOS);
     }
 
     

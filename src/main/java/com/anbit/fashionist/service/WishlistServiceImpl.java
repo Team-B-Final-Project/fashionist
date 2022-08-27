@@ -95,17 +95,13 @@ public class WishlistServiceImpl implements WishlistService {
     public ResponseEntity<?> deleteWishlist(Long id) throws ResourceNotFoundException {
         Wishlist wishlist = wishlistRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Wishlist not found!"));
         User user = authService.getCurrentUser();
-        Product product = productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product not found!"));
-        if (Boolean.TRUE.equals(wishlistRepository.existsByUserAndProduct(user, product))) {
-            this.wishlistRepository.delete(wishlist);
-        }else {
-            throw new ResourceNotFoundException("This product has not been in the wishlist!");
+        if(!user.getId().equals(wishlist.getUser().getId())){
+            throw new ResourceNotFoundException("You are not allowed to delete this wishlist!");
         }
-
+        this.wishlistRepository.delete(wishlist);
         logger.info(loggerLine);
         logger.info(wishlist.toString());
         logger.info(loggerLine);
-
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK , "Product deleted from wishlist", null);
     }
 }

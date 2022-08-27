@@ -1,6 +1,8 @@
 package com.anbit.fashionist.domain.dao;
 
 import com.anbit.fashionist.domain.common.Audit;
+
+
 import lombok.*;
 
 import javax.persistence.*;
