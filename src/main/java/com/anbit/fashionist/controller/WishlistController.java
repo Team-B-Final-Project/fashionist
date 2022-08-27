@@ -20,7 +20,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/api/v1")
 @SecurityRequirement(name = "bearer-key")
-@AllArgsConstructor
+
 public class WishlistController {
 
     @Autowired

@@ -54,15 +54,6 @@ public class ErrorExceptionHandlingController extends ResponseEntityExceptionHan
         logger.error(loggerLine);
         return ResponseHandler.generateValidationErrorResponse(HttpStatus.BAD_REQUEST, messages, error.getCode(), error.getDescription());
     }
-    
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<?> handleRuntimeException(RuntimeException e) {
-        var error = EErrorCode.SERVER_ERROR;
-        logger.error(loggerLine);
-        logger.error(error.getDescription());
-        logger.error(loggerLine);
-        return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), error.getCode(), error.getDescription());
-    }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException e) {

@@ -1,5 +1,6 @@
 package com.anbit.fashionist.service;
 
+import com.anbit.fashionist.domain.dao.Cart;
 import com.anbit.fashionist.domain.dao.Product;
 import com.anbit.fashionist.domain.dao.User;
 import com.anbit.fashionist.domain.dao.Wishlist;
@@ -41,31 +42,35 @@ public class WishlistServiceImpl implements WishlistService {
 
     @Override
     public ResponseEntity<?> getAllWishlist() throws ResourceNotFoundException {
-        List<Wishlist> wishlistLists = wishlistRepository.findAll();
-        List<SearchProductResponseDTO> wishlistResponseDTOs = new ArrayList<>();
-        if (wishlistLists.isEmpty()) {
-            throw new ResourceNotFoundException("You have no whislist yet!");
+        User user = authService.getCurrentUser();
+        List<Wishlist> wishlists = wishlistRepository.findByUser(user);
+        
+        if(wishlists.isEmpty()) {
+            throw new ResourceNotFoundException("You have not wishlist yet!");
         }
-        wishlistLists.forEach(wishlist -> {
-            List<String> prooductPictureUrl = new ArrayList<>();
+
+        List<SearchProductResponseDTO> wishlistProducts = new ArrayList<>();
+        wishlists.forEach(wishlist -> {
+            List<String> productPictureUrl = new ArrayList<>();
             wishlist.getProduct().getPictures().forEach(picture -> {
-                prooductPictureUrl.add(picture.getUrl());
+                productPictureUrl.add(picture.getUrl());
             });
             SearchProductResponseDTO responseDTO = SearchProductResponseDTO.builder()
                     .id(wishlist.getProduct().getId())
-                    .productPictureUrl(prooductPictureUrl)
+                    .productPictureUrl(productPictureUrl)
                     .name(wishlist.getProduct().getName())
                     .price(wishlist.getProduct().getPrice())
                     .city(wishlist.getProduct().getStore().getAddress().getVillage().getDistrict().getRegency().getName())
                     .build();
-            wishlistResponseDTOs.add(responseDTO);
+                    wishlistProducts.add(responseDTO);
         });
 
 
         logger.info(loggerLine);
         logger.info("Successfully retrieved data!");
+        logger.info(wishlistProducts.toString());
         logger.info(loggerLine);
-        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully retrieved data!", wishlistResponseDTOs);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully retrieved data!", wishlistProducts);
     }
 
     @Override
