@@ -193,7 +193,7 @@ CREATE TABLE public.review(
 "rating" double NOT NULL,
 "comment" varchar NOT NULL,
 "user_id" bigserial NOT NULL,
-"product_id" bigserial NOT NULL,
+"transaction_id" bigserial NOT NULL,
 constraint "review_pkey" primary key ("id")
 );
 
@@ -203,9 +203,9 @@ foreign key("user_id")
 references public.user("id");
 
 ALTER TABLE public.review
-add constraint "product_id_fkey"
-foreign key("product_id")
-references public.product("id");
+add constraint "transaction_id_fkey"
+foreign key("transaction_id")
+references public.transaction("id");
 
 ALTER TABLE public.reset_password_token
 ADD CONSTRAINT "email_fkey"
