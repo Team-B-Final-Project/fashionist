@@ -61,7 +61,7 @@ public class CartController {
     @Operation(summary = "delete product from cart")
     @DeleteMapping("/delete/cart/{id}")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
-    public ResponseEntity<?> delete(@Valid @PathVariable @Min(1) @Pattern(regexp = "^/d$") Long id) throws ResourceNotFoundException {
+    public ResponseEntity<?> delete(@Valid @PathVariable Long id) throws ResourceNotFoundException {
         return cartService.deleteCart(id);
     }
 
