@@ -25,14 +25,4 @@ public class Wishlist {
     @JoinColumn(name = "product_id")
     private Product product;
 
-//    @Override
-//    public String toString() {
-//        return "ProductServiceImpl{" +
-//                "id=" + id +
-//                "user_id=" + user +
-//                ", product_id=" + product +
-//                '}';
-//
-//
-//    }
 }

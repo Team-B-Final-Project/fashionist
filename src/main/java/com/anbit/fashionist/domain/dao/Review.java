@@ -25,8 +25,8 @@ public class Review extends Audit {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Product.class)
-    @JoinColumn(name = "product_id")
-    private Product product;
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Transaction.class)
+    @JoinColumn(name = "transaction_id")
+    private Transaction transaction;
 
 }

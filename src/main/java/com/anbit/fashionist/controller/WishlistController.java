@@ -20,7 +20,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/api/v1")
 @SecurityRequirement(name = "bearer-key")
-@AllArgsConstructor
+
 public class WishlistController {
 
     @Autowired
@@ -34,10 +34,10 @@ public class WishlistController {
     }
 
     @Operation(summary = "Get all your wishlist")
-    @GetMapping("/wishlist/all/{id}")
+    @GetMapping("/wishlist/all")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
-    public ResponseEntity<?> findAllWishlist(@PathVariable Long id) throws ResourceNotFoundException {
-        return wishlistService.getAllWishlist(id);
+    public ResponseEntity<?> findAllWishlist() throws ResourceNotFoundException {
+        return wishlistService.getAllWishlist();
     }
 
     @Operation(summary = "Delete your wishlist")

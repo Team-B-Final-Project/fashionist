@@ -18,10 +18,6 @@ public class ReviewRequestDTO {
     private double rating;
 
     @NotBlank
-    private Long productId;
-
-    @NotBlank
-    private Long userId;
-
+    private Long transactionId;
 
 }

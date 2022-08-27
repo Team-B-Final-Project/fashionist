@@ -41,16 +41,16 @@ public class WishlistServiceImpl implements WishlistService {
     private static final String loggerLine = "---------------------------------------";
 
     @Override
-    public ResponseEntity<?> getAllWishlist(Long id) throws ResourceNotFoundException {
-        List<Wishlist> wishlistLists = wishlistRepository.findAll();
-        List<SearchProductResponseDTO> wishlistResponseDTOs = new ArrayList<>();
-        Wishlist wishtlist = wishlistRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Wishlist not found!"));
+    public ResponseEntity<?> getAllWishlist() throws ResourceNotFoundException {
         User user = authService.getCurrentUser();
-        if(!user.getId().equals(wishtlist.getUser().getId())){
-            throw new ResourceNotFoundException("You are not allowed to see this wishlist!");
+        List<Wishlist> wishlists = wishlistRepository.findByUser(user);
+        
+        if(wishlists.isEmpty()) {
+            throw new ResourceNotFoundException("You have not wishlist yet!");
         }
 
-        wishlistLists.forEach(wishlist -> {
+        List<SearchProductResponseDTO> wishlistProducts = new ArrayList<>();
+        wishlists.forEach(wishlist -> {
             List<String> productPictureUrl = new ArrayList<>();
             wishlist.getProduct().getPictures().forEach(picture -> {
                 productPictureUrl.add(picture.getUrl());
@@ -62,14 +62,15 @@ public class WishlistServiceImpl implements WishlistService {
                     .price(wishlist.getProduct().getPrice())
                     .city(wishlist.getProduct().getStore().getAddress().getVillage().getDistrict().getRegency().getName())
                     .build();
-            wishlistResponseDTOs.add(responseDTO);
+                    wishlistProducts.add(responseDTO);
         });
 
 
         logger.info(loggerLine);
         logger.info("Successfully retrieved data!");
+        logger.info(wishlistProducts.toString());
         logger.info(loggerLine);
-        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully retrieved data!", wishlistResponseDTOs);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully retrieved data!", wishlistProducts);
     }
 
     @Override
@@ -94,13 +95,17 @@ public class WishlistServiceImpl implements WishlistService {
     public ResponseEntity<?> deleteWishlist(Long id) throws ResourceNotFoundException {
         Wishlist wishlist = wishlistRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Wishlist not found!"));
         User user = authService.getCurrentUser();
-        if(!user.getId().equals(wishlist.getUser().getId())){
-            throw new ResourceNotFoundException("You are not allowed to delete this wishlist!");
+        Product product = productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product not found!"));
+        if (Boolean.TRUE.equals(wishlistRepository.existsByUserAndProduct(user, product))) {
+            this.wishlistRepository.delete(wishlist);
+        }else {
+            throw new ResourceNotFoundException("This product has not been in the wishlist!");
         }
-        this.wishlistRepository.delete(wishlist);
+
         logger.info(loggerLine);
         logger.info(wishlist.toString());
         logger.info(loggerLine);
+
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK , "Product deleted from wishlist", null);
     }
 }
