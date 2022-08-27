@@ -1,11 +1,12 @@
 package com.anbit.fashionist.service;
 
-import com.anbit.fashionist.domain.dao.Cart;
+
 import com.anbit.fashionist.domain.dao.Product;
 import com.anbit.fashionist.domain.dao.User;
 import com.anbit.fashionist.domain.dao.Wishlist;
-import com.anbit.fashionist.domain.dto.SearchProductResponseDTO;
+
 import com.anbit.fashionist.domain.dto.WishlistRequestDTO;
+import com.anbit.fashionist.domain.dto.WishlistResponseDTO;
 import com.anbit.fashionist.handler.ResponseHandler;
 import com.anbit.fashionist.helper.ResourceAlreadyExistException;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
@@ -46,17 +47,18 @@ public class WishlistServiceImpl implements WishlistService {
         List<Wishlist> wishlists = wishlistRepository.findByUser(user);
         
         if(wishlists.isEmpty()) {
-            throw new ResourceNotFoundException("You have not wishlist yet!");
+            throw new ResourceNotFoundException("You have no wishlist yet!");
         }
 
-        List<SearchProductResponseDTO> wishlistProducts = new ArrayList<>();
+        List<WishlistResponseDTO> wishlistProducts = new ArrayList<>();
         wishlists.forEach(wishlist -> {
             List<String> productPictureUrl = new ArrayList<>();
             wishlist.getProduct().getPictures().forEach(picture -> {
                 productPictureUrl.add(picture.getUrl());
             });
-            SearchProductResponseDTO responseDTO = SearchProductResponseDTO.builder()
-                    .id(wishlist.getProduct().getId())
+            WishlistResponseDTO responseDTO = WishlistResponseDTO.builder()
+                    .id(wishlist.getId())
+                    .productId(wishlist.getProduct().getId())
                     .productPictureUrl(productPictureUrl)
                     .name(wishlist.getProduct().getName())
                     .price(wishlist.getProduct().getPrice())

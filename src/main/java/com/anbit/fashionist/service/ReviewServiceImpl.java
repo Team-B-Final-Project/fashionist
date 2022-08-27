@@ -2,9 +2,7 @@ package com.anbit.fashionist.service;
 
 
 import com.anbit.fashionist.controller.AddressController;
-import com.anbit.fashionist.domain.common.UserDetailsImpl;
 
-import com.anbit.fashionist.domain.dao.Product;
 import com.anbit.fashionist.domain.dao.Review;
 import com.anbit.fashionist.domain.dao.Transaction;
 import com.anbit.fashionist.domain.dao.User;
@@ -14,7 +12,7 @@ import com.anbit.fashionist.domain.dto.ReviewResponseDTO;
 import com.anbit.fashionist.handler.ResponseHandler;
 import com.anbit.fashionist.helper.ResourceAlreadyExistException;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
-import com.anbit.fashionist.repository.ProductRepository;
+
 import com.anbit.fashionist.repository.ReviewRepository;
 
 
@@ -29,7 +27,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 public class ReviewServiceImpl implements ReviewService {
