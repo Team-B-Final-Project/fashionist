@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.anbit.fashionist.domain.dto.EditProfileRequestDTO;
+import com.anbit.fashionist.helper.ResourceAlreadyExistException;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.service.ProfileServiceImpl;
 
@@ -49,11 +50,12 @@ public class ProfileController {
      * Edit the current authenticated user's profile information
      * @param requestDTO
      * @return
+     * @throws ResourceAlreadyExistException
      */
     @Operation(summary = "Edit the current authenticated user's profile information")
     @PutMapping("/")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
-    public ResponseEntity<?> editProfile(@Valid @RequestBody EditProfileRequestDTO requestDTO) {
+    public ResponseEntity<?> editProfile(@Valid @RequestBody EditProfileRequestDTO requestDTO) throws ResourceAlreadyExistException {
         return profileService.editProfile(requestDTO);
     }
 
