@@ -105,7 +105,7 @@ public class ProductServiceImpl implements ProductService{
         if (category != null) {
             categoryByName = categoryRepository.findByName(ECategory.valueOf(category.toUpperCase())).orElseThrow(() -> new ResourceNotFoundException("Category not found"));
         }
-        pageProduct = productRepository.searchProduct(categoryByName, keyword, locations.replace(" ", ","), minPrice, maxPrice ,pageable);
+        pageProduct = productRepository.searchProduct(categoryByName, keyword, locations, minPrice, maxPrice ,pageable);
         if (pageProduct.getContent().isEmpty()) {
             throw new ResourceNotFoundException("Product not found");
         }
