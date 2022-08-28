@@ -83,7 +83,7 @@ public class TransactionController {
      * @throws ResourceNotFoundException
      */
     @Operation(summary = "Send product and input the receipt")
-    @GetMapping("/transaction/send_product")
+    @PostMapping("/transaction/send_product")
     @PreAuthorize("hasAuthority('ROLE_SELLER')")
     public ResponseEntity<?> sendProduct(@Valid @RequestParam("id") Long transactionId, SendProductRequsetDTO requsetDTO) throws ResourceNotFoundException{
         return transactionService.sendProduct(transactionId, requsetDTO);
