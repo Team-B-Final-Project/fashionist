@@ -6,6 +6,7 @@ import com.anbit.fashionist.domain.dao.Product;
 import com.anbit.fashionist.domain.dao.ProductPicture;
 import com.anbit.fashionist.domain.dao.Store;
 import com.anbit.fashionist.domain.dao.User;
+import com.anbit.fashionist.domain.dto.ProductResponseDTO;
 import com.anbit.fashionist.domain.dto.SearchProductResponseDTO;
 import com.anbit.fashionist.domain.dto.UploadProductRequestDTO;
 import com.anbit.fashionist.handler.ResponseHandler;
@@ -182,5 +183,23 @@ public class ProductServiceImpl implements ProductService{
         logger.info("Product created successfully!");
         logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, "Product created successfully!", null);
+    }
+    
+    @Override
+    public ResponseEntity<?> getProduct(Long id) throws ResourceNotFoundException {
+        Product product = productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product not found!"));
+        List<ProductPicture> productPictures = product.getPictures();
+        List<String> productPictureUrl = new ArrayList<>();
+        productPictures.forEach(picture -> {
+            productPictureUrl.add(picture.getUrl());
+        });
+        ProductResponseDTO responseDTO = ProductResponseDTO.builder()
+            .name(product.getName())
+            .description(product.getDescription())
+            .stock(product.getStock())
+            .price(product.getPrice())
+            .productPictureUrl(productPictureUrl)
+            .build();
+        return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, "Product created successfully!", responseDTO);
     }
 }

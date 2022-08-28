@@ -60,6 +60,20 @@ public class ProductController {
     }
 
     /***
+     * Get product detail
+     * @param id
+     * @return
+     * @throws ResourceAlreadyExistException
+     * @throws ResourceNotFoundException
+     * @throws IOException
+     */
+    @Operation(summary = "Get product detail")
+    @GetMapping("/product/get/{id}")
+    public ResponseEntity<?> get(@PathVariable("id") Long id) throws ResourceAlreadyExistException, ResourceNotFoundException, IOException {
+        return productService.getProduct(id);
+    }
+
+    /***
      * Upload a product for seller
      * @param requestDTO
      * @return
@@ -75,4 +89,5 @@ public class ProductController {
         @Valid @RequestPart @NotEmpty @Size(min = 1, max = 5) List<MultipartFile> files) throws ResourceAlreadyExistException, ResourceNotFoundException, IOException {
         return productService.createProduct(requestDTO, files);
     }
+
 }

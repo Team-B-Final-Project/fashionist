@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 public interface ProductService {
     ResponseEntity<?> searchProducts(String keyword, String category, String locations, String sortBy, String order, Float minPrice, Float maxPrice, int page) throws ResourceNotFoundException;
+
+    ResponseEntity<?> getProduct(Long id) throws  ResourceNotFoundException;
     
     ResponseEntity<?> createProduct(UploadProductRequestDTO productRequestDTO, List<MultipartFile> files) throws ResourceNotFoundException, ResourceAlreadyExistException, IOException;
 }
