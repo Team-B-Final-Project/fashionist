@@ -64,15 +64,15 @@ public class CartController {
     }
 
     /***
-     * Get all cart
+     * Get all cart of current user
      * @return
      * @throws ResourceNotFoundException
      */
 
-    @Operation(summary = "Get all cart")
+    @Operation(summary = "Get all cart of current user")
     @GetMapping("/get/cart")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     public ResponseEntity<?> getAll() throws ResourceNotFoundException {
-        return cartService.getCart();
+        return cartService.getCarts();
     }
 }

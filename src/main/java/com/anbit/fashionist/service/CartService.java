@@ -15,5 +15,5 @@ public interface CartService {
 
     ResponseEntity<?> deleteCart(Long id) throws  ResourceNotFoundException;
 
-    ResponseEntity<?> getCart() throws ResourceNotFoundException;
+    ResponseEntity<?> getCarts() throws ResourceNotFoundException;
 }

@@ -95,7 +95,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public ResponseEntity<?> getCart() throws ResourceNotFoundException {
+    public ResponseEntity<?> getCarts() throws ResourceNotFoundException {
         User user = authService.getCurrentUser();
         List<Cart> carts = cartRepository.findByUser(user);
         
