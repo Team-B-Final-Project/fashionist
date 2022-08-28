@@ -16,7 +16,7 @@ import com.anbit.fashionist.service.RegionServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "9. Region Controller")
+@Tag(name = "Region Controller")
 @RestController
 @RequestMapping("/api/v1/region")
 public class RegionController {

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 
-@Tag(name = "7. Wishlist Controller")
+@Tag(name = "Wishlist Controller")
 @RestController
 @RequestMapping("/api/v1")
 @SecurityRequirement(name = "bearer-key")

@@ -16,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "10. Review Controller")
+@Tag(name = "Review Controller")
 @RestController
 @RequestMapping("/api/v1")
 @SecurityRequirement(name = "bearer-key")

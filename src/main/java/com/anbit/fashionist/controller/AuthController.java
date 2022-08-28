@@ -23,7 +23,7 @@ import com.anbit.fashionist.service.AuthServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "1. Auth Controller")
+@Tag(name = "Auth Controller")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/v1/auth")
