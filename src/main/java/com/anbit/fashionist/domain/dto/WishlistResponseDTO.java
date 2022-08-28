@@ -1,6 +1,9 @@
 package com.anbit.fashionist.domain.dto;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import com.anbit.fashionist.domain.dao.Product;
 
 import lombok.*;
 
@@ -10,19 +13,24 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-
 public class WishlistResponseDTO {
 
     private Long id;
 
-    private Long productId;
-    
-    private List<String> productPictureUrl;
+    private SearchProductResponseDTO product; 
 
-    private String name;
-
-    private Float price;
-    
-    private String city;
+    public void setProduct(Product product){
+        List<String> productPictureUrl = new ArrayList<>();
+        product.getPictures().forEach(picture -> {
+            productPictureUrl.add(picture.getUrl());
+        });
+        SearchProductResponseDTO responseDTO = new SearchProductResponseDTO();
+        this.product = responseDTO;
+        this.product.setId(product.getId());
+        this.product.setProductPictureUrl(productPictureUrl);
+        this.product.setName(product.getName());
+        this.product.setPrice(product.getPrice());
+        this.product.setCity(product.getStore().getAddress().getVillage().getDistrict().getRegency().getName());
+    }
 
 }

@@ -51,9 +51,14 @@ public class TransactionHistoryResponseDTO {
         List<ProductResponseDTO> responseDTO = new ArrayList<>();
         this.products = responseDTO;
         productList.forEach(product -> {
+            List<String> productPictureUrl = new ArrayList<>();
+            product.getPictures().forEach(picture -> {
+                productPictureUrl.add(picture.getUrl());
+            });
             ProductResponseDTO dto = new ProductResponseDTO();
-            dto.setProductId(product.getId());
+            dto.setId(product.getId());
             dto.setName(product.getName());
+            dto.setProductPictureUrl(productPictureUrl);
             dto.setPrice(product.getPrice());
             dto.setStock(product.getStock());
             dto.setDescription(product.getDescription());
