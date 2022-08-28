@@ -83,7 +83,7 @@ public class TransactionController {
      * @throws ResourceNotFoundException
      */
     @Operation(summary = "Send product and input the receipt")
-    @GetMapping("/transaction/pay")
+    @GetMapping("/transaction/send_product")
     @PreAuthorize("hasAuthority('ROLE_SELLER')")
     public ResponseEntity<?> sendProduct(@Valid @RequestParam("id") Long transactionId, SendProductRequsetDTO requsetDTO) throws ResourceNotFoundException{
         return transactionService.sendProduct(transactionId, requsetDTO);
@@ -96,7 +96,7 @@ public class TransactionController {
      * @throws ResourceNotFoundException
      */
     @Operation(summary = "Confirm product has been received and transaction is successfull")
-    @GetMapping("/transaction/pay")
+    @GetMapping("/transaction/confirm")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     public ResponseEntity<?> confirmProduct(@Valid @RequestParam("id") Long transactionId) throws ResourceNotFoundException{
         return transactionService.productDelivered(transactionId);
