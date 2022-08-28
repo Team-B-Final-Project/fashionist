@@ -79,7 +79,6 @@ public class ProfileServiceImpl implements ProfileService {
         User user = authService.getCurrentUser();
         user.setFirstName(requestDTO.getFirstName());
         user.setLastName(requestDTO.getLastName());
-        user.setEmail(requestDTO.getEmail());
         user.setDateOfBirth(requestDTO.getDateOfBirth());
         user.setPhoneNumber(requestDTO.getPhoneNumber());
         User editedUser = userRepository.save(user);

@@ -14,8 +14,6 @@ public class EditProfileRequestDTO {
 
     private String lastName;
 
-    private String email;
-
     private Date dateOfBirth;
 
     private String phoneNumber;
