@@ -148,7 +148,7 @@ public class RegionServiceImpl implements RegionService {
             villageList = villageRepository.findByNameContainingIgnoreCaseAndDistrictId(name, districtId);
         }
         if (villageList.isEmpty()) {
-            throw new ResourceNotFoundException("District not found!");
+            throw new ResourceNotFoundException("Village not found!");
         }
         List<GetRegionResonseDTO> responseDTOs = new ArrayList<>();
         villageList.forEach(village -> {
