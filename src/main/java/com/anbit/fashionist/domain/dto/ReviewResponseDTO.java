@@ -1,5 +1,6 @@
 package com.anbit.fashionist.domain.dto;
 
+
 import lombok.*;
 
 @AllArgsConstructor
@@ -7,8 +8,11 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
+
 public class ReviewResponseDTO {
    private Long id;
-   private float rating;
+   private double rating;
    private String comment;
+
+
 }
