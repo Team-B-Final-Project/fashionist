@@ -4,6 +4,7 @@ import com.anbit.fashionist.domain.dao.Cart;
 import com.anbit.fashionist.domain.dao.Product;
 import com.anbit.fashionist.domain.dao.User;
 import com.anbit.fashionist.domain.dto.AddCartRequestDTO;
+import com.anbit.fashionist.domain.dto.CartResponseDTO;
 import com.anbit.fashionist.domain.dto.EditCartTotalItemRequestDTO;
 import com.anbit.fashionist.handler.ResponseHandler;
 import com.anbit.fashionist.helper.ResourceAlreadyExistException;
@@ -11,6 +12,9 @@ import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.repository.CartRepository;
 import com.anbit.fashionist.repository.ProductRepository;
 import com.anbit.fashionist.repository.UserRepository;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,5 +92,33 @@ public class CartServiceImpl implements CartService {
         logger.info(cart.toString());
         logger.info(loggerLine);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK , "Product deleted from cart", null);
+    }
+
+    @Override
+    public ResponseEntity<?> getCarts() throws ResourceNotFoundException {
+        User user = authService.getCurrentUser();
+        List<Cart> carts = cartRepository.findByUser(user);
+        
+        if(carts.isEmpty()) {
+            throw new ResourceNotFoundException("You have no cart yet!");
+        }
+
+        List<CartResponseDTO> cartProducts = new ArrayList<>();
+        carts.forEach(cart -> {
+            CartResponseDTO responseDTO = CartResponseDTO.builder()
+                    .id(cart.getId())
+                    .productId(cart.getProduct().getId())
+                    .userId(cart.getUser().getId())
+                    .itemUnit(cart.getItemUnit())
+                    .totalPrice(cart.getTotalPrice())
+                    .build();
+            cartProducts.add(responseDTO);
+        });
+
+        logger.info(loggerLine);
+        logger.info("Successfully retrieved data!");
+        logger.info(cartProducts.toString());
+        logger.info(loggerLine);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully retrieved data!", cartProducts);
     }
 }

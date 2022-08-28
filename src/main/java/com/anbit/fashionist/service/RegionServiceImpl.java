@@ -83,7 +83,7 @@ public class RegionServiceImpl implements RegionService {
         } else {
             regencyList = regencyRepository.findByNameContainingIgnoreCaseAndProvinceId(name, provinceId);
         }
-        if (regencyList == null) {
+        if (regencyList.isEmpty()) {
             throw new ResourceNotFoundException("Regency not found!");
         }
         List<GetRegionResonseDTO> responseDTOs = new ArrayList<>();
@@ -115,7 +115,7 @@ public class RegionServiceImpl implements RegionService {
         } else {
             districtList = districtRepository.findByNameContainingIgnoreCaseAndRegencyId(name, regId);
         }
-        if (districtList == null) {
+        if (districtList.isEmpty()) {
             throw new ResourceNotFoundException("District not found!");
         }
         List<GetRegionResonseDTO> responseDTOs = new ArrayList<>();
@@ -147,8 +147,8 @@ public class RegionServiceImpl implements RegionService {
         } else {
             villageList = villageRepository.findByNameContainingIgnoreCaseAndDistrictId(name, districtId);
         }
-        if (villageList == null) {
-            throw new ResourceNotFoundException("District not found!");
+        if (villageList.isEmpty()) {
+            throw new ResourceNotFoundException("Village not found!");
         }
         List<GetRegionResonseDTO> responseDTOs = new ArrayList<>();
         villageList.forEach(village -> {

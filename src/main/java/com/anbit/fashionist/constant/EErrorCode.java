@@ -21,7 +21,8 @@ public enum EErrorCode {
     RESOURCE_EXIST(1304, "Resource already exists"),
     WRONG_OTP(1305, "Wrong OTP value"),
     INVALIND_REQUEST(1306, "Invalid request"),
-    FILE_NOT_EXIST(1307, "File not exist");
+    FILE_NOT_EXIST(1307, "File not exist"),
+    FILE_TOO_LARGE(1308, "File too large");
 
 
     private final int code;

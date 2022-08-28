@@ -20,6 +20,7 @@ import com.anbit.fashionist.domain.dao.User;
 import com.anbit.fashionist.domain.dto.EditProfileRequestDTO;
 import com.anbit.fashionist.domain.dto.GetProfileResponseDTO;
 import com.anbit.fashionist.handler.ResponseHandler;
+import com.anbit.fashionist.helper.ResourceAlreadyExistException;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.repository.ProfilePictureRepository;
 import com.anbit.fashionist.repository.UserRepository;
@@ -75,12 +76,14 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public ResponseEntity<?> editProfile(EditProfileRequestDTO requestDTO) {
+    public ResponseEntity<?> editProfile(EditProfileRequestDTO requestDTO) throws ResourceAlreadyExistException {
         User user = authService.getCurrentUser();
         user.setFirstName(requestDTO.getFirstName());
         user.setLastName(requestDTO.getLastName());
-        user.setEmail(requestDTO.getEmail());
         user.setDateOfBirth(requestDTO.getDateOfBirth());
+        if (Boolean.TRUE.equals(userRepository.existsByPhoneNumber(requestDTO.getPhoneNumber()))){
+            throw new ResourceAlreadyExistException("Phone number is already in use!");
+        }
         user.setPhoneNumber(requestDTO.getPhoneNumber());
         User editedUser = userRepository.save(user);
         logger.info(loggerLine);

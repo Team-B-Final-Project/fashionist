@@ -14,4 +14,6 @@ public interface CartService {
     ResponseEntity<?> editCartTotalItem (EditCartTotalItemRequestDTO requestDTO) throws ResourceNotFoundException;
 
     ResponseEntity<?> deleteCart(Long id) throws  ResourceNotFoundException;
+
+    ResponseEntity<?> getCarts() throws ResourceNotFoundException;
 }

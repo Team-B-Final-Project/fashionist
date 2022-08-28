@@ -7,7 +7,7 @@ import com.anbit.fashionist.service.WishlistServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.AllArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,7 +20,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/api/v1")
 @SecurityRequirement(name = "bearer-key")
-@AllArgsConstructor
+
 public class WishlistController {
 
     @Autowired
@@ -34,10 +34,10 @@ public class WishlistController {
     }
 
     @Operation(summary = "Get all your wishlist")
-    @GetMapping("/wishlist/all/{id}")
+    @GetMapping("/wishlist/all")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
-    public ResponseEntity<?> findAllWishlist(@PathVariable Long id) throws ResourceNotFoundException {
-        return wishlistService.getAllWishlist(id);
+    public ResponseEntity<?> findAllWishlist() throws ResourceNotFoundException {
+        return wishlistService.getAllWishlist();
     }
 
     @Operation(summary = "Delete your wishlist")

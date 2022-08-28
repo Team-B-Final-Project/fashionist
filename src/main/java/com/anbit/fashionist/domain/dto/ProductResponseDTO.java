@@ -1,5 +1,7 @@
 package com.anbit.fashionist.domain.dto;
 
+import java.util.List;
+
 import lombok.*;
 
 @AllArgsConstructor
@@ -8,9 +10,11 @@ import lombok.*;
 @Setter
 @Builder
 public class ProductResponseDTO {
-    private Long productId;
+    private Long id;
 
     private String name;
+
+    private List<String> productPictureUrl;
 
     private String description;
 

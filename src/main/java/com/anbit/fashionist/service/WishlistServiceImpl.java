@@ -1,11 +1,12 @@
 package com.anbit.fashionist.service;
 
-import com.anbit.fashionist.domain.dao.Cart;
+
 import com.anbit.fashionist.domain.dao.Product;
 import com.anbit.fashionist.domain.dao.User;
 import com.anbit.fashionist.domain.dao.Wishlist;
-import com.anbit.fashionist.domain.dto.SearchProductResponseDTO;
+
 import com.anbit.fashionist.domain.dto.WishlistRequestDTO;
+import com.anbit.fashionist.domain.dto.WishlistResponseDTO;
 import com.anbit.fashionist.handler.ResponseHandler;
 import com.anbit.fashionist.helper.ResourceAlreadyExistException;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
@@ -41,35 +42,30 @@ public class WishlistServiceImpl implements WishlistService {
     private static final String loggerLine = "---------------------------------------";
 
     @Override
-    public ResponseEntity<?> getAllWishlist(Long id) throws ResourceNotFoundException {
-        List<Wishlist> wishlistLists = wishlistRepository.findAll();
-        List<SearchProductResponseDTO> wishlistResponseDTOs = new ArrayList<>();
-        Wishlist wishtlist = wishlistRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Wishlist not found!"));
+    public ResponseEntity<?> getAllWishlist() throws ResourceNotFoundException {
         User user = authService.getCurrentUser();
-        if(!user.getId().equals(wishtlist.getUser().getId())){
-            throw new ResourceNotFoundException("You are not allowed to see this wishlist!");
+        List<Wishlist> wishlists = wishlistRepository.findByUser(user);
+        
+        if(wishlists.isEmpty()) {
+            throw new ResourceNotFoundException("You have no wishlist yet!");
         }
-
-        wishlistLists.forEach(wishlist -> {
+        List<WishlistResponseDTO> wishlistProducts = new ArrayList<>();
+        wishlists.forEach(wishlist -> {
             List<String> productPictureUrl = new ArrayList<>();
             wishlist.getProduct().getPictures().forEach(picture -> {
                 productPictureUrl.add(picture.getUrl());
             });
-            SearchProductResponseDTO responseDTO = SearchProductResponseDTO.builder()
-                    .id(wishlist.getProduct().getId())
-                    .productPictureUrl(productPictureUrl)
-                    .name(wishlist.getProduct().getName())
-                    .price(wishlist.getProduct().getPrice())
-                    .city(wishlist.getProduct().getStore().getAddress().getVillage().getDistrict().getRegency().getName())
-                    .build();
-            wishlistResponseDTOs.add(responseDTO);
+            WishlistResponseDTO responseDTO = WishlistResponseDTO.builder()
+                .id(wishlist.getId())
+                .build();
+            responseDTO.setProduct(wishlist.getProduct());
+            wishlistProducts.add(responseDTO);
         });
-
-
         logger.info(loggerLine);
         logger.info("Successfully retrieved data!");
+        logger.info(wishlistProducts.toString());
         logger.info(loggerLine);
-        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully retrieved data!", wishlistResponseDTOs);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully retrieved data!", wishlistProducts);
     }
 
     @Override
