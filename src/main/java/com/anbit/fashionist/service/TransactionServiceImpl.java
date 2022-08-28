@@ -28,6 +28,7 @@ import com.anbit.fashionist.domain.dao.TransactionStatus;
 import com.anbit.fashionist.domain.dao.User;
 import com.anbit.fashionist.domain.dto.CreateTransactionRequestDTO;
 import com.anbit.fashionist.domain.dto.CreateTransactionResponseDTO;
+import com.anbit.fashionist.domain.dto.SendProductRequsetDTO;
 import com.anbit.fashionist.domain.dto.TransactionHistoriesResponseDTO;
 import com.anbit.fashionist.domain.dto.TransactionHistoryResponseDTO;
 import com.anbit.fashionist.handler.ResponseHandler;
@@ -207,7 +208,11 @@ public class TransactionServiceImpl implements TransactionService {
         if (transaction.getUser() != user) {
             throw new ResourceNotFoundException("Transaction is not found!");
         }
-        TransactionStatus transactionStatus = transactionStatusRepository.findByName(ETransactionStatus.PACKING).orElseThrow(() -> new ResourceNotFoundException("Transaction status not found!"));
+        TransactionStatus waitingPayment = transactionStatusRepository.findByName(ETransactionStatus.WAITING_PAYMENT).orElseThrow(() -> new ResourceNotFoundException("Transaction status is not found!"));
+        if (transaction.getTransactionStatus() != waitingPayment) {
+            throw new ResourceNotFoundException("Transaction is not found!");
+        }
+        TransactionStatus transactionStatus = transactionStatusRepository.findByName(ETransactionStatus.PACKING).orElseThrow(() -> new ResourceNotFoundException("Transaction status is not found!"));
         transaction.setTransactionStatus(transactionStatus);
         transactionRepository.save(transaction);
         logger.info(loggerLine);
@@ -217,15 +222,19 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public ResponseEntity<?> sendProduct(Long transactionId, String receipt) throws ResourceNotFoundException {
+    public ResponseEntity<?> sendProduct(Long transactionId, SendProductRequsetDTO requsetDTO) throws ResourceNotFoundException {
         User user = authService.getCurrentUser();
         Transaction transaction = transactionRepository.findById(transactionId).orElseThrow(() -> new ResourceNotFoundException("Transaction not found!"));
-        if (transaction.getUser() != user) {
+        if (transaction.getProductTransactions().get(0).getProduct().getStore().getUser() != user) {
             throw new ResourceNotFoundException("Transaction is not found!");
         }
-        TransactionStatus transactionStatus = transactionStatusRepository.findByName(ETransactionStatus.SENT).orElseThrow(() -> new ResourceNotFoundException("Transaction status not found!"));
+        TransactionStatus packing = transactionStatusRepository.findByName(ETransactionStatus.PACKING).orElseThrow(() -> new ResourceNotFoundException("Transaction status is not found!"));
+        if (transaction.getTransactionStatus() != packing) {
+            throw new ResourceNotFoundException("Transaction is not found!");
+        }
+        TransactionStatus transactionStatus = transactionStatusRepository.findByName(ETransactionStatus.DELIVERED).orElseThrow(() -> new ResourceNotFoundException("Transaction status not found!"));
         transaction.setTransactionStatus(transactionStatus);
-        transaction.setReceipt(receipt);
+        transaction.setReceipt(requsetDTO.getReceipt());
         transactionRepository.save(transaction);
         logger.info(loggerLine);
         logger.info(transaction.toString());
@@ -234,12 +243,18 @@ public class TransactionServiceImpl implements TransactionService {
     }
     
     @Override
-    public ResponseEntity<?> productDelivered(Long transactionId, String receipt) throws ResourceNotFoundException {
+    public ResponseEntity<?> productDelivered(Long transactionId) throws ResourceNotFoundException {
         User user = authService.getCurrentUser();
         Transaction transaction = transactionRepository.findById(transactionId).orElseThrow(() -> new ResourceNotFoundException("Transaction not found!"));
         if (transaction.getUser() != user) {
             throw new ResourceNotFoundException("Transaction is not found!");
         }
+        TransactionStatus sent = transactionStatusRepository.findByName(ETransactionStatus.DELIVERED).orElseThrow(() -> new ResourceNotFoundException("Transaction status is not found!"));
+        if (transaction.getTransactionStatus() != sent) {
+            throw new ResourceNotFoundException("Transaction is not found!");
+        }
+        TransactionStatus transactionStatus = transactionStatusRepository.findByName(ETransactionStatus.SENT).orElseThrow(() -> new ResourceNotFoundException("Transaction status not found!"));
+        transaction.setTransactionStatus(transactionStatus);
         logger.info(loggerLine);
         logger.info(transaction.toString());
         logger.info(loggerLine);

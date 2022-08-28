@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.anbit.fashionist.domain.dto.CreateTransactionRequestDTO;
+import com.anbit.fashionist.domain.dto.SendProductRequsetDTO;
 import com.anbit.fashionist.helper.ResourceNotFoundException;
 import com.anbit.fashionist.service.TransactionServiceImpl;
 
@@ -62,15 +63,42 @@ public class TransactionController {
     }
 
     /***
-     * Trigger when user pay transaction
+     * Pay a transaction
      * @param id
      * @return
      * @throws ResourceNotFoundException
      */
-    @Operation(summary = "Trigger when user pay transaction")
+    @Operation(summary = "Pay a transaction")
     @GetMapping("/transaction/pay")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     public ResponseEntity<?> transactionPay(@Valid @RequestParam("id") Long transactionId) throws ResourceNotFoundException{
         return transactionService.makePayment(transactionId);
+    }
+
+    /***
+     * Send product and input the receipt
+     * @param transactionId
+     * @param requsetDTO
+     * @return
+     * @throws ResourceNotFoundException
+     */
+    @Operation(summary = "Send product and input the receipt")
+    @GetMapping("/transaction/pay")
+    @PreAuthorize("hasAuthority('ROLE_SELLER')")
+    public ResponseEntity<?> sendProduct(@Valid @RequestParam("id") Long transactionId, SendProductRequsetDTO requsetDTO) throws ResourceNotFoundException{
+        return transactionService.sendProduct(transactionId, requsetDTO);
+    }
+
+    /***
+     * Confirm product has been received and transaction is successfull
+     * @param transactionId
+     * @return
+     * @throws ResourceNotFoundException
+     */
+    @Operation(summary = "Confirm product has been received and transaction is successfull")
+    @GetMapping("/transaction/pay")
+    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
+    public ResponseEntity<?> confirmProduct(@Valid @RequestParam("id") Long transactionId) throws ResourceNotFoundException{
+        return transactionService.productDelivered(transactionId);
     }
 }
